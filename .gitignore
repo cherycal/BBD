@@ -128,13 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-#Tildes
+# Tildes
 *~
-**/*~
-./Fantasy/README.md~
+Fantasy/*~
+/Fantasy/*~
 ./Fantasy/*~
-
-
-
-
-
