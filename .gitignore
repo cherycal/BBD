@@ -130,8 +130,9 @@ dmypy.json
 
 #Tildes
 *~
-Fantasy/README.md~
-Fantasy/*~
+**/*~
+./Fantasy/README.md~
+./Fantasy/*~
 
 
 
