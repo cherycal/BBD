@@ -49,7 +49,10 @@ for team in data['teams']:
                         for item in player['playerPoolEntry']['player'][player_key]:
                             item_date = time.localtime(item['date'] / 1000)
                             history_date = time.strftime('%Y%m%d', item_date)
-                            print(team_name + " , " + player_full_name + " , " + history_date + " , " + str(item['percentOwned']))
+                            percent_owned = round(item['percentOwned'],2)
+                            auction_value = round(item['auctionValueAverage'],2)
+                            print(team_name + " , " + player_full_name + " , " + history_date + " , " +
+                                  str(percent_owned) + " , " + str(auction_value))
                     
                 
     #print("\n\n")
