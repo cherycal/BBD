@@ -1,0 +1,18 @@
+{"appliedStatTotal":0.0,"draftAuctionValue":5,"keeperValueFuture":0,
+"player":{"dateUniverseChanged":1547163016520,"defaultPositionId":4,
+"draftRanksByRankType":{"STANDARD":{"auctionValue":5,"published":false,"rank":132,"rankSourceId":0,"rankType":"STANDARD","slotId":0}},
+"draftedSeasonId":2016,"droppable":true,"dualPositionEligible":false,"eligibleSlots":[2,6,19,12,16,17],
+"firstName":"Gavin","fullName":"Gavin Lux","id":40423,"injuryStatus":"ACTIVE","invalid":false,"jersey":"9","lastName":"Lux",
+"lastNewsDate":1594492047000,"lastVideoDate":1587381447000,"laterality":"RIGHT","ownership":{"activityLevel":null,
+"auctionValueAverage":3.3258426966292136,"auctionValueAverageChange":0.053115423901940684,
+"averageDraftPosition":161.41803278688525,"averageDraftPositionPercentChange":-3.8811336670477488,
+"leagueType":0,"percentOwned":87.42138364779875},"proTeamId":19,"replacementId":0,
+"seasonOutlook":"Lux forced his way into the Dodgers' September and postseason plans thanks to .347/.421/.607 rates, 26 HRs
+ and 10 SBs in 113 games combined between Double-A Tulsa and Triple-A Oklahoma City, flashing enough pop in the process to
+ put himself  in the mix at 2B entering spring training. While that will be a battle, his blue-chip prospect status might 
+earn him an edge, assuming the Dodgers don't want to keep his service time in check. Make no mistake, Lux can rake. 
+He's the kind of player with easy top-10 potential at second base if he's in an everyday role, but
+ his base stealing comes with some questions, as he was only 52-for-77 during his minor league career. He's a top 
+dynasty/keeper-league prospect, and one who could settle in the top 100 in redraft leagues if he's looking good during
+ spring training.",
+"stance":"LEFT","universeId":2},"tradeLocked":false,"transactions":[]}
