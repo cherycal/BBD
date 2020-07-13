@@ -3,8 +3,9 @@ import sys
 import time
 from datetime import datetime
 import sys
+import os
 sys.path.append('./modules')
-import sqldb
+import sqldb, tools
 
 def get_teams():
 
@@ -27,7 +28,6 @@ def print_rosters():
 
 
 def get_new_rosters():
-    new_rosters = {}
 
     for league in league_dict:
         addr = "http://fantasy.espn.com/apis/v3/games/flb/seasons/2020/segments/0/leagues/" + str(league) + "?view=roster"
@@ -45,14 +45,14 @@ def get_new_rosters():
                           + \
                           team_name + "\"," + str(league) + ")"
                 new_rosters[player_full_name + ':' + team_name] = team_name
-                print(command)
+                #print(command)
                 insert_list.append(command)
     return
 
 
 def update_rosters():
     players = len(insert_list)
-    msg = ""
+
     minimum = 200
 
     if (players < minimum):
@@ -66,13 +66,61 @@ def update_rosters():
         print("Updating Rosters table")
         c = bdb.delete("DELETE FROM Rosters where LeagueID  in (SELECT LeagueID FROM Leagues where Active = 'True')")
         for command in insert_list:
-            print(command)
+            #print(command)
             bdb.insert(command)
+
+def broadcast_changes():
+    msg = ""
+    for p in old_rosters:
+        if new_rosters.get(p):
+            if (old_rosters[p] == new_rosters[p]):
+                # print(p, old_rosters[p], new_rosters[p] )
+                pass
+            else:
+                # print("In old not in new: " + p, old_rosters[p], new_rosters[p] )
+                msg += "DROPPED: " + p + ": " + old_rosters[p] + ", " + new_rosters[p]  + ".  "
+                msg += "\n"
+        else:
+            # print("In old not in new: " + p)
+            msg += "DROPPED: " + p + ".  "
+            msg += "\n"
+
+    for p in new_rosters:
+        if (old_rosters.get(p)):
+            pass
+        else:
+            # print("In new not in old: " + p, new_rosters[p])
+            msg += "ADDED: " + p + ".  "
+            msg += "\n"
+
+    if (msg != ""):
+        print("Msg: " + msg)
+        inst.push("Roster changes: " + str(date_time), msg)
+    else:
+        msg = "No changes"
+        inst.push("Roster changes: " + str(date_time), msg)
+        print("Msg: " + msg)
+
+    f.write(msg)
+
+
+def setup():
+    platform = tools.get_platform()
+    current_dir = os.getcwd()
+    if (platform == "Windows"):
+        outfile = current_dir + "\\logs\\log." + str(out_date)
+    elif (platform == "Linux" or platform == "linux"):
+        outfile = current_dir + "/logs/log." + str(out_date)
+    else:
+        print("OS platform " + platform + " isn't Windows or Linux. Exit.")
+        exit(1)
+
+    print(outfile)
+    return outfile
 
 
 import push
 inst = push.Push()
-
 bdb = sqldb.DB('Baseball.db')
 
 now = datetime.now() # current date and time
@@ -82,10 +130,17 @@ out_date = now.strftime("%m%d%Y-%H%M%S")
 league_dict = {}
 team_dict = {}
 old_rosters = {}
+new_rosters = {}
 insert_list = []
 
+outfile = setup()
+f = open(outfile, "w")
 get_teams()
-print_teams()
-print_rosters()
+#print_teams()
+#print_rosters()
 get_new_rosters()
 update_rosters()
+broadcast_changes()
+
+f.close()
+bdb.close()
