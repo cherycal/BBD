@@ -7,6 +7,22 @@ import os
 sys.path.append('./modules')
 import sqldb, tools
 
+import push
+inst = push.Push()
+bdb = sqldb.DB('Baseball.db')
+
+now = datetime.now() # current date and time
+date_time = now.strftime("%m/%d/%Y-%H:%M:%S")
+out_date = now.strftime("%m%d%Y-%H%M%S")
+
+league_dict = {}
+team_dict = {}
+old_rosters = {}
+new_rosters = {}
+insert_list = []
+
+#######################################################################################################################
+
 def get_teams():
 
     c = bdb.select("SELECT LeagueID, Name FROM Leagues where Active = 'True'")
@@ -96,6 +112,8 @@ def broadcast_changes():
     if (msg != ""):
         print("Msg: " + msg)
         inst.push("Roster changes: " + str(date_time), msg)
+        time.sleep(2)
+        inst.push("Roster changes: " + str(date_time), "Done")
     else:
         msg = "No changes"
         inst.push("Roster changes: " + str(date_time), msg)
@@ -118,23 +136,11 @@ def setup():
     print(outfile)
     return outfile
 
-
-import push
-inst = push.Push()
-bdb = sqldb.DB('Baseball.db')
-
-now = datetime.now() # current date and time
-date_time = now.strftime("%m/%d/%Y-%H:%M:%S")
-out_date = now.strftime("%m%d%Y-%H%M%S")
-
-league_dict = {}
-team_dict = {}
-old_rosters = {}
-new_rosters = {}
-insert_list = []
+#######################################################################################################################
 
 outfile = setup()
 f = open(outfile, "w")
+
 get_teams()
 #print_teams()
 #print_rosters()
