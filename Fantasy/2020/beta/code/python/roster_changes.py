@@ -1,6 +1,13 @@
 import urllib.request, json
+import sys
 import time
 from datetime import datetime
+import sys
+sys.path.append('./modules')
+print(sys.path)
+import sqldb
+
+
 
 #print("Load start ")
 now = datetime.now() # current date and time
