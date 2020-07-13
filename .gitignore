@@ -133,3 +133,12 @@ dmypy.json
 Fantasy/*~
 /Fantasy/*~
 ./Fantasy/*~
+
+./Fantasy/2020/beta/code/python/.idea/*
+./Fantasy/2020/beta/code/python/.idea/
+./Fantasy/2020/beta/code/python/.idea
+Fantasy/2020/beta/code/python/.idea/
+Fantasy/2020/beta/code/python/.idea
+/Fantasy/2020/beta/code/python/.idea/*
+/Fantasy/2020/beta/code/python/.idea/
+/Fantasy/2020/beta/code/python/.idea
