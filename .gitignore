@@ -128,17 +128,11 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Tildes
+# tildes
 *~
-Fantasy/*~
-/Fantasy/*~
-./Fantasy/*~
+*\~
 
-./Fantasy/2020/beta/code/python/.idea/*
-./Fantasy/2020/beta/code/python/.idea/
-./Fantasy/2020/beta/code/python/.idea
-Fantasy/2020/beta/code/python/.idea/
-Fantasy/2020/beta/code/python/.idea
-/Fantasy/2020/beta/code/python/.idea/*
-/Fantasy/2020/beta/code/python/.idea/
-/Fantasy/2020/beta/code/python/.idea
+bdb.db
+*test_*.py
+*logs*
+
