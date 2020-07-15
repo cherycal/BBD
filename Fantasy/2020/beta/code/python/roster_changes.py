@@ -57,9 +57,7 @@ def get_new_rosters():
             for player in team['roster']['entries']:
                 player_full_name = player['playerPoolEntry']['player']['fullName']
                 command = "INSERT INTO Rosters(Player, Team, LeagueID) VALUES ( \"" + player_full_name + \
-                          "\" ,\"" \
-                          + \
-                          team_name + "\"," + str(league) + ")"
+                          "\" ,\"" + team_name + "\"," + str(league) + ")"
                 new_rosters[player_full_name + ':' + team_name] = team_name
                 #print(command)
                 insert_list.append(command)
@@ -119,16 +117,19 @@ def broadcast_changes():
         inst.push("Roster changes: " + str(date_time), msg)
         print("Msg: " + msg)
 
-    f.write(msg)
+    return msg
 
 
-def setup():
+def setup_outfile(outfile_name):
+
+    outfile = ""
     platform = tools.get_platform()
     current_dir = os.getcwd()
     if (platform == "Windows"):
-        outfile = current_dir + "\\logs\\log." + str(out_date)
+        outfile = current_dir + "\\logs\\" + outfile_name + "_" + str(out_date) + ".txt"
+
     elif (platform == "Linux" or platform == "linux"):
-        outfile = current_dir + "/logs/log." + str(out_date)
+        outfile = current_dir + "/logs/" + outfile_name + "_" + str(out_date) + ".txt"
     else:
         print("OS platform " + platform + " isn't Windows or Linux. Exit.")
         exit(1)
@@ -138,15 +139,22 @@ def setup():
 
 #######################################################################################################################
 
-outfile = setup()
-f = open(outfile, "w")
+def main():
 
-get_teams()
-#print_teams()
-#print_rosters()
-get_new_rosters()
-update_rosters()
-broadcast_changes()
+    outfile = setup_outfile("roster_changes")
+    f = open(outfile, "w")
 
-f.close()
-bdb.close()
+    get_teams()
+    # print_teams()
+    # print_rosters()
+    get_new_rosters()
+    update_rosters()
+    msg = broadcast_changes()
+
+    f.write(msg)
+    f.close()
+
+    bdb.close()
+
+if __name__ == "__main__":
+    main()
