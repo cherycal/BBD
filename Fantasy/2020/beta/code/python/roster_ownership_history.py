@@ -13,7 +13,7 @@ bdb = sqldb.DB('Baseball.db')
 now = datetime.now() # current date and time
 date_time = now.strftime("%m/%d/%Y-%H:%M:%S")
 out_date = now.strftime("%m%d%Y-%H%M%S")
-start_date = 20200712
+start_date = 20200713
 
 league_dict = {}
 team_dict = {}
