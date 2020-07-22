@@ -49,6 +49,10 @@ class DB:
         self.cursor.execute(command)
         self.conn.commit()
 
+    def update(self, command):
+        self.cursor.execute(command)
+        self.conn.commit()
+
     def close(self):
         print("Closing " + self.db)
         self.conn.close()
