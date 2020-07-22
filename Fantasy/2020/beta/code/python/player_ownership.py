@@ -1,19 +1,22 @@
-import urllib.request, json
-import time
-from datetime import datetime
-import sys
+import json
 import os
+import sys
+import time
+import urllib.request
+from datetime import datetime
+
 sys.path.append('./modules')
 import sqldb, tools
 import pickle
 import os.path
 from os import path
 import push
+
 inst = push.Push()
 bdb = sqldb.DB('Baseball.db')
 
-now = datetime.now() # current date and time
-date_time = now.strftime("%m/%d/%Y-%H:%M:%S")
+now = datetime.now()  # current date and time
+date_time = now.strftime("%Y%m%d%H%M%S")
 out_date = now.strftime("%Y%m%d")
 integer_today = int(out_date)
 string_today = out_date
@@ -38,26 +41,26 @@ def setup_outfile(outfile_name):
     outfile = ""
     platform = tools.get_platform()
     current_dir = os.getcwd()
-    if (platform == "Windows"):
-        outfile = current_dir + "\\logs\\" + outfile_name + "_" + str(out_date) + ".txt"
+    if platform == "Windows":
+        outfile = current_dir + "\\logs\\" + outfile_name + "_" + str(date_time) + ".txt"
 
-    elif (platform == "Linux" or platform == "linux"):
-        outfile = current_dir + "/logs/" + outfile_name + "_" + str(out_date) + ".txt"
+    elif platform == "Linux" or platform == "linux":
+        outfile = current_dir + "/logs/" + outfile_name + "_" + str(date_time) + ".txt"
     else:
         print("OS platform " + platform + " isn't Windows or Linux. Exit.")
         msg += "\tOS platform " + platform + " isn't Windows or Linux. Exit." + "\n\n"
         exit_process(1)
 
-    msg += "\toutfile name is " + outfile +"\n\n"
+    msg += "\toutfile name is " + outfile + "\n\n"
 
     return outfile
 
 
 def load_position_dict():
-    global  msg
+    global msg
     position_dict = {}
     msg += "load_position_dict()\n\n"
-    if path.exists("dict.pickle") and open("dict.pickle","rb"):
+    if path.exists("dict.pickle") and open("dict.pickle", "rb"):
         msg += "Load from pickle\n\n"
         pickle_in = open("dict.pickle", "rb")
         position_dict = pickle.load(pickle_in)
@@ -73,21 +76,26 @@ def load_position_dict():
 
 
 def check_position_dict(position_dict):
-    global  msg
+    global msg
     for position_id in position_dict:
-        print( str(position_id ) + ", " + position_dict[position_id] )
+        print(str(position_id) + ", " + position_dict[position_id])
 
 
-
-def check_date():
+def get_player_data_max_date():
     global msg
     msg += "check_date()\n\n"
-
     max_date = bdb.select("SELECT max(Date) from PlayerData")
-    if str(max_date[0][0]) == out_date:
-        msg += "\tThe process has already been run today, " + str(out_date) + ". The program is exiting.\n\n"
-        exit_process(1)
+    return max_date
 
+
+def check_for_new_players():
+    global msg
+    msg += "check_for_new_players()\n\n"
+    c = bdb.select("select ESPNID, Name from MostRecentPlayerData where ESPNID not in (select ESPNID from PlayerData)")
+    for t in c:
+        print(t)
+        msg += str(t) + "\n"
+    return
 
 
 def get_teams():
@@ -103,22 +111,23 @@ def get_teams():
         team_dict[t[1]] = t[2]
 
 
-def get_history(position_dict):
+def get_player_data_from_espn(position_dict):
     global msg
-    msg += "get_history()\n\n"
+    msg += "get_player_data_from_espn()\n\n"
 
     for league_id in league_dict:
 
-        with urllib.request.urlopen("http://fantasy.espn.com/apis/v3/games/flb/seasons/2020/segments/0/leagues/" + str(league_id) + "?view=kona_player_info") as url:
+        with urllib.request.urlopen("http://fantasy.espn.com/apis/v3/games/flb/seasons/2020/segments/0/leagues/" + str(
+                league_id) + "?view=kona_player_info") as url:
             data = json.loads(url.read().decode())
 
         for player in data['players']:
             if player['player']['ownership']['percentOwned'] >= 0:
-                full_name =  player['player']['fullName']
+                full_name = player['player']['fullName']
                 espn_id = str(player['player']['id'])
-                auction_value = round( player['player']['ownership']['auctionValueAverage'], 2)
+                auction_value = round(player['player']['ownership']['auctionValueAverage'], 2)
                 auction_value_change = str(round(player['player']['ownership']['auctionValueAverageChange'], 2))
-                percent_owned = round( player['player']['ownership']['percentOwned'], 2)
+                percent_owned = round(player['player']['ownership']['percentOwned'], 2)
                 eligible_slots = player['player']['eligibleSlots']
                 position_list = []
                 for position_id in eligible_slots:
@@ -130,39 +139,77 @@ def get_history(position_dict):
                 else:
                     injury_status = "NONE"
                 pro_team_id = str(player['player']['proTeamId'])
-                command = "INSERT INTO PlayerData( Date, ESPNID, Name, PercentOwned, AuctionValue," \
-                          "InjuryStatus, ESPNTEAMID, AuctionValueChange, EligibleSlots) " \
+
+                command = "INSERT INTO MostRecentPlayerData( Date, ESPNID, Name, PercentOwned, AuctionValue," \
+                          "InjuryStatus, ESPNTEAMID, AuctionValueChange, EligibleSlots,UpdateTime) " \
                           "VALUES (" + str(out_date) + "," + str(espn_id) + ", " + \
                           "\"" + full_name + "\" ," + str(percent_owned) + ", " + \
-                          str(auction_value) + ",\"" +  injury_status  + "\", " + str(pro_team_id) +  ", " + str(auction_value_change)  + \
-                          ",\"" + position_string + "\")"
-                #print(command)
-                #print(str(eligible_slots))
+                          str(auction_value) + ",\"" + injury_status + "\", " + str(pro_team_id) + ", " + str(
+                    auction_value_change) + \
+                          ",\"" + position_string + "\"," + str(date_time) + ")"
+
                 if auction_value > 0 or percent_owned > 0:
                     insert_list.append(command)
 
 
-
-
-def update_rosters():
+# noinspection PyRedundantParentheses
+def update_most_recent_player_data_table(print_flag):
     global msg
-    msg += "update_rosters()\n\n"
+    msg += "update_most_recent_player_data_table\n\n"
     entries = len(insert_list)
     minimum = 100
 
     if (entries < minimum):
         msg += "Not enough entries in new list: " + str(entries) + "\n\n"
-        #inst.push("Roster error: " + str(date_time), msg)
+        # inst.push("Roster error: " + str(date_time), msg)
         print(msg)
         exit_process(1)
     else:
-        print("Updating PlayerData table")
-        msg += "Updating PlayerData table" + "\n\n"
-        bdb.delete("DELETE from PlayerData where Date = " + str(out_date))
+        print("Updating MostRecentPlayerData table")
+        msg += "Updating MostRecentPlayerData table" + "\n\n"
+        bdb.delete("DELETE from MostRecentPlayerData")
         for command in insert_list:
-            #print(command)
+            if print_flag:
+                print(command)
             bdb.insert(command)
         msg += "Total entries: " + str(entries) + "\n\n"
+    return
+
+
+def check_number_of_new_most_recent_entries():
+    global msg
+    msg += "check_number_of_new_most_recent_entries\n\n"
+
+    finish_process = False
+    c = bdb.select("select M.*, P.InjuryStatus as OldInjuryStatus from MostRecentPlayerData M, PlayerData P "
+                   "where M.Date = P.Date and M.ESPNID = P.ESPNID")
+    new_player_data_entries = int(len(c))
+    print("Number of new player data entries:")
+    print(new_player_data_entries)
+
+    if new_player_data_entries == 0:
+        finish_process = True
+    else:
+        c = bdb.select("select M.*, P.InjuryStatus as OldInjuryStatus "
+                   "from MostRecentPlayerData M, PlayerData P where M.Date = P.Date and M.ESPNID = P.ESPNID "
+                   "and M.InjuryStatus != P.InjuryStatus")
+        new_player_data_differences = int(len(c))
+        print("Number of new player data differences:")
+        print(new_player_data_differences)
+        if new_player_data_differences > 0:
+            finish_process = True
+
+    return finish_process
+
+
+def update_player_data_table(entries_exist):
+    global msg
+    if entries_exist:
+        msg += "update_player_data_table\n\n"
+        bdb.delete("DELETE from PlayerData where Date = " + str(out_date))
+        bdb.insert("INSERT into PlayerData select * from MostRecentPlayerData")
+    return
+
 
 def get_dtd():
     dtd_dict = {}
@@ -171,6 +218,7 @@ def get_dtd():
         dtd_dict[player] = player
     return dtd_dict
 
+
 def get_dl():
     dl_dict = {}
     dl_players = bdb.select("select ESPNID from PlayerData where InjuryStatus like '%DL%' ")
@@ -178,19 +226,18 @@ def get_dl():
         dl_dict[player] = player
     return dl_dict
 
-def run_injury_queries( push_data ):
 
-    dtd_dict = get_dtd()
-    dl_dict = get_dl()
+def run_injury_queries(push_data):
+    #dtd_dict = get_dtd()
+    #dl_dict = get_dl()
 
-    for id in dtd_dict:
-        pass
-        #print(id)
+    #for id in dtd_dict:
+        #pass
+        # print(id)
 
-    for id in dl_dict:
-        pass
-        #print(id)
-
+    #for id in dl_dict:
+        #pass
+        # print(id)
 
     # print("Just inactivated")
     # just_inactivated = bdb.select("select P.*, Team, LeagueID from PlayerData P "
@@ -205,13 +252,13 @@ def run_injury_queries( push_data ):
     #
     # print("\n\n")
 
-    print( "Just added to Day to Day")
+    print("Just added to Day to Day")
     just_added_to_dtd = bdb.select("select P.*, Team, LeagueID from PlayerData P "
-                                        "left outer join Rosters R on P.Name = R.Player "
-                                        "where InjuryStatus = 'DAY_TO_DAY' and Date = " + string_today +
-                                        " and P.ESPNID in ( Select ESPNID from PlayerData where "
-                                        "InjuryStatus = 'ACTIVE' and Date = " + string_yesterday + ") "
-                                        "order by InjuryStatus, AuctionValue desc")
+                                   "left outer join Rosters R on P.Name = R.Player "
+                                   "where InjuryStatus = 'DAY_TO_DAY' and Date = " + string_today +
+                                   " and P.ESPNID in ( Select ESPNID from PlayerData where "
+                                   "InjuryStatus = 'ACTIVE' and Date = " + string_yesterday + ") "
+                                                                                              "order by InjuryStatus, AuctionValue desc")
     injury_msg = ""
     for r in just_added_to_dtd:
         lg = str(r[10])
@@ -227,17 +274,17 @@ def run_injury_queries( push_data ):
 
     print("Just added to IL")
     just_added_to_il = bdb.select("select P.*, Team, LeagueID from PlayerData P "
-                                        "left outer join Rosters R on P.Name = R.Player "
-                                        "where InjuryStatus like '%DL%' and Date = " + string_today +
-                                        " and P.ESPNID in ( Select ESPNID from PlayerData where "
-                                        "InjuryStatus not like '%DL%' and Date = " + string_yesterday + ") "
-                                        "order by InjuryStatus, AuctionValue desc")
+                                  "left outer join Rosters R on P.Name = R.Player "
+                                  "where InjuryStatus like '%DL%' and Date = " + string_today +
+                                  " and P.ESPNID in ( Select ESPNID from PlayerData where "
+                                  "InjuryStatus not like '%DL%' and Date = " + string_yesterday + ") "
+                                                                                                  "order by InjuryStatus, AuctionValue desc")
 
     injury_msg = ""
     count = 1
     for r in just_added_to_il:
-        espn_id = r[1]
-        #if espn_id not in dl_dict:
+        #espn_id = r[1]
+        # if espn_id not in dl_dict:
         #    continue
 
         lg = str(r[10])
@@ -256,8 +303,9 @@ def run_injury_queries( push_data ):
         # Team
         # LeagueId
 
-        print(r[2] + "\t, " + str(r[3]) + "\t, " + r[5] + "\t, " + str(r[8]) + "\t, " + str(r[9]) + "\t, " + lg )
-        injury_msg += r[2] + "\t, " + str(r[3]) + "\t, " + r[5] + "\t, " + str(r[8]) + "\t, " + str(r[9]) + ", " + lg + "\n"
+        print(r[2] + "\t, " + str(r[3]) + "\t, " + r[5] + "\t, " + str(r[8]) + "\t, " + str(r[9]) + "\t, " + lg)
+        injury_msg += r[2] + "\t, " + str(r[3]) + "\t, " + r[5] + "\t, " + str(r[8]) + "\t, " + str(
+            r[9]) + ", " + lg + "\n"
 
         if count % 6 == 0 and push_data:
             inst.push("Added to IL: " + str(out_date), injury_msg)
@@ -272,11 +320,11 @@ def run_injury_queries( push_data ):
 
     print("Just became active from IL")
     just_became_active_from_il = bdb.select("select P.*, Team, LeagueID from PlayerData P "
-                                  "left outer join Rosters R on P.Name = R.Player "
-                                  "where InjuryStatus not like '%DL%' and Date = " + string_today +
-                                  " and P.ESPNID in ( Select ESPNID from PlayerData where "
-                                  "InjuryStatus like '%DL%' and Date = " + string_yesterday + ") "
-                                  "order by InjuryStatus, AuctionValue desc")
+                                            "left outer join Rosters R on P.Name = R.Player "
+                                            "where InjuryStatus not like '%DL%' and Date = " + string_today +
+                                            " and P.ESPNID in ( Select ESPNID from PlayerData where "
+                                            "InjuryStatus like '%DL%' and Date = " + string_yesterday + ") "
+                                                                                                        "order by InjuryStatus, AuctionValue desc")
 
     injury_msg = ""
     count = 1
@@ -295,16 +343,15 @@ def run_injury_queries( push_data ):
         pass
         inst.push("Activated from IL: " + str(out_date), injury_msg)
 
-
     print("\n\n")
 
     print("Just became active from DTD")
     just_became_active_from_dtd = bdb.select("select P.*, Team, LeagueID from PlayerData P "
-                                            "left outer join Rosters R on P.Name = R.Player "
-                                            "where InjuryStatus = 'ACTIVE' and Date = " + string_today +
-                                            " and P.ESPNID in ( Select ESPNID from PlayerData where "
-                                            "InjuryStatus like 'DAY_TO_DAY' and Date = " + string_yesterday + ") "
-                                            "order by InjuryStatus, AuctionValue desc")
+                                             "left outer join Rosters R on P.Name = R.Player "
+                                             "where InjuryStatus = 'ACTIVE' and Date = " + string_today +
+                                             " and P.ESPNID in ( Select ESPNID from PlayerData where "
+                                             "InjuryStatus like 'DAY_TO_DAY' and Date = " + string_yesterday + ") "
+                                                                                                               "order by InjuryStatus, AuctionValue desc")
     injury_msg = ""
     for r in just_became_active_from_dtd:
         lg = str(r[10])
@@ -320,40 +367,58 @@ def run_injury_queries( push_data ):
     return
 
 
-
-
+# noinspection PyGlobalUndefined
 def exit_process(code):
-    global msg, f, bdb
+    global msg, bdb
     msg += "Exit code: " + str(code) + "\n\n"
     print(msg)
+    exit(code)
+
+
+def close_file_object(f):
     f.write(msg)
     f.close()
     bdb.close()
-    exit(code)
 
+
+# noinspection PyUnreachableCode
 def main():
-    global f, msg
+    global msg
 
     msg += "Running player_ownership at " + date_time + "\n\n"
+
     outfile = setup_outfile("player_ownership")
     f = open(outfile, "w")
 
     pd = load_position_dict()
 
-    #check_position_dict(pd)
+    # check_position_dict(pd)
 
-    #check_date()
+    # get_player_data_max_date()
 
+    check_for_new_players()
+
+    # get Fantasy team data
+    # league_dict and team_dict
     get_teams()
 
-    get_history(pd)
+    get_player_data_from_espn(pd)
 
-    update_rosters()
+    update_most_recent_player_data_table(False)
 
-    run_injury_queries(True)
+    finish_process = check_number_of_new_most_recent_entries()
+
+    print ('finish_process: ')
+    print (finish_process)
+
+    update_player_data_table(finish_process)
+
+    run_injury_queries(finish_process)
+
+    close_file_object(f)
 
     exit_process(0)
 
+
 if __name__ == "__main__":
     main()
-
