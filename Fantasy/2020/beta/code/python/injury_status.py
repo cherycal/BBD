@@ -175,6 +175,8 @@ def update_rosters():
             bdb.insert(command)
         msg += "Total entries: " + str(entries) + "\n\n"
 
+
+
 def exit_process(code):
     global msg, f, bdb
     msg += "Exit code: " + str(code) + "\n\n"
