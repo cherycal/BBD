@@ -7,7 +7,6 @@ import os
 
 sys.path.append('./modules')
 import sqldb, tools
-
 import push
 
 inst = push.Push()
@@ -70,7 +69,7 @@ def get_new_rosters():
                 command = "INSERT INTO Rosters(Player, Team, LeagueID, ESPNID) VALUES (\"" + player_full_name + \
                           "\" ,\"" + team_name + "\"," + str(league) + "," + str(espn_id) + ")"
                 new_rosters[str(espn_id) + ':' + team_name] = player_full_name + ", " + \
-                                                              team_name + " (Lg " + team_dict[team_name] + ")"
+                team_name + " (Lg " + str(league) + ")"
                 #print(command)
                 insert_list.append(command)
     return
@@ -100,6 +99,7 @@ def update_rosters():
 def broadcast_changes():
     global msg
     msg = ""
+    msg_list = list()
     for p in old_rosters:
         if new_rosters.get(p):
             if old_rosters[p] == new_rosters[p]:
@@ -109,10 +109,12 @@ def broadcast_changes():
                 # print("In old not in new: " + p, old_rosters[p], new_rosters[p] )
                 msg += "DROPPED: " + old_rosters[p] + ", " + new_rosters[p] + ".  "
                 msg += "\n"
+                msg_list.append("DROPPED: " + old_rosters[p] + ", " + new_rosters[p] + ".  " + "\n")
         else:
             # print("In old not in new: " + p)
             msg += "DROPPED: " + old_rosters[p]
             msg += "\n"
+            msg_list.append("DROPPED: " + old_rosters[p] + "\n")
 
     for p in new_rosters:
         if old_rosters.get(p):
@@ -121,11 +123,15 @@ def broadcast_changes():
             # print("In new not in old: " + p, new_rosters[p])
             msg += "ADDED: " + new_rosters[p]
             msg += "\n"
+            msg_list.append("ADDED: " + new_rosters[p] + "\n")
 
+    if msg != "":
+        msg += "****************************************************************************************\n"
         print("Msg: " + msg)
-        inst.push("Roster changes: " + str(date_time), msg)
+        #inst.push("Roster changes: " + str(date_time), msg)
+        inst.push_list(msg_list, "Roster changes: " + str(date_time))
         time.sleep(2)
-        inst.push("Roster changes: " + str(date_time), "Done")
+        #inst.push("Roster changes: " + str(date_time), "Done")
     else:
         msg = "No changes"
         #inst.push("Roster changes: " + str(date_time), msg)
