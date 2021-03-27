@@ -84,14 +84,14 @@ def check_position_dict(position_dict):
 def get_player_data_max_date():
     global msg
     msg += "check_date()\n\n"
-    max_date = bdb.select("SELECT max(Date) from PlayerData")
+    max_date = bdb.select("SELECT max(Date) from ESPNPlayerData")
     return max_date
 
 
 def check_for_new_players():
     global msg
     msg += "check_for_new_players()\n\n"
-    c = bdb.select("select ESPNID, Name from MostRecentPlayerData where ESPNID not in (select ESPNID from PlayerData)")
+    c = bdb.select("select ESPNID, Name from ESPNMostRecentPlayerData where ESPNID not in (select ESPNID from ESPNPlayerData)")
     for t in c:
         print(t)
         msg += str(t) + "\n"
@@ -101,11 +101,11 @@ def check_for_new_players():
 def get_teams():
     global msg
     msg += "get_teams()\n\n"
-    c = bdb.select("SELECT LeagueID, Name FROM Leagues where LeagueID = 6455")
+    c = bdb.select("SELECT LeagueID, Name FROM ESPNLeagues where LeagueID = 6455")
     for t in c:
         league_dict[t[0]] = t[1]
 
-    c = bdb.select("SELECT * FROM Rosters where LeagueID  in (SELECT LeagueID FROM Leagues where Active = 'True')")
+    c = bdb.select("SELECT * FROM ESPNRosters where LeagueID  in (SELECT LeagueID FROM ESPNLeagues where Active = 'True')")
     for t in c:
         old_own_status[t[0] + ':' + t[1]] = t[1]
         team_dict[t[1]] = t[2]
@@ -114,11 +114,12 @@ def get_teams():
 def get_player_data_from_espn(position_dict):
     global msg
     msg += "get_player_data_from_espn()\n\n"
+    season = "2021"
 
     for league_id in league_dict:
         print(league_id)
-        url_name = "http://fantasy.espn.com/apis/v3/games/flb/seasons/2020/segments/0/leagues/" + str(
-            league_id) + "?view=kona_player_info"
+        url_name = "http://fantasy.espn.com/apis/v3/games/flb/seasons/" + season + \
+                   "/segments/0/leagues/" + str(league_id) + "?view=kona_player_info"
         print(url_name)
         with urllib.request.urlopen(url_name) as url:
             data = json.loads(url.read().decode())
@@ -144,13 +145,14 @@ def get_player_data_from_espn(position_dict):
                         injury_status = "NONE"
                     pro_team_id = str(player['player']['proTeamId'])
 
-                    command = "INSERT INTO MostRecentPlayerData( Date, ESPNID, Name, PercentOwned, AuctionValue," \
-                              "InjuryStatus, ESPNTEAMID, AuctionValueChange, EligibleSlots,UpdateTime) " \
+                    command = "INSERT INTO ESPNMostRecentPlayerData( Date, ESPNID, Name, PercentOwned, AuctionValue," \
+                              "InjuryStatus, ESPNTEAMID, AuctionValueChange, EligibleSlots,UpdateTime,Bats, " \
+                              "Throws, PrimaryPosition, NextStartID, MLBTeam, PercentStarted, AverageDraftPosition ) " \
                               "VALUES (" + str(out_date) + "," + str(espn_id) + ", " + \
                               "\"" + full_name + "\" ," + str(percent_owned) + ", " + \
                               str(auction_value) + ",\"" + injury_status + "\", " + str(pro_team_id) + ", " + str(
                         auction_value_change) + \
-                              ",\"" + position_string + "\"," + str(date_time) + ")"
+                              ",\"" + position_string + "\"," + str(date_time) + ",NULL,NULL,NULL,NULL,NULL,NULL,NULL)"
 
                     if auction_value > 0 or percent_owned > 0:
                         insert_list.append(command)
@@ -169,9 +171,9 @@ def update_most_recent_player_data_table(print_flag):
         print(msg)
         exit_process(1)
     else:
-        print("Updating MostRecentPlayerData table")
-        msg += "Updating MostRecentPlayerData table" + "\n\n"
-        bdb.delete("DELETE from MostRecentPlayerData")
+        print("Updating ESPNMostRecentPlayerData table")
+        msg += "Updating ESPNMostRecentPlayerData table" + "\n\n"
+        bdb.delete("DELETE from ESPNMostRecentPlayerData")
         for command in insert_list:
             if print_flag:
                 print(command)
@@ -186,7 +188,7 @@ def check_number_of_new_most_recent_entries():
 
     msg += "check_number_of_new_most_recent_entries\n\n"
 
-    rows = bdb.query(cmd="select M.*, P.InjuryStatus as OldInjuryStatus from MostRecentPlayerData M, PlayerData P "
+    rows = bdb.query(cmd="select M.*, P.InjuryStatus as OldInjuryStatus from ESPNMostRecentPlayerData M, ESPNPlayerData P "
                          "where M.Date = P.Date and M.ESPNID = P.ESPNID")
     existing_player_data_entries: int = int(len(rows))
     print("Number of existing_player_data_entries:")
@@ -195,7 +197,7 @@ def check_number_of_new_most_recent_entries():
     new_differences_list = list()
     if existing_player_data_entries != 0:
         rows = bdb.query("select M.*, P.InjuryStatus as OldInjuryStatus "
-                         "from MostRecentPlayerData M, PlayerData P where M.Date = P.Date and M.ESPNID = P.ESPNID "
+                         "from ESPNMostRecentPlayerData M, PlayerData P where M.Date = P.Date and M.ESPNID = P.ESPNID "
                          "and M.InjuryStatus != P.InjuryStatus order by PercentOwned desc")
         new_player_data_differences = int(len(rows))
         if existing_player_data_entries > 0 and new_player_data_differences > 0:
@@ -221,14 +223,14 @@ def update_player_data_table(existing_entries, new_diffs):
         print("Existing new entries in PlayerData table: " + str(existing_entries))
         print("New differences: " + str(new_diffs))
         msg += "update_player_data_table\n\n"
-        bdb.delete("DELETE from PlayerData where Date = " + str(out_date))
-        bdb.insert("INSERT into PlayerData select * from MostRecentPlayerData")
+        bdb.delete("DELETE from ESPNPlayerData where Date = " + str(out_date))
+        bdb.insert("INSERT into ESPNPlayerData select * from ESPNMostRecentPlayerData")
     return
 
 
 def get_dtd():
     dtd_dict = {}
-    dtd_players = bdb.select("select ESPNID from PlayerData where InjuryStatus like '%DAY_TO_DAY%' ")
+    dtd_players = bdb.select("select ESPNID from ESPNPlayerData where InjuryStatus like '%DAY_TO_DAY%' ")
     for player in dtd_players:
         dtd_dict[player] = player
     return dtd_dict
@@ -236,7 +238,7 @@ def get_dtd():
 
 def get_dl():
     dl_dict = {}
-    dl_players = bdb.select("select ESPNID from PlayerData where InjuryStatus like '%DL%' ")
+    dl_players = bdb.select("select ESPNID from ESPNPlayerData where InjuryStatus like '%DL%' ")
     for player in dl_players:
         dl_dict[player] = player
     return dl_dict
@@ -247,10 +249,10 @@ def just_added_to_dtd(push_data):
     print("just_added_to_dtd()")
 
     query = "select P.Date, P.ESPNID, P.Name, P.PercentOwned, P.AuctionValue, P.InjuryStatus" + \
-            ", P.ESPNTEAMID, P.AuctionValueChange, P.EligibleSlots, P.UpdateTime, Team, LeagueID from PlayerData P " + \
-            "left outer join Rosters R on P.Name = R.Player " + \
+            ", P.ESPNTEAMID, P.AuctionValueChange, P.EligibleSlots, P.UpdateTime, Team, LeagueID from ESPNPlayerData P " + \
+            "left outer join ESPNRosters R on P.Name = R.Player " + \
             "where InjuryStatus = 'DAY_TO_DAY' and Date = " \
-            + string_today + " and P.ESPNID in ( Select ESPNID from PlayerData where " + \
+            + string_today + " and P.ESPNID in ( Select ESPNID from ESPNPlayerData where " + \
             "InjuryStatus = 'ACTIVE' and Date = " + string_yesterday + ") " + \
             "order by AuctionValue desc"
 
@@ -287,10 +289,10 @@ def just_added_to_il(push_data):
     injury_msg_list = list()
 
     added_to_il = bdb.select("select P.Date, P.ESPNID, P.Name, P.PercentOwned, P.AuctionValue, P.InjuryStatus" +
-                             ", P.ESPNTEAMID, P.AuctionValueChange, P.EligibleSlots, P.UpdateTime, Team, LeagueID from PlayerData P "
-                             "left outer join Rosters R on P.Name = R.Player "
+                             ", P.ESPNTEAMID, P.AuctionValueChange, P.EligibleSlots, P.UpdateTime, Team, LeagueID from ESPNPlayerData P "
+                             "left outer join ESPNRosters R on P.Name = R.Player "
                              "where InjuryStatus like '%DL%' and Date = " + string_today +
-                             " and P.ESPNID in ( Select ESPNID from PlayerData where "
+                             " and P.ESPNID in ( Select ESPNID from ESPNPlayerData where "
                              "InjuryStatus not like '%DL%' and Date = " + string_yesterday + ") "
                                                                                              "order by InjuryStatus, AuctionValue desc")
 
@@ -322,10 +324,10 @@ def just_activated_from_il(push_data):
     injury_msg_list = list()
 
     active_from_il = bdb.select("select P.Date, P.ESPNID, P.Name, P.PercentOwned, P.AuctionValue, P.InjuryStatus" +
-                                ", P.ESPNTEAMID, P.AuctionValueChange, P.EligibleSlots, P.UpdateTime, Team, LeagueID from PlayerData P "
-                                "left outer join Rosters R on P.Name = R.Player "
+                                ", P.ESPNTEAMID, P.AuctionValueChange, P.EligibleSlots, P.UpdateTime, Team, LeagueID from ESPNPlayerData P "
+                                "left outer join ESPNRosters R on P.Name = R.Player "
                                 "where InjuryStatus not like '%DL%' and Date = " + string_today +
-                                " and P.ESPNID in ( Select ESPNID from PlayerData where "
+                                " and P.ESPNID in ( Select ESPNID from ESPNPlayerData where "
                                 "InjuryStatus like '%DL%' and Date = " + string_yesterday + ") "
                                                                                             "order by InjuryStatus, AuctionValue desc")
 
@@ -350,10 +352,10 @@ def just_activated_from_dtd(push_data):
     injury_msg_list = list()
 
     active_from_dtd = bdb.select("select P.Date, P.ESPNID, P.Name, P.PercentOwned, P.AuctionValue, P.InjuryStatus" +
-                                 ", P.ESPNTEAMID, P.AuctionValueChange, P.EligibleSlots, P.UpdateTime, Team, LeagueID from PlayerData P "
-                                 "left outer join Rosters R on P.Name = R.Player "
+                                 ", P.ESPNTEAMID, P.AuctionValueChange, P.EligibleSlots, P.UpdateTime, Team, LeagueID from ESPNPlayerData P "
+                                 "left outer join ESPNRosters R on P.Name = R.Player "
                                  "where InjuryStatus = 'ACTIVE' and Date = " + string_today +
-                                 " and P.ESPNID in ( Select ESPNID from PlayerData where "
+                                 " and P.ESPNID in ( Select ESPNID from ESPNPlayerData where "
                                  "InjuryStatus like 'DAY_TO_DAY' and Date = " + string_yesterday + ") "
                                                                                                    "order by InjuryStatus, AuctionValue desc")
 
@@ -436,10 +438,10 @@ def main():
     outfile = setup_outfile("player_ownership")
     f = open(outfile, "w")
 
+    # ESPN position ids to names
     pd = load_position_dict()
 
     # check_position_dict(pd)
-
     # get_player_data_max_date()
 
     check_for_new_players()
@@ -450,7 +452,7 @@ def main():
 
     get_player_data_from_espn(pd)
 
-    update_most_recent_player_data_table(False)
+    update_most_recent_player_data_table(print_flag=False)
 
     (existing_entries, new_diffs) = check_number_of_new_most_recent_entries()
 

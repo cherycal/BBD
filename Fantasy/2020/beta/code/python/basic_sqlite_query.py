@@ -5,12 +5,19 @@ import sqldb
 
 # My python class: sqldb.py
 
-bdb = sqldb.DB('Baseball.db')
+mode = "TEST"
 
-#bdb = sqldb.DB('C:\\Ubuntu\\Shared\\data\\Baseball.db')
+if mode == "TEST":
+    bdb = sqldb.DB('BaseballTest.db')
+else:
+    bdb = sqldb.DB('Baseball.db')
 
-c = bdb.select("SELECT * FROM Leagues")
+# DB location: ('C:\\Ubuntu\\Shared\\data\\Baseball.db')
 
+#c = bdb.select("SELECT count(name) FROM sqlite_master WHERE type='table' AND name='ESPNPlayerDataCurrent'")
+c = bdb.select("SELECT * FROM ESPNLeagues")
+
+#print(c[0][0])
 for t in c:
     print(t)
 

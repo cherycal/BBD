@@ -10,7 +10,9 @@ import pickle
 import os.path
 from os import path
 
-url_name = "http://site.api.espn.com/apis/site/v2/sports/baseball/mlb/teams"
+#url_name = "https://fantasy.espn.com/apis/v3/games/flb/seasons/2020/players?scoringPeriodId=0&view=players_wl"
+#url_name = "https://fantasy.espn.com/apis/v3/games/flb/seasons/2020/segments/0/leagues/162788?view=mPendingTransactions&view=mSettings&view=mStatus&view=mMatchupScore&view=mTeam&view=modular&view=mNav"
+url_name = "download.json"
 
 print(url_name)
 
@@ -21,9 +23,4 @@ with urllib.request.urlopen(url_name) as url:
 
     json_formatted = json.dumps(json_object, indent=2)
 
-    #print(json_formatted)
-
-    for team in json_object['sports'][0]['leagues'][0]['teams']:
-        print(team)
-        #print(team['team']['id'] + ', ' + team['team']['abbreviation'])
-        #bdb.insert("insert into ESPNTeams (TeamID, Team) VALUES (" + str(team['team']['id']) + ",\"" + str(team['team']['abbreviation']) + "\")")
+    print(json_formatted)

@@ -23,7 +23,7 @@ class Push(object):
         self.interval = 0
         self.title = None
         self.body = None
-        self.MAX_MSG_LENGTH = 720
+        self.MAX_MSG_LENGTH = 480
         self.str = ""
 
     def push(self, title="None", body="None"):
@@ -42,7 +42,7 @@ class Push(object):
             # print("Msg: "+ msg)
             # print(msg_len)
             if msg_len > max_msg_len:
-                print("Full msg:\n" + full_msg)
+                print("Message part:\n" + full_msg)
                 self.push(title, full_msg)
                 time.sleep(2.5)
                 full_msg = msg
@@ -50,7 +50,7 @@ class Push(object):
             else:
                 full_msg += str(msg)
         # Push the remainder out
-        print("Full msg remainder:\n" + full_msg)
+        print("Message remainder:\n" + full_msg)
         self.push(title, full_msg)
         return
 

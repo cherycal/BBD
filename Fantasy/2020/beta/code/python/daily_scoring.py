@@ -45,6 +45,7 @@ def setup_outfile(outfile_name):
     current_dir = os.getcwd()
     if platform == "Windows":
         outfile = current_dir + "\\logs\\" + outfile_name + "_" + str(date_time_string) + ".txt"
+        print(outfile)
 
     elif platform == "Linux" or platform == "linux":
         outfile = current_dir + "/logs/" + outfile_name + "_" + str(date_time_string) + ".txt"
@@ -101,7 +102,9 @@ def get_espn_data():
                 data = json.loads(url.read().decode())
 
             for team_item in data['schedule'][0]['teams']:
-                team_name = team_dict[league_id][str(team_item['teamId'])]
+                team_name = str(team_dict[league_id][str(team_item['teamId'])])
+                team_name = team_name.replace(" ", "")
+
                 start_day_points = team_item['totalPoints']
                 current_points = team_item['totalPointsLive']
                 today_points = current_points - start_day_points
@@ -119,7 +122,10 @@ def get_espn_data():
                     print( date_time_string + ', ' + espn_team + ', ' +
                            espn_id + ', ' + espn_name + ', ' + lineup_slot + ', ' + player_daily_points)
 
-                print('----------------')
+            for team_item in data['schedule'][0]['teams']:
+                current_points = team_item['totalPointsLive']
+                print(str( current_points))
+
 
 
 # noinspection PyGlobalUndefined
