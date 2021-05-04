@@ -133,7 +133,12 @@ dmypy.json
 *\~
 
 bdb.db
-*test_*.py
 *logs*
+*image.png
+*idea*
+*.csv*
+*/2020/beta/*
+
+
 
 *Todo.txt*
