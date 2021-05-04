@@ -94,7 +94,7 @@ class DB:
 
     def insert_list(self, table, in_list):
         # inserts one row given a list of values that *precisely* matches the columns in a table
-        print_calling_function()
+        #print_calling_function()
         # print(table)
         # print(in_list)
         cursor = self.conn.execute('select * from ' + table)
@@ -112,7 +112,7 @@ class DB:
         return
 
     def update_list(self, table, set_attr, where_attr, params):
-        print_calling_function()
+        #print_calling_function()
         # print(params)
         self.conn.execute("UPDATE " + table + " SET " +
                           set_attr + " = ? where " + where_attr + "= ?", params)

@@ -4,6 +4,10 @@ from pyfcm import FCMNotification
 import time
 from datetime import datetime
 import tweepy
+import dataframe_image as dfi
+import pandas as pd
+import inspect
+
 
 # APP ID: 20456708
 
@@ -35,13 +39,26 @@ class Push(object):
         self.interval = 0
         self.title = None
         self.body = None
-        self.MAX_MSG_LENGTH = 240
+        self.MAX_MSG_LENGTH = 225
         self.str = ""
         self.auth = tweepy.OAuthHandler(APIKEY, APISECRETKEY)
         self.auth.set_access_token(ACCESSTOKEN, ACCESSTOKENSECRET)
 
         # Create API object
         self.api = tweepy.API(self.auth)
+
+    def print_calling_function(self):
+        print('\n')
+        print("Printing calling information (fantasy.py)")
+        print("#############################")
+        # print(str(inspect.stack()[-2].filename) + ", " + str(inspect.stack()[-2].function) +
+        #      ", " + str(inspect.stack()[-2].lineno))
+        print(str(inspect.stack()[1].filename) + ", " + str(inspect.stack()[1].function) +
+              ", " + str(inspect.stack()[1].lineno))
+        # print(str(inspect.stack()[-1].filename) + ", " + str(inspect.stack()[-1].function) +
+        #      ", " + str(inspect.stack()[-1].lineno))
+        print("#############################")
+        return
 
     def push(self, title="None", body="None"):
         res = self.push_service.notify_single_device(registration_id=self.registration_id,
@@ -51,23 +68,42 @@ class Push(object):
         return res
 
     def tweet(self, msg):
-
         ts = datetime.now()  # current date and time
-        formatted_date_time = ts.strftime("%Y%m%d-%H%M%S")
-        if msg != "" and len(msg) < self.MAX_MSG_LENGTH - len(formatted_date_time) - 3:
-            self.api.update_status(msg + " (" + str(formatted_date_time) + ")")
+        formatted_date_time = ts.strftime("%I%M%S.%f")[0:9]
+        if msg != "" and len(msg) < self.MAX_MSG_LENGTH:
+            try:
+                self.api.update_status(msg + " (" + str(formatted_date_time) + ")")
+            except Exception as ex:
+                print("try failed" + ": " + str(ex))
+                self.print_calling_function()
         else:
-            self.api.update_status("Invalid msg")
+            while len(msg) < self.MAX_MSG_LENGTH:
+                trunc_msg = msg[0:self.MAX_MSG_LENGTH]
+                try:
+                    self.api.update_status("Invalid msg" + " (" + str(formatted_date_time) + ")")
+                    self.api.update_status(trunc_msg + " (" + str(formatted_date_time) + ")")
+                except Exception as ex:
+                    print("try failed" + ": " + str(ex))
+                    self.print_calling_function()
+                msg = msg[self.MAX_MSG_LENGTH:]
         return
 
     def tweet_media(self, img, msg):
         ts = datetime.now()  # current date and time
-        formatted_date_time = ts.strftime("%Y%m%d-%H%M%S")
-        if msg != "" and len(msg) < self.MAX_MSG_LENGTH - len(formatted_date_time) - 1:
+        formatted_date_time = ts.strftime("%I%M%S.%f")[0:9]
+        if len(msg) < self.MAX_MSG_LENGTH:
             # self.api.update_status(msg)
-            self.api.update_with_media(img, status=msg + " (" + str(formatted_date_time) + ")")
+            try:
+                self.api.update_with_media(img, status=msg + " (" + str(formatted_date_time) + ")")
+            except Exception as ex:
+                print("try failed" + ": " + str(ex))
+                self.print_calling_function()
         else:
-            self.api.update_status("Invalid msg")
+            try:
+                self.api.update_status("Invalid msg" + " (" + str(formatted_date_time) + ")")
+            except Exception as ex:
+                print("try failed" + ": " + str(ex))
+                self.print_calling_function()
 
         return
 
@@ -82,6 +118,7 @@ class Push(object):
             if msg_len > max_msg_len:
                 print("Message part:\n" + full_msg)
                 self.push(title, full_msg)
+                self.tweet(full_msg)
                 time.sleep(2.5)
                 full_msg = msg
                 msg_len = len(full_msg)
@@ -91,6 +128,26 @@ class Push(object):
         print("Message remainder:\n" + full_msg)
         self.push(title, full_msg)
         self.tweet(full_msg)
+        return
+
+    def push_list_twtr(self, push_list, title="None"):
+        max_msg_len = self.MAX_MSG_LENGTH
+        msg_len = 0
+        full_msg = ""
+        for msg in push_list:
+            msg_len += len(msg)
+            full_msg += str(msg)
+        if msg_len > max_msg_len:
+            index = [""] * len(push_list)
+            col_headers = [""]
+            df = pd.DataFrame(push_list, columns=col_headers, index=index)
+            img = "mytable.png"
+            dfi.export(df, img)
+            self.tweet_media(img, title)
+            #self.push()
+        else:
+            self.push(title, full_msg)
+            self.tweet(full_msg)
         return
 
     def set_msg(self, title, body):

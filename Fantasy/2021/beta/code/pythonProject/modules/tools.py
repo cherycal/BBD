@@ -3,6 +3,9 @@ from selenium import webdriver
 
 
 # for webscraping
+# try:
+# except Exception as ex:
+#      print(str(ex))
 
 def get_platform():
     platforms = {
