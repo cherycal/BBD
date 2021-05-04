@@ -105,18 +105,25 @@ class DB:
         for _ in in_list:
             question_mark_string += "?,"
         question_mark_string = question_mark_string[: -1] + ")"
-        self.conn.execute("INSERT INTO " + table + " ( " + cols + " ) "
-                                                                  "VALUES " + question_mark_string, in_list)
-        # self.cursor.execute(list)
-        self.conn.commit()
+        try:
+            self.conn.execute("INSERT INTO " + table + " ( " + cols + " ) "
+                                                                      "VALUES " + question_mark_string, in_list)
+            # self.cursor.execute(list)
+            self.conn.commit()
+        except Exception as ex:
+            print(str(ex))
+
         return
 
     def update_list(self, table, set_attr, where_attr, params):
         #print_calling_function()
         # print(params)
-        self.conn.execute("UPDATE " + table + " SET " +
-                          set_attr + " = ? where " + where_attr + "= ?", params)
-        self.conn.commit()
+        try:
+            self.conn.execute("UPDATE " + table + " SET " +
+                              set_attr + " = ? where " + where_attr + "= ?", params)
+            self.conn.commit()
+        except Exception as ex:
+            print(str(ex))
         return
 
     def delete_item(self, command, params):

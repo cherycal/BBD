@@ -22,7 +22,7 @@ now = datetime.now()  # current date and time
 date_time = now.strftime("%Y%m%d%H%M%S")
 out_date = now.strftime("%Y%m%d")
 
-override_date = ""
+override_date = "20210503"
 
 if override_date != "":
 	out_date = override_date
