@@ -22,7 +22,7 @@ from os import path
 #bdb.close()
 # exit(0)
 
-year = "2017"
+year = "2021"
 # Custom statcast stats
 url = "https://baseballsavant.mlb.com/leaderboard/custom?year=" + \
       year + "&type=batter&filter=&sort=1&sortDir=desc&min=1&selections=" + \

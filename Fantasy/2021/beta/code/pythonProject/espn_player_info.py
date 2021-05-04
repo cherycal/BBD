@@ -46,9 +46,7 @@ def begin_day_process():
     TRIES_BEFORE_QUITTING = 3
     SLEEP = 5
 
-
     insert_many_list = fantasy.get_espn_player_info()
-    #run_function(fantasy.get_player_info_changes())
 
     tries = 0
     passed = 0
@@ -77,12 +75,17 @@ def begin_day_process():
         except Exception as ex:
             inst.push("DATABASE ERROR - try " + str(tries) + " at " + str(date_time),
                       "Insert ESPNPlayerDataCurrent" + ": " + str(ex))
+
         time.sleep(SLEEP)
 
     if not passed:
-        inst.push("DATABASE ERROR", "insert ESPNPlayerDataCurrent, espn_player_info")
+        inst.push("DATABASE ERROR", "insert ESPNPlayerDataCurrent, "
+                                    "espn_player_info")
     else:
-        inst.push("BEGIN DAY PROCESS SUCCEEDS", "insert ESPNPlayerDataCurrent, espn_player_info")
+        inst.push("BEGIN DAY PROCESS SUCCEEDS",
+                  "insert ESPNPlayerDataCurrent, espn_player_info")
+
+
 
 
 def eod_process():
@@ -119,7 +122,8 @@ def run_function(function, name="none given"):
 def main():
     run_begin_day_process = 1
     run_end_day_process = 1
-    begin_day_time = 40000
+    run_roster_suite = 1
+    begin_day_time = 12000
     end_day_time = 211500
 
     while 1:
@@ -143,6 +147,17 @@ def main():
 
         run_function(fantasy.refresh_rosters())
 
+        if run_roster_suite:
+            run_function(fantasy.tweet_add_drops())
+            run_function(fantasy.tweet_daily_schedule())
+            run_function(fantasy.tweet_sprk_on_opponents())
+            run_function(fantasy.tweet_fran_on_opponents())
+            run_function(fantasy.tweet_oppo_rosters())
+            ##
+            run_function(fantasy.refresh_statcast_schedule())
+            run_function(fantasy.refresh_espn_schedule())
+            run_roster_suite = 0
+
         # Retrieve baseline information from ESPNPlayerDataCurrent
         run_function(fantasy.get_db_player_info())
 
@@ -159,7 +174,7 @@ def main():
         run_function(fantasy.run_transactions())
 
         print("Sleep at " + formatted_date_time)
-        num1 = random.randint(45, 85)
+        num1 = random.randint(25, 35)
         print("Sleep for " + str(num1) + " seconds")
         time.sleep(num1)
 

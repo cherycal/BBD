@@ -1,19 +1,24 @@
 __author__ = 'chance'
 
+import json
 import os
-import os.path
 import sys
-
-import numpy as np
+import time
+import urllib.request
+from datetime import datetime
 import pandas as pd
+import numpy as np
+import os.path
+from os import path
 
 sys.path.append('./modules')
 from bs4 import BeautifulSoup
 import requests
 
+import tools
 import time
 import push
-from datetime import timedelta, date
+from datetime import timedelta, datetime, date
 
 inst = push.Push()
 
@@ -95,13 +100,54 @@ def single_day(**kwargs):
 	##################################################################################################
 	##################################################################################################
 
-	# page = requests.get(url_text)
-	# soup = BeautifulSoup(page.content, 'html.parser')
+	page = requests.get(url_text)
+	soup = BeautifulSoup(page.content, 'html.parser')
 
 	csvfile2 = "C:\\Users\\chery\\Documents\\BBD\\Statcast\\" + dirname + "\\" + "events_daily2.csv"
+	f = open(csvfile2, "w")
 
-	df2 = pd.read_html(url_text)[0]
-	df2.to_csv(csvfile2, index=False)
+	print_header = 1
+	if print_header:
+		count = 0
+		line_str = ""
+		for item in soup.find_all('th'):
+			if item.get_text():
+				count += 1
+				line_str += (item.get_text() + ',')
+		line_str = line_str[:-1]
+		if count > 0:
+			f.write(line_str.strip())
+			f.write("\n")
+
+	count = 0
+	line_str = ""
+	for item in soup.find_all('td'):
+		if item.find('span'):
+			line_str = line_str[:-1]
+			data = line_str.strip()
+			if len(data):
+				f.write(data)
+				count = 0
+				line_str = ""
+		if item.get('class'):
+			count += 1
+			text = str(item.get_text().strip())
+			if text == dt:
+				text = text.replace('-', '')
+			line_str += text + ','
+		if item.get('id'):
+			playerid = str(item['id'][3:])
+			count += 1
+			line_str += playerid + ','
+		f.write("\n")
+
+	line_str = line_str[:-1]
+	print(line_str.strip())
+	if count > 0:
+		f.write(line_str.strip())
+		f.write("\n")
+
+	f.close()
 
 	if os.path.getsize(csvfile2) > 0:
 		df2 = pd.read_csv(csvfile2, encoding='unicode_escape')
@@ -114,7 +160,7 @@ def single_day(**kwargs):
 		print(df2.columns)
 
 		df_combined = pd.concat([df, df2], axis=1)
-		df_combined['play_id'] = df_combined['Rk.']
+		df_combined['play_id'] = df_combined['gamedate'] * 10000 + df_combined['Rk.']
 		df_combined['barrel'] = df_combined['launch_speed_angle']
 		df_combined['barrel'] = np.where(df_combined['launch_speed_angle'] >= 1, 0, df_combined['barrel'])
 		df_combined['barrel'] = np.where(df_combined['launch_speed_angle'] == 6, 1, df_combined['barrel'])
@@ -177,10 +223,6 @@ def single_day(**kwargs):
 			df_combined.to_sql(tablename, bdb.conn, if_exists='append', index=False)
 
 		return_value = df_combined
-
-	update_cmd = "update " + tablename + " set play_id = play_id + " + str(int(dt8) * 10000) + \
-	             " where game_date = '" + str(dt) + "'"
-	bdb.update(update_cmd)
 
 	return return_value
 
@@ -318,7 +360,7 @@ def post_process_csv_file(infile, outfile):
 	df.to_csv(outfile, index=False)
 
 
-def single_year(year, bp, dates=(4, 6, 4, 6)):
+def single_year(year, bp, dates=(4, 4, 4, 4)):
 	###################
 	###################
 	# Hard coded:
@@ -353,8 +395,6 @@ def single_year(year, bp, dates=(4, 6, 4, 6)):
 		outfile = "C:\\Users\chery\Documents\BBD\Statcast\\" + bpdir + "\\" + "events_combined_daily.csv"
 		if isinstance(df, pd.DataFrame):
 			df.to_csv(outfile, index=False)
-		dt8 = int(str.replace(str(dt), "-", ""))
-		print("Date8: " + str(dt8))
 
 	# Cleanup
 	bdb.update(
@@ -364,24 +404,19 @@ def single_year(year, bp, dates=(4, 6, 4, 6)):
 		"update StatcastPitchingEvents set xBA = 0, adj_xBA = 0, hit_distance_sc = 0, xwOBA = 0, "
 		"xSLG = 0, adj_xwOBA = 0, adj_xSLG = 0 where xwOBA is NULL and events like 'strikeout%'")
 	bdb.update(
-		"update StatcastBattingEvents set xwOBA = 0.69, xSLG = NULL, "
-		"adj_xwOBA = 0.69, adj_xSLG = NULL where events = 'walk'")
+		"update StatcastBattingEvents set xwOBA = 0.69, xSLG = 1, "
+		"adj_xwOBA = 0.69, adj_xSLG = 1 where xwOBA is NULL and events = 'walk'")
 	bdb.update(
-		"update StatcastPitchingEvents set xwOBA = 0.69, xSLG = NULL,"
-		" adj_xwOBA = 0.69, adj_xSLG = NULL where events = 'walk'")
+		"update StatcastPitchingEvents set xwOBA = 0.69, xSLG = 1,"
+		" adj_xwOBA = 0.69, adj_xSLG = 1 where xwOBA is NULL and events = 'walk'")
 
 
 def main():
 	# single_year(2016, "bat", (5, 1, 5, 1))
 	# single_year(2016, "pitch")
-	today = date.today()
-	yest = today - timedelta(days=1)
-
 	for year in [2021]:
 		for bp in ["bat", "pitch"]:
-			#single_year(year, bp, (4, 15, 4, 15))
-			single_year(year, bp, (yest.month, yest.day, yest.month, yest.day))
-
+			single_year(year, bp)
 
 if __name__ == "__main__":
 	main()
