@@ -13,13 +13,21 @@ import requests
 
 import time
 import push
+import tools
 from datetime import timedelta, date
+from pathlib import Path
 
 inst = push.Push()
 
 import sqldb
 
 bdb = sqldb.DB('Baseball.db')
+
+plat = tools.get_platform()
+print(plat)
+cur_dir = Path.cwd()
+data_dir = cur_dir / 'data'
+data_dir.mkdir(mode=0o755,exist_ok=True)
 
 
 def daterange(date1, date2):
@@ -81,8 +89,11 @@ def single_day(**kwargs):
 	print("sleeping ....")
 	time.sleep(.5)
 
+
 	r = requests.get(url_details_text, allow_redirects=True)
-	csvfile = "C:\\Users\chery\Documents\BBD\Statcast\\" + dirname + "\\" + "events_daily.csv"
+	filename = dirname + "_events_daily.csv"
+	csvfile = data_dir / filename
+	#print(csvfile)
 	open(csvfile, 'wb').write(r.content)
 	df = pd.read_csv(csvfile, encoding='unicode_escape')
 
@@ -98,7 +109,9 @@ def single_day(**kwargs):
 	# page = requests.get(url_text)
 	# soup = BeautifulSoup(page.content, 'html.parser')
 
-	csvfile2 = "C:\\Users\\chery\\Documents\\BBD\\Statcast\\" + dirname + "\\" + "events_daily2.csv"
+	filename = dirname + "_events_daily.csv"
+	csvfile2 = data_dir / filename
+	#csvfile2 = "C:\\Users\\chery\\Documents\\BBD\\Statcast\\" + dirname + "\\" + "events_daily2.csv"
 
 	df2 = pd.read_html(url_text)[0]
 	df2.to_csv(csvfile2, index=False)
@@ -350,7 +363,11 @@ def single_year(year, bp, dates=(4, 6, 4, 6)):
 	for dt in daterange(start_dt, end_dt):
 		df = single_day(date=dt, year=year, player_type=player_type, dir=bpdir, override=True)
 		time.sleep(sleep_interval)
-		outfile = "C:\\Users\chery\Documents\BBD\Statcast\\" + bpdir + "\\" + "events_combined_daily.csv"
+
+		filename = bpdir + "_events_combined_daily.csv"
+		outfile = data_dir / filename
+
+		#outfile = "C:\\Users\chery\Documents\BBD\Statcast\\" + bpdir + "\\" + "events_combined_daily.csv"
 		if isinstance(df, pd.DataFrame):
 			df.to_csv(outfile, index=False)
 		dt8 = int(str.replace(str(dt), "-", ""))
