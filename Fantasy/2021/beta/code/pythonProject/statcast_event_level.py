@@ -24,7 +24,7 @@ import sqldb
 bdb = sqldb.DB('Baseball.db')
 
 plat = tools.get_platform()
-print(plat)
+#print(plat)
 cur_dir = Path.cwd()
 data_dir = cur_dir / 'data'
 data_dir.mkdir(mode=0o755,exist_ok=True)
@@ -83,8 +83,8 @@ def single_day(**kwargs):
 	url_details_text = url_base + url_csv_text + url_body + url_checks + url_details
 	url_text = url_base + url_basic_search_text + url_body + url_checks + url_footer
 
-	print(url_details_text)
-	print(url_text)
+	#print(url_details_text)
+	#print(url_text)
 
 	print("sleeping ....")
 	time.sleep(.5)
