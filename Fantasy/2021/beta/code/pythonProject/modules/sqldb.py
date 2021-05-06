@@ -149,7 +149,8 @@ class DB:
 				self.cursor.execute(command)
 				self.conn.commit()
 				incomplete = 0
-				print("DB command succeeded: " + command)
+				if verbose:
+					print("DB command succeeded: " + command)
 			except Exception as ex:
 				print(str(ex))
 				tries += 1
