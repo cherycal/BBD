@@ -903,7 +903,7 @@ class Fantasy(object):
 			for row in rows:
 				lol.append(row)
 				index.append("")
-				
+
 			df = pd.DataFrame(lol, columns=col_headers, index=index)
 			img = "mytable.png"
 			dfi.export(df, img)
