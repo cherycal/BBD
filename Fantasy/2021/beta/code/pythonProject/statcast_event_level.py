@@ -183,11 +183,18 @@ def single_day(**kwargs):
 					delete_cmd = "DELETE from " + tablename + " where game_date = '" + dt + "'"
 					print(delete_cmd)
 					time.sleep(4)
-					bdb.delete(delete_cmd)
-					df_combined.to_sql(tablename, bdb.conn, if_exists='append', index=False)
+					try:
+						bdb.delete(delete_cmd)
+						time.sleep(1)
+						df_combined.to_sql(tablename, bdb.conn, if_exists='append', index=False)
+					except Exception as ex:
+						print(str(ex))
 		else:
 			print(tablename + " does not exist. Insert")
-			df_combined.to_sql(tablename, bdb.conn, if_exists='append', index=False)
+			try:
+				df_combined.to_sql(tablename, bdb.conn, if_exists='append', index=False)
+			except Exception as ex:
+				print(str(ex))
 
 		return_value = df_combined
 
@@ -396,7 +403,7 @@ def main():
 
 	for year in [2021]:
 		for bp in ["bat", "pitch"]:
-			#single_year(year, bp, (4, 15, 4, 15))
+			#single_year(year, bp, (4, 18, 4, 18))
 			single_year(year, bp, (yest.month, yest.day, yest.month, yest.day))
 
 
