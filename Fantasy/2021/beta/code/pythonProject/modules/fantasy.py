@@ -835,21 +835,21 @@ class Fantasy(object):
 		           'x-fantasy-filter: {"players":{"filterStatus":{"value":["FREEAGENT","WAIVERS","ONTEAM"]},'
 		           '"filterSlotIds":{"value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}}']
 		print("get_player_data_json: " + url_name)
-		buffer = BytesIO()
-		c = pycurl.Curl()
-		c.setopt(c.URL, url_name)
-		c.setopt(c.HTTPHEADER, headers)
-		c.setopt(c.WRITEDATA, buffer)
-		c.setopt(c.CAINFO, certifi.where())
-		c.perform()
-		c.close()
-
-		data = buffer.getvalue()
-
-		self.player_data_json = json.loads(data)
+		try:
+			buffer = BytesIO()
+			c = pycurl.Curl()
+			c.setopt(c.URL, url_name)
+			c.setopt(c.HTTPHEADER, headers)
+			c.setopt(c.WRITEDATA, buffer)
+			c.setopt(c.CAINFO, certifi.where())
+			c.perform()
+			c.close()
+			data = buffer.getvalue()
+			self.player_data_json = json.loads(data)
+		except Exception as ex:
+			print(str(ex))
 
 	# json_formatted = json.dumps(self.player_data_json, indent=2)
-
 	# print(json_formatted)
 
 	def get_player_info_changes(self):
@@ -898,21 +898,21 @@ class Fantasy(object):
 		index = list()
 
 		print("Query: " + query)
-		col_headers, rows = self.DB.select_w_cols(query)
-
-		for row in rows:
-			lol.append(row)
-			index.append("")
-
-		df = pd.DataFrame(lol, columns=col_headers, index=index)
+		try:
+			col_headers, rows = self.DB.select_w_cols(query)
+			for row in rows:
+				lol.append(row)
+				index.append("")
+				
+			df = pd.DataFrame(lol, columns=col_headers, index=index)
+			img = "mytable.png"
+			dfi.export(df, img)
+			self.push_instance.tweet_media(img, msg)
+		except Exception as ex:
+			print(str(ex))
 
 		# df_styled = df.style.background_gradient()
 		# adding a gradient based on values in cell
-
-		img = "mytable.png"
-		dfi.export(df, img)
-
-		self.push_instance.tweet_media(img, msg)
 		return
 
 	def tweet_add_drops(self, dt=""):
