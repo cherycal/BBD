@@ -106,8 +106,9 @@ class DB:
 			question_mark_string += "?,"
 		question_mark_string = question_mark_string[: -1] + ")"
 		try:
-			self.conn.execute("INSERT INTO " + table + " ( " + cols + " ) "
-			                                                          "VALUES " + question_mark_string, in_list)
+			self.conn.execute("INSERT INTO " + table +
+			                  " ( " + cols + " ) VALUES " +
+			                  question_mark_string, in_list)
 			# self.cursor.execute(list)
 			self.conn.commit()
 		except Exception as ex:
@@ -154,7 +155,7 @@ class DB:
 			except Exception as ex:
 				print(str(ex))
 				tries += 1
-				self.push_instance("DB command failed", str(ex) + ": " + command)
+				self.push_instance.push("DB command failed", str(ex) + ": " + command)
 				time.sleep(5)
 		if tries == max_tries:
 			print("DB command failed: " + command)
