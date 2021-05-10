@@ -7,6 +7,12 @@ sys.path.append('./modules')
 import pandas as pd
 import time
 import push
+from pathlib import Path
+from datetime import date, datetime
+
+p = Path.cwd()
+data_dir = p / 'data'
+data_dir.mkdir(mode=0o755, exist_ok=True)
 
 inst = push.Push()
 
@@ -14,9 +20,12 @@ import sqldb
 
 bdb = sqldb.DB('Baseball.db')
 
+now = datetime.now()
+
+date8 = now.strftime("%Y%m%d")
+
 
 def do_splits(split_name, yr):
-
 	month = 0
 	if split_name == "Left":
 		month = 13
@@ -45,15 +54,18 @@ def do_splits(split_name, yr):
 	print("sleeping ....")
 	time.sleep(1)
 
-	csvfile = "C:\\Users\\chery\\Documents\\BBD\\FG\\Batting\\" + \
-	          "team_splits_" + split_name + "_" + str(yr) + ".csv"
+	# csvfile = "C:\\Users\\chery\\Documents\\BBD\\FG\\Batting\\" + \
+	#           "team_splits_" + split_name + "_" + str(yr) + ".csv"
 
-	tbl_array = pd.read_html(url_text,attrs = {'id': 'LeaderBoard1_dg1_ctl00'},header=1)
+	csvfile = str(data_dir) + "\\team_splits_" + split_name + "_" + str(yr) + ".csv"
+
+	tbl_array = pd.read_html(url_text, attrs={'id': 'LeaderBoard1_dg1_ctl00'}, header=1)
 
 	df = tbl_array[0]
 	df.drop(df.tail(1).index, inplace=True)
 	df['Vs'] = split_name.upper()
 	df['Year'] = yr
+	df['updatedate'] = date8
 	df = df.rename(columns={'#': 'Rank'})
 	print(df.columns)
 	df.to_csv(csvfile, index=False)
@@ -64,7 +76,7 @@ def do_splits(split_name, yr):
 
 	tbltest = bdb.select("SELECT name FROM sqlite_master WHERE type='table' AND name='" +
 	                     table_name + "'")
-	if (len(tbltest) > 0):
+	if len(tbltest) > 0:
 		tbl_exists = True
 
 	if tbl_exists:
@@ -86,7 +98,7 @@ def do_splits(split_name, yr):
 
 def main():
 	yr = 2021
-	for lr in ["Left", "Right","Home","Away"]:
+	for lr in ["Left", "Right", "Home", "Away"]:
 		do_splits(lr, yr)
 
 
