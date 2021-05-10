@@ -36,3 +36,9 @@ print("Current day:", today.day)
 print("yesterday year:", yesterday.year)
 print("yesterday month:", yesterday.month)
 print("yesterday day:", yesterday)
+
+
+# convert date formats ...
+d = "04/01/2021"
+datetimeobject = datetime.strptime(d, '%m/%d/%Y')
+d8 = datetimeobject.strftime('%Y%m%d')
