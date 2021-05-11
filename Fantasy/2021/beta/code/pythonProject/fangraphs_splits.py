@@ -10,6 +10,16 @@ import tools
 import time
 import push
 import sqldb
+from pathlib import Path
+from datetime import date, datetime
+
+now = datetime.now()
+
+date8 = now.strftime("%Y%m%d")
+
+p = Path.cwd()
+data_dir = p / 'data'
+data_dir.mkdir(mode=0o755, exist_ok=True)
 
 inst = push.Push()
 from urllib.parse import unquote
@@ -22,7 +32,7 @@ bdb = sqldb.DB('Baseball.db')
 def do_split(bat_pitch, left_right, from_yr, to_yr):
 	# Selenium
 	driver = tools.get_driver("headless")
-	#driver = tools.get_driver()
+	# driver = tools.get_driver()
 
 	#
 	# bat_pitch = "Batting"
@@ -88,7 +98,7 @@ def do_split(bat_pitch, left_right, from_yr, to_yr):
 			soup = bs(html, "html.parser")
 			time.sleep(sleep_interval)
 			results = soup.find_all('a', attrs={"class": "data-export"})
-			#print(results)
+			# print(results)
 			raw_data = results[0]['href']
 			not_loaded = 0
 		except Exception as ex:
@@ -98,9 +108,13 @@ def do_split(bat_pitch, left_right, from_yr, to_yr):
 	my_csv = unquote(data_list[1])
 	print(type(my_csv))
 
-	csv_filename = "C:\\Users\\chery\\Documents\\BBD\\FG\\" + bat_pitch + "\\" + \
-	               "season_splits_" + left_right + "_" + str(stat_group) + "_" + \
-	               str(from_yr) + "-" + str(to_yr) + ".csv"
+	# csv_filename = "C:\\Users\\chery\\Documents\\BBD\\FG\\" + bat_pitch + "\\" + \
+	#                "season_splits_" + left_right + "_" + str(stat_group) + "_" + \
+	#                str(from_yr) + "-" + str(to_yr) + ".csv"
+
+	csv_filename = data_dir / str("season_splits_" + left_right + \
+	                              "_" + str(stat_group) + "_" + \
+	                              str(from_yr) + "-" + str(to_yr) + ".csv")
 
 	# df = pd.read_html(url)[0]
 	# df.to_csv(csvfile, index=False)
@@ -115,10 +129,10 @@ def do_split(bat_pitch, left_right, from_yr, to_yr):
 			line = line.replace('%', 'Pct')
 			line = line.replace('/', 'Per')
 			line = line.replace('+', 'Plus')
-			new_csv += line + ",BatPitch,Vs,\n"
+			new_csv += line + ",BatPitch,Vs,updatedate\n"
 			print(line)
 		else:
-			new_csv += line + "," + bat_pitch_indicator + "," + left_right + '\n'
+			new_csv += line + "," + bat_pitch_indicator + "," + left_right + "," + str(date8) + '\n'
 		count += 1
 
 	# print(new_csv)
@@ -132,11 +146,14 @@ def do_split(bat_pitch, left_right, from_yr, to_yr):
 	delete_cmd = "DELETE from " + table_name + " where BatPitch = '" + bat_pitch_indicator + "'" + \
 	             " and Season = " + str(from_yr) + " and Vs = '" + left_right + "'"
 
-	print(delete_cmd)
-	bdb.delete(delete_cmd)
+	try:
+		print(delete_cmd)
+		bdb.delete(delete_cmd)
 
-	df = pd.read_csv(csv_filename)
-	df.to_sql(table_name, bdb.conn, if_exists='append', index=False)
+		df = pd.read_csv(csv_filename)
+		df.to_sql(table_name, bdb.conn, if_exists='append', index=False)
+	except Exception as ex:
+		print(str(ex))
 
 	driver.close()
 

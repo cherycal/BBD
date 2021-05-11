@@ -57,7 +57,7 @@ def do_splits(split_name, yr):
 	# csvfile = "C:\\Users\\chery\\Documents\\BBD\\FG\\Batting\\" + \
 	#           "team_splits_" + split_name + "_" + str(yr) + ".csv"
 
-	csvfile = str(data_dir) + "\\team_splits_" + split_name + "_" + str(yr) + ".csv"
+	csvfile = data_dir / str("team_splits_" + split_name + "_" + str(yr) + ".csv")
 
 	tbl_array = pd.read_html(url_text, attrs={'id': 'LeaderBoard1_dg1_ctl00'}, header=1)
 

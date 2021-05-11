@@ -42,3 +42,8 @@ print("yesterday day:", yesterday)
 d = "04/01/2021"
 datetimeobject = datetime.strptime(d, '%m/%d/%Y')
 d8 = datetimeobject.strftime('%Y%m%d')
+
+## SQLITE date range using offsets ( no hardcoding )
+c = bdb.select("select game from StatcastGameData where "
+               "date >= strftime('%Y%m%d','now','-4 days') "
+               "and date <= strftime('%Y%m%d','now')")
