@@ -106,7 +106,7 @@ def do_split(bat_pitch, left_right, from_yr, to_yr):
 
 	data_list = raw_data.split(",")
 	my_csv = unquote(data_list[1])
-	print(type(my_csv))
+	#print(type(my_csv))
 
 	# csv_filename = "C:\\Users\\chery\\Documents\\BBD\\FG\\" + bat_pitch + "\\" + \
 	#                "season_splits_" + left_right + "_" + str(stat_group) + "_" + \
@@ -123,14 +123,13 @@ def do_split(bat_pitch, left_right, from_yr, to_yr):
 	count = 0
 	for line in my_csv.split('\n'):
 		if count == 0:
-			print("x")
-			print(line)
-			print(type(line))
+			#print(line)
+			#print(type(line))
 			line = line.replace('%', 'Pct')
 			line = line.replace('/', 'Per')
 			line = line.replace('+', 'Plus')
 			new_csv += line + ",BatPitch,Vs,updatedate\n"
-			print(line)
+			#print(line)
 		else:
 			new_csv += line + "," + bat_pitch_indicator + "," + left_right + "," + str(date8) + '\n'
 		count += 1
