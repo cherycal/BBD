@@ -614,7 +614,7 @@ class Fantasy(object):
 
 
 	def set_next_start(self):
-		print_calling_function()
+		# print_calling_function()
 		url_name = "https://fantasy.espn.com/apis/v3/games/flb/" \
 		           "seasons/2021/segments/0/leagues/37863846?" \
 		           "scoringPeriodId=20&view=kona_player_info"
@@ -625,7 +625,7 @@ class Fantasy(object):
 		           'x-fantasy-filter: {"players":{"filterStatus":{"value":["FREEAGENT","WAIVERS","ONTEAM"]},'
 		           '"filterSlotIds":{"value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}}']
 
-		print("set_next_start: " + url_name)
+		# print("set_next_start: " + url_name)
 
 		buffer = BytesIO()
 		c = pycurl.Curl()
@@ -655,18 +655,18 @@ class Fantasy(object):
 											next_start = game
 
 						if self.game_dates.get(next_start):
-							print(player['player']['fullName'])
-							print(player['player']['id'])
-							print(next_start)
-							print(self.game_dates[next_start])
-							print("\n")
+							# print(player['player']['fullName'])
+							# print(player['player']['id'])
+							# print(next_start)
+							# print(self.game_dates[next_start])
+							# print("\n")
 							player_obj.set_start(next_start)
 
 		return
 
 
 	def get_db_player_info(self):
-		print_calling_function()
+		# print_calling_function()
 		player_status = {}
 		rows = self.DB.query("select Date, espnid, injuryStatus, status,"
 		                     "nextStartID from ESPNPlayerDataCurrent")
@@ -703,7 +703,7 @@ class Fantasy(object):
 			       "/segments/0/leagues/" + str(league) + \
 			       "?view=mDraftDetail&view=mLiveScoring&view=mMatchupScore&view=mPendingTransactions&" + \
 			       "view=mPositionalRatings&view=mRoster&view=mSettings&view=mTeam&view=modular&view=mNav"
-			print(addr)
+			# print(addr)
 
 			try:
 				with urllib.request.urlopen(addr) as url:
@@ -726,19 +726,19 @@ class Fantasy(object):
 
 
 		count = len(insert_list)
-		print(count)
+		# print(count)
 		if count > 800:
 			command = "Delete from ESPNRosters"
 			self.DB.delete(command)
-			print("\nDelete Rosters worked\n")
+			#print("\nDelete Rosters worked\n")
 			self.DB.insert_many("ESPNRosters", insert_list)
-			print("\nInsert Rosters worked\n")
+			#print("\nInsert Rosters worked\n")
 
 	def get_current_player_status(self):
 		return self.current_player_status
 
 	def get_espn_player_info(self):
-		print_calling_function()
+		# print_calling_function()
 		player_status = {}
 		# Get next start info
 		self.set_next_start()
@@ -824,7 +824,7 @@ class Fantasy(object):
 		return insert_many_list
 
 	def get_player_data_json(self):
-		print_calling_function()
+		#print_calling_function()
 		leagueID = self.default_league
 		url_name = "http://fantasy.espn.com/apis/v3/games/flb/seasons/" + self.year + \
 		           "/segments/0/leagues/" + \
@@ -897,7 +897,7 @@ class Fantasy(object):
 		lol = []
 		index = list()
 
-		print("Query: " + query)
+		# print("Query: " + query)
 		try:
 			col_headers, rows = self.DB.select_w_cols(query)
 			for row in rows:
@@ -928,19 +928,19 @@ class Fantasy(object):
 
 	def tweet_sprk_on_opponents(self):
 		query = "select * from SPRKOnOpponents"
-		print(query)
+		#print(query)
 		self.run_query(query, "SPRK on Opponents: ")
 		return
 
 	def tweet_fran_on_opponents(self):
 		query = "select * from FRANOnOpponents"
-		print(query)
+		#print(query)
 		self.run_query(query, "FRAN on Opponents: ")
 		return
 
 	def tweet_oppo_rosters(self):
 		query = "select * from OppoRosters"
-		print(query)
+		#print(query)
 		self.run_query(query, "Oppo Rosters ")
 		return
 
@@ -1005,14 +1005,14 @@ class Fantasy(object):
 	def refresh_statcast_schedule(self):
 		url_name = "http://statsapi.mlb.com/api/v1/schedule?sportId=1,&date=" + \
 		           self.statcast_date
-		print("url is: " + url_name)
+		#print("url is: " + url_name)
 		entries = []
 		column_names = ['date', 'game']
 		with urllib.request.urlopen(url_name) as url:
 			data = json.loads(url.read().decode())
 			for gamedate in data['dates']:
 				for game in gamedate['games']:
-					print(self.date + "," + str(game['gamePk']))
+					#print(self.date + "," + str(game['gamePk']))
 					entry = [self.date, game['gamePk']]
 					entries.append(entry)
 
@@ -1084,7 +1084,7 @@ class Fantasy(object):
 		           self.roster_year + \
 		           "/segments/0/leagues/" + \
 		           str(leagueID) + "?view=mTransactions2"
-		print("build_transactions: " + url_name)
+		# print("build_transactions: " + url_name)
 		add_drop_count = 0
 		try:
 			with urllib.request.urlopen(url_name) as url:
@@ -1243,13 +1243,13 @@ class Fantasy(object):
 			trans_period = transaction.get_type()
 			# player_name = transaction.get_player_name()
 			# espn_trans_ids from RosterChanges table ESPNTransID
-			print("Transaction inside process_transactions:")
-			print(transaction.get_transaction_fields())
+			# print("Transaction inside process_transactions:")
+			# print(transaction.get_transaction_fields())
 			if transaction.get_espntransid() not in self.espn_trans_ids or \
 					int(transaction.get_update_time_hhmmss()) >= \
 					int(self.get_roster_lock_time()):
-				print("New transaction " + trans_type)
-				print(transaction.get_transaction_fields())
+				# print("New transaction " + trans_type)
+				# print(transaction.get_transaction_fields())
 				if trans_type == "LINEUP" and trans_period == "ROSTER":
 					updates.append(transaction)
 			if transaction.get_espntransid() not in self.espn_trans_ids:
@@ -1257,37 +1257,36 @@ class Fantasy(object):
 					adds.append(transaction)
 				if trans_type == "DROP":
 					drops.append(transaction)
-			else:
-				print("Old transaction at " +
-				      str(transaction.get_update_time_hhmmss()))
-		print("process_transactions:")
+			#else:
+				# print("Old transaction at " + str(transaction.get_update_time_hhmmss()))
+		# print("process_transactions:")
 		self.process_updates(updates)
 		self.process_adds(adds)
 		self.process_drops(drops)
 		return
 
 	def process_updates(self, updates):
-		print("Number of process_updates:")
+		# print("Number of process_updates:")
 		# takes a list of transaction objects
-		print(len(updates))
+		# print(len(updates))
 		for transaction in updates:
-			print("Update")
+			#print("Update")
 			to_position = transaction.get_to_position()
 			leagueID = transaction.get_leagueID()
-			print(transaction.get_to_position())
+			#print(transaction.get_to_position())
 			espnid = transaction.get_espnid()
-			print(transaction.get_espnid())
+			#print(transaction.get_espnid())
 			self.DB.update_data("Update ESPNRosters set Position = ? "
 			                    "where ESPNID = ? and LeagueID = ?",
 			                    (to_position, espnid, leagueID))
 
 	def process_adds(self, adds):
-		print("Number of process_adds:")
+		#print("Number of process_adds:")
 		# takes a list of transaction objects
-		print(len(adds))
+		#print(len(adds))
 		# entry = list()
 		for transaction in adds:
-			print("Add")
+			#print("Add")
 			player_name = transaction.get_player_name()
 			to_team = transaction.get_to_team()
 			leagueID = transaction.get_leagueID()
@@ -1297,13 +1296,13 @@ class Fantasy(object):
 			# insert_many_list = list()
 			entry = [player_name, to_team, leagueID,
 			         espnid, to_position, update_time, self.year]
-			print("Build transactions Rosters insert command:")
-			print(entry)
+			#print("Build transactions Rosters insert command:")
+			#print(entry)
 			self.DB.insert_list("ESPNRosters", entry)
 
 	def process_drops(self, drops):
-		print("Number of process_drops:")
-		print(len(drops))
+		#print("Number of process_drops:")
+		#print(len(drops))
 		for transaction in drops:
 			leagueID = transaction.get_leagueID()
 			espnid = str(transaction.get_espnid())
@@ -1346,21 +1345,21 @@ class Fantasy(object):
 					self.DB.insert_list("ESPNTeamOwners", insert_list)
 
 	def run_transactions(self, teams=0):
-		print_calling_function()
+		#print_calling_function()
 		if not teams:
 			teams = self.get_active_leagues()
 		self.espn_trans_ids = self.get_espn_trans_ids()
 		add_drop_count = 0
 		for team in teams:
 			add_drop_count += self.build_transactions(team)
-			time.sleep(5)
+			time.sleep(1.5)
 		if add_drop_count > 0:
 			self.tweet_add_drops()
 		if int(self.get_hhmmss()) > int(self.get_roster_lock_time()):
 			print("Process transactions:")
-			time.sleep(1)
+			time.sleep(.5)
 			self.process_transactions()
-			time.sleep(1)
+			time.sleep(.5)
 		else:
 			print("Time: " + str(self.get_hhmmss()) +
 			      " vs roster lock at " +
