@@ -54,22 +54,22 @@ def begin_day_process():
     while tries < TRIES_BEFORE_QUITTING:
         tries += 1
         try:
-            print("First row of insert many list:")
-            print(insert_many_list[0])
-            print("Length of insert many list:")
-            print(len(insert_many_list))
+            #print("First row of insert many list:")
+            #print(insert_many_list[0])
+            # print("Length of insert many list:")
+            #print(len(insert_many_list))
             if len(insert_many_list) > 3000:
                 command = "Delete from ESPNPlayerDataCurrent"
                 bdb.delete(command)
-                print("\nDelete ESPNPlayerDataCurrent worked\n")
+                #print("\nDelete ESPNPlayerDataCurrent worked\n")
                 bdb.insert_many("ESPNPlayerDataCurrent", insert_many_list)
-                print("\ninsert ESPNPlayerDataCurrent worked\n")
-                time.sleep(5)
+                #print("\ninsert ESPNPlayerDataCurrent worked\n")
+                time.sleep(2)
                 passed = 1
                 break
             else:
                 print("Skipping ESPNPlayerDataCurrent Refresh phase")
-                time.sleep(5)
+                time.sleep(2)
                 passed = 1
                 break
         except Exception as ex:
@@ -93,7 +93,7 @@ def eod_process():
     tries = 0
     passed = 0
     TRIES_BEFORE_QUITTING = 3
-    SLEEP = 5
+    SLEEP = 2.5
     while tries < TRIES_BEFORE_QUITTING:
         tries += 1
         try:
@@ -115,7 +115,7 @@ def eod_process():
 
 # noinspection PyUnusedLocal
 def run_function(function, name="none given"):
-    print("Function: " + str(inspect.stack()[-2].code_context))
+    #print("Function: " + str(inspect.stack()[-2].code_context))
     return
 
 
@@ -123,7 +123,7 @@ def main():
     run_begin_day_process = 1
     run_end_day_process = 1
     run_roster_suite = 1
-    begin_day_time = 12000
+    begin_day_time = 10000
     end_day_time = 211500
 
     while 1:
@@ -174,7 +174,7 @@ def main():
         run_function(fantasy.run_transactions())
 
         print("Sleep at " + formatted_date_time)
-        num1 = random.randint(25, 35)
+        num1 = random.randint(15, 25)
         print("Sleep for " + str(num1) + " seconds")
         time.sleep(num1)
 
