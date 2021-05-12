@@ -34,10 +34,11 @@ q = "select distinct MLBID, Name from ( select  round(MLBID,0) as MLBID, " \
     " Name from ESPNPlayerDataCurrent E, IDMap I, ESPNRosters R where" \
     " E.espnid = R.ESPNID and  E.espnid = I.ESPNID and R.Team in" \
     " ('When Franimals Attack' ,'Spring Rakers', 'Flip Mode', " \
-    "'Called Shots','Avengers: Age Of Beltran'," \
+    "'Called Shots','wOBA Barons','Avengers:  Age Of Beltran'," \
     "'Avengers: Age Of Beltran')"
 
 print(q)
+time.sleep(2)
 
 c = bdb.select(q)
 
@@ -198,34 +199,43 @@ def process_statcast(data, gamepk):
 
 	mlb_first_run = 0
 
+
 def process_lineups(lineups):
-	cols = ['date','gamepk','pitcher','batter','pitcher_team','batter_team']
+	cols = ['date', 'gamepk', 'pitcher', 'batter', 'pitcher_team', 'batter_team','date8']
 	lol = list()
 	d = lineups['date']
 	g = lineups['gamepk']
 	a = lineups['at']
 	h = lineups['ht']
+	datetimeobject = datetime.strptime(d, '%m/%d/%Y')
+	d8 = datetimeobject.strftime('%Y%m%d')
 	for p in lineups['ap']:
 		for b in lineups['hb']:
-			l = [d,g,p,b,a,h]
-			print(l)
-			lol.append(l)
+			ll = [d, g, p, b, a, h, d8]
+			#print(ll)
+			lol.append(ll)
 	for p in lineups['hp']:
 		for b in lineups['ab']:
-			l = [d,g,p,b,h,a]
-			print(l)
-			lol.append(l)
+			ll = [d, g, p, b, h, a, d8]
+			#print(ll)
+			lol.append(ll)
+
 	table_name = "DailyLineups"
 	delcmd = "delete from " + table_name + " where Date = '" + d + "' and gamepk = " + g
 	print(delcmd)
 	df = pd.DataFrame(lol, columns=cols)
 
 	## try
-	bdb.delete(delcmd)
+	try:
+		bdb.delete(delcmd)
+		df.to_sql(table_name, bdb.conn, if_exists='append',
+		          index=False)
+	except Exception as ex:
+		time.sleep(5)
+		print(str(ex))
 
-	df.to_sql(table_name, bdb.conn, if_exists='append',
-	          index=False)
 	return
+
 
 def main():
 	global has_statcast
@@ -264,9 +274,14 @@ def main():
 	#     print(i)
 	#     print(reported_event_count[i])
 
-	while 1:
+	not_eod = 1
+
+	while not_eod:
 		ts = datetime.now()  # current date and time
 		formatted_date_time = ts.strftime("%Y%m%d-%H%M%S")
+
+		not_eod = 0
+
 		for gamepk in gamepks:
 
 			########### Statcast ######################
@@ -274,50 +289,57 @@ def main():
 			url_name = "https://baseballsavant.mlb.com/gf?game_pk=" + gamepk
 			print(url_name)
 
-			with urllib.request.urlopen(url_name) as url:
-				statcast_count[gamepk] = 0
-				data = json.loads(url.read().decode())
+			try:
+				with urllib.request.urlopen(url_name) as url:
+					statcast_count[gamepk] = 0
+					data = json.loads(url.read().decode())
 
-				if data.get('game_status_code'):
-					if data['game_status_code'] == "F":
-						print("Skipping completed game")
+					if data.get('game_status_code'):
+						if data['game_status_code'] == "F":
+							print("Skipping completed game")
+							continue
+						else:
+							print("Sleep at " + formatted_date_time)
+							num1 = random.randint(5, 9)
+							print("Sleep for " + str(num1) + " seconds")
+							time.sleep(num1)
+
+					lineups['gamepk'] = gamepk
+					if not data.get('home_team_data'):
 						continue
-					else:
-						print("Sleep at " + formatted_date_time)
-						num1 = random.randint(5, 9)
-						print("Sleep for " + str(num1) + " seconds")
-						time.sleep(num1)
+					if data.get('gameDate'):
+						lineups['date'] = data['gameDate']
+						not_eod = 1
+					lineups['ht'] = data['home_team_data']['abbreviation']
+					lineups['at'] = data['away_team_data']['abbreviation']
+					lineups['ab'] = data['away_lineup']
+					lineups['ap'] = data['away_pitcher_lineup']
+					lineups['hb'] = data['home_lineup']
+					lineups['hp'] = data['home_pitcher_lineup']
+					process_lineups(lineups)
 
-				lineups['gamepk'] = gamepk
-				if not data.get('home_team_data'):
-					continue
-				if data.get('gameDate'):
-					lineups['date'] = data['gameDate']
-				lineups['ht'] = data['home_team_data']['abbreviation']
-				lineups['at'] = data['away_team_data']['abbreviation']
-				lineups['ab'] = data['away_lineup']
-				lineups['ap'] = data['away_pitcher_lineup']
-				lineups['hb'] = data['home_lineup']
-				lineups['hp'] = data['home_pitcher_lineup']
-				process_lineups(lineups)
-
-				if data.get('exit_velocity'):
+					if data.get('exit_velocity'):
 						print("Reporting statcast data")
 						process_statcast(data, gamepk)
+			except Exception as ex:
+				print(str(ex))
 
 			############  MLB  ###################
 
 			url_name = "http://statsapi.mlb.com/api/v1.1/game/" + gamepk + "/feed/live"
 			print(url_name)
 
-			with urllib.request.urlopen(url_name) as url2:
-				event_count[gamepk] = 0
-				data = json.loads(url2.read().decode())
-				if data.get('liveData'):
-					print("Reporting MLB data")
-					process_mlb(data, gamepk)
-				else:
-					print("MLB data unavailable")
+			try:
+				with urllib.request.urlopen(url_name) as url2:
+					event_count[gamepk] = 0
+					data = json.loads(url2.read().decode())
+					if data.get('liveData'):
+						print("Reporting MLB data")
+						process_mlb(data, gamepk)
+					else:
+						print("MLB data unavailable")
+			except Exception as ex:
+				print(str(ex))
 
 			# Record how many events have been reported to event_count.csv file
 			with open('event_count.csv', 'w') as f:
@@ -336,7 +358,7 @@ def main():
 					f.write("%s,%s\n" % (key, 1 * has_statcast[key]))
 			f.close()
 
-
+	print("Games are done for today")
 
 if __name__ == "__main__":
 	main()
