@@ -78,7 +78,7 @@ class DB:
 		# Ex: db.insert_many( Animals, [ (1,'a','aardvark'),(2,'b','bear'),(3,'c','cat') ] )
 		# each tuple must *precisely* match the columns in a table
 		table = table_name
-		print_calling_function()
+		# print_calling_function()
 		# print("in_list[0]:")
 		# print(in_list[0])
 		question_mark_string = "("
@@ -88,8 +88,11 @@ class DB:
 		command = "INSERT INTO " + table + " VALUES " + question_mark_string
 		# print(command)
 		# print(in_list)
-		self.conn.executemany(command, in_list)
-		self.conn.commit()
+		try:
+			self.conn.executemany(command, in_list)
+			self.conn.commit()
+		except Exception as ex:
+			print(str(ex))
 		return
 
 	def insert_list(self, table, in_list):
