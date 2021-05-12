@@ -139,6 +139,6 @@ bdb.db
 *.csv*
 */2020/beta/*
 
-
+*.png*
 
 *Todo.txt*
