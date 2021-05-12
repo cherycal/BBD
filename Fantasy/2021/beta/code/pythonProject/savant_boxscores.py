@@ -22,7 +22,7 @@ now = datetime.now()  # current date and time
 date_time = now.strftime("%Y%m%d%H%M%S")
 out_date = now.strftime("%Y%m%d")
 
-override_date = "20210503"
+override_date = ""
 
 if override_date != "":
 	out_date = override_date
@@ -49,7 +49,10 @@ for t in c:
 
 gamepks = list()
 
-c = bdb.select("select game from StatcastGameData where date = " + str(out_date))
+c = bdb.select("select game from StatcastGameData where "
+               "date >= strftime('%Y%m%d','now','-4 days') "
+               "and date <= strftime('%Y%m%d','now')")
+
 for t in c:
 	gamepks.append(str(t[0]))
 
@@ -229,8 +232,8 @@ def process_statcast(data, gamepk):
 		df = df.sort_values(by=['points'], ascending=[False])
 		df = df[column_names]
 		# df_styled = df.style.background_gradient()  # adding a gradient based on values in cell
-		img = "mytable.png"
-		dfi.export(df, img)
+		#img = "mytable.png"
+		#dfi.export(df, img)
 		# inst.tweet_media(img, "Pitching stats: " + teamname)
 
 		table_name = "StatcastBoxscoresPitching"
@@ -307,7 +310,7 @@ def main():
 			f.close()
 
 			print("Sleep at " + formatted_date_time)
-			num1 = random.randint(4, 8)
+			num1 = random.randint(2, 4)
 			print("Sleep for " + str(num1) + " seconds")
 			time.sleep(num1)
 		exit(0)
