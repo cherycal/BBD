@@ -173,8 +173,22 @@ def single_day(**kwargs):
 				print("No rows in table. Insert")
 				delete_cmd = "DELETE from " + tablename + " where game_date = '" + dt + "'"
 				print(delete_cmd)
-				bdb.delete(delete_cmd)
-				df_combined.to_sql(tablename, bdb.conn, if_exists='append', index=False)
+				not_run = True
+				tries = 0
+				max_tries = 3
+				while not_run and tries < max_tries:
+					try:
+						bdb.delete(delete_cmd)
+						df_combined.to_sql(tablename, bdb.conn, if_exists='append', index=False)
+						not_run = False
+					except Exception as ex:
+						print(str(ex))
+						tries += 1
+						time.sleep(2.5)
+				if not_run:
+					"DB Update failed: " + tablename
+				else:
+					"DB Update succeeded: " + tablename
 			else:
 				if df_rows == tablerows and override is False:
 					print("Rows match, skip ...")
