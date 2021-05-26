@@ -1,10 +1,10 @@
 __author__ = 'chance'
 
-import dataframe_image
-import dataframe_image as dfi
+import sys
+
 import numpy as np
 import pandas as pd
-import sys
+
 sys.path.append('./modules')
 import push
 inst = push.Push()

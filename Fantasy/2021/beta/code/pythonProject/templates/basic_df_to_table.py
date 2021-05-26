@@ -1,14 +1,12 @@
 __author__ = 'chance'
 
-from bs4 import BeautifulSoup
-import time
 import json
-import os
 import sys
-import time
 import urllib.request
+
 import pandas as pd
-sys.path.append('./modules')
+
+sys.path.append('../modules')
 import sqldb
 
 # My python class: sqldb.py

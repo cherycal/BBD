@@ -2,15 +2,11 @@ __author__ = 'chance'
 
 import sys
 
-sys.path.append('./modules')
+sys.path.append('../modules')
 
-import sqldb
 from bs4 import BeautifulSoup as bs
 import tools
 import time
-import re
-import pandas as pd
-
 
 sleep_interval = 1
 # Selenium

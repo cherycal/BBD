@@ -1,22 +1,23 @@
 __author__ = 'chance'
 
+import inspect
 import json
-import sys
+import pickle
 import time
 import urllib.request
 from datetime import datetime, timedelta
-
-sys.path.append('./modules')
-import sqldb, tools
-import pickle
-from os import path
-import push
-import inspect
-import pycurl
-import certifi
 from io import BytesIO
-import pandas as pd
+from os import path
+
+import certifi
 import dataframe_image as dfi
+import pandas as pd
+import pycurl
+
+import push
+# sys.path.append('./modules')
+import sqldb
+import tools
 
 
 def get_default_position(positionID):
@@ -64,7 +65,11 @@ class Fantasy(object):
 	def __init__(self, mode="PROD"):
 		self.espn_player_json = None
 		self.timedict = {}
-		print("Initializing Fantasy Object from " + str(inspect.stack()[-1].filename))
+		filename = str(inspect.stack()[-1].filename).split('/')[-1]
+		logname = filename.replace('.py','.log')
+		logname = './logs/' + logname
+		print("Initializing Fantasy Object from " + filename)
+		print("Log name " + logname)
 		self.push_msg = ""
 		db = 'Baseball.db'
 		if mode == "TEST":
@@ -102,11 +107,17 @@ class Fantasy(object):
 		self.push_msg_list = list()
 		self.transactions = {}
 		self.player_data_json = object()
+		self.TIMEOUT = 30
 		self.roster_lock_time = self.set_roster_lock_time()
 		now = datetime.now()  # current date and time
 		self.date = now.strftime("%Y%m%d")
 		self.statcast_date = now.strftime("%Y-%m-%d")
 		self.hhmmss = self.get_hhmmss()
+		self.logger_instance = tools.get_logger(logfilename=logname)
+		self.logger_instance.debug("Initializing fantasy object")
+
+	def post_log_msg(self,msg):
+		self.logger_instance.debug(msg)
 
 	def get_date8(self):
 		now = datetime.now()
@@ -466,7 +477,7 @@ class Fantasy(object):
 	def set_roster_lock_time(self):
 		url_name = "http://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard"
 
-		with urllib.request.urlopen(url_name) as url:
+		with urllib.request.urlopen(url_name, timeout=self.TIMEOUT) as url:
 			data = json.loads(url.read().decode())
 
 			for i in data['events']:
@@ -519,7 +530,7 @@ class Fantasy(object):
 		           "/segments/0/leagues/" + \
 		           str(leagueID) + "?view=standings"
 		print("league_standings: " + url_name)
-		with urllib.request.urlopen(url_name) as url:
+		with urllib.request.urlopen(url_name, timeout=self.TIMEOUT) as url:
 			json_object = json.loads(url.read().decode())
 		# json_formatted = json.dumps(json_object, indent=2)
 		# print(json_formatted)
@@ -604,7 +615,7 @@ class Fantasy(object):
 		           "/segments/0/leagues/" + \
 		           str(leagueID) + "?view=kona_playercard"
 		print("set_espn_player_json: " + url_name)
-		with urllib.request.urlopen(url_name) as url:
+		with urllib.request.urlopen(url_name, timeout=self.TIMEOUT) as url:
 			json_object = json.loads(url.read().decode())
 		# json_formatted = json.dumps(json_object, indent=2)
 		return json_object
@@ -630,6 +641,7 @@ class Fantasy(object):
 		buffer = BytesIO()
 		c = pycurl.Curl()
 		c.setopt(c.URL, url_name)
+		c.setopt(c.CONNECTTIMEOUT, self.TIMEOUT)
 		c.setopt(c.HTTPHEADER, headers)
 		c.setopt(c.WRITEDATA, buffer)
 		c.setopt(c.CAINFO, certifi.where())
@@ -706,7 +718,7 @@ class Fantasy(object):
 			# print(addr)
 
 			try:
-				with urllib.request.urlopen(addr) as url:
+				with urllib.request.urlopen(addr, timeout=self.TIMEOUT) as url:
 					data = json.loads(url.read().decode())
 					for j in data['teams']:
 						# team_id = str(j['id'])
@@ -835,12 +847,14 @@ class Fantasy(object):
 		           'x-fantasy-filter: {"players":{"filterStatus":{"value":["FREEAGENT","WAIVERS","ONTEAM"]},'
 		           '"filterSlotIds":{"value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}}']
 		print("get_player_data_json: " + url_name)
+		self.logger_instance.debug(f'get_player_data_json: {url_name}')
 		try:
 			buffer = BytesIO()
 			c = pycurl.Curl()
 			c.setopt(c.URL, url_name)
 			c.setopt(c.HTTPHEADER, headers)
 			c.setopt(c.WRITEDATA, buffer)
+			c.setopt(c.CONNECTTIMEOUT, self.TIMEOUT)
 			c.setopt(c.CAINFO, certifi.where())
 			c.perform()
 			c.close()
@@ -862,6 +876,8 @@ class Fantasy(object):
 			if i in self.get_db_player_status():
 				for j in self.get_current_player_status()[i]:
 					if self.get_current_player_status()[i][j] != self.get_db_player_status()[i][j]:
+						current = self.get_current_player_status()[i][j]
+						db =  self.get_db_player_status()[i][j]
 						espnid = i
 						name = str(self.get_player_object(i).name)
 						set_attr = j
@@ -871,11 +887,11 @@ class Fantasy(object):
 						if set_attr != "nextStartID":
 							self.push_msg_list.append(
 								tools.string_from_list([name, set_attr, 'old:', old, 'new:', new]))
+							run_injury_updates = True
 						self.DB.update_list("ESPNPlayerDataCurrent", set_attr, where_attr, (new, espnid))
 						self.DB.update_list("ESPNPlayerDataCurrent", "Date", where_attr, (out_date, espnid))
 						self.DB.update_list("ESPNPlayerDataCurrent", "UpdateTime", where_attr, (date_time, espnid))
 						self.DB.insert_list("ESPNStatusChanges", [out_date, date_time, espnid, set_attr, old, new])
-						run_injury_updates = True
 			else:
 				print("No corresponding data in ESPNPlayerDataCurrent for " + i)
 				# Insert into PlayerDataCurrent
@@ -972,7 +988,7 @@ class Fantasy(object):
 		url_name = "https://fantasy.espn.com/apis/v3/games/flb/seasons/" + \
 		           self.year + "?view=proTeamSchedules_wl"
 
-		with urllib.request.urlopen(url_name) as url:
+		with urllib.request.urlopen(url_name, timeout=self.TIMEOUT) as url:
 			data = json.loads(url.read().decode())
 			# json_formatted = json.dumps(data, indent=2)
 			# print(json_formatted)
@@ -1008,7 +1024,7 @@ class Fantasy(object):
 		#print("url is: " + url_name)
 		entries = []
 		column_names = ['date', 'game']
-		with urllib.request.urlopen(url_name) as url:
+		with urllib.request.urlopen(url_name, timeout=self.TIMEOUT) as url:
 			data = json.loads(url.read().decode())
 			for gamedate in data['dates']:
 				for game in gamedate['games']:
@@ -1087,7 +1103,7 @@ class Fantasy(object):
 		# print("build_transactions: " + url_name)
 		add_drop_count = 0
 		try:
-			with urllib.request.urlopen(url_name) as url:
+			with urllib.request.urlopen(url_name, timeout=self.TIMEOUT) as url:
 				json_object = json.loads(url.read().decode())
 				push_list = list()
 				# push_list_twtr = list()
@@ -1163,12 +1179,6 @@ class Fantasy(object):
 								index = str(trans_obj.get_update_time()) + \
 								        str(trans_obj.get_transid())
 
-								# print("In build_transactions, transaction at " +
-								# str(trans_obj.get_update_time_hhmmss()))
-								# print("Roster lock time is " +
-								# str(self.get_roster_lock_time()))
-								# espn_trans_ids from RosterChanges table ESPNTransID
-
 								if (espn_transaction_id not in self.espn_trans_ids) or \
 										(int(trans_obj.get_update_time_hhmmss()) >=
 										 int(self.get_roster_lock_time())):
@@ -1197,6 +1207,7 @@ class Fantasy(object):
 											             "Flip Mode",
 											             "Avengers: Age Of Beltran",
 											             "wOBA Barons"]
+
 											if i['type'] == "LINEUP" and team_name \
 													not in team_list:
 												print("Skipping lineup change team"
@@ -1214,18 +1225,12 @@ class Fantasy(object):
 					                                     player_name, i['type']])
 													print("Push String: " + push_str)
 													push_list.append(push_str)
-											# push_list_twtr.append([update_time," ", team_name])
-											# push_list_twtr.append([from_position," ", to_position])
-											# if from_team != '' or to_team != '':
-											#     push_list_twtr.append([from_team," ", to_team])
-											# push_list_twtr.append([player_name," ", i['type']])
 
 			if len(push_list) > 4:
 				self.push_instance.push("Over 4 transactions", "Look for table tweet")
 
 			if len(push_list) > 0:
 				self.push_instance.push_list(push_list, "Transactions")
-				# self.push_instance.push_list_twtr(push_list_twtr, "Transactions")
 				push_list.clear()
 
 		except Exception as ex:
@@ -1332,7 +1337,7 @@ class Fantasy(object):
 		           "/segments/0/leagues/" + \
 		           str(leagueID)
 		print("populate_team_owners: " + url_name)
-		with urllib.request.urlopen(url_name) as url:
+		with urllib.request.urlopen(url_name, timeout=self.TIMEOUT) as url:
 			json_object = json.loads(url.read().decode())
 
 			# json_formatted = json.dumps(json_object, indent=2)
@@ -1352,6 +1357,7 @@ class Fantasy(object):
 		add_drop_count = 0
 		for team in teams:
 			add_drop_count += self.build_transactions(team)
+			#print(f'Total add/drops: {add_drop_count}')
 			time.sleep(1.5)
 		if add_drop_count > 0:
 			self.tweet_add_drops()

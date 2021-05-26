@@ -4,7 +4,7 @@ import sys
 import urllib.request
 from datetime import datetime
 
-sys.path.append('./modules')
+sys.path.append('../modules')
 import sqldb
 import push
 import fantasy

@@ -7,6 +7,7 @@ import push
 import fantasy
 import inspect
 import random
+import tools
 
 mode = "PROD"
 
@@ -17,6 +18,7 @@ bdb = fantasy.get_db()
 now = datetime.now()  # current date and time
 date_time = now.strftime("%Y%m%d%H%M%S")
 out_date = now.strftime("%Y%m%d")
+date8 = out_date
 integer_today = int(out_date)
 string_today = out_date
 integer_yesterday = integer_today - 1
@@ -89,7 +91,12 @@ def begin_day_process():
 
 
 def eod_process():
-    command = ""
+    command = "delete from ESPNPlayerDataHistory where Date = '" + str(date8) + "'"
+    try:
+        bdb.delete(command)
+    except Exception as ex:
+        print(str(ex))
+
     tries = 0
     passed = 0
     TRIES_BEFORE_QUITTING = 3
@@ -106,7 +113,7 @@ def eod_process():
         time.sleep(SLEEP)
 
     if not passed:
-        inst.push("DATABASE ERROR: " + str(date_time), "espn_player_info.py")
+        inst.push("DB ERROR eod_process(): " + str(date_time), "espn_player_info.py")
     else:
         inst.push("EOD PROCESS SUCCEEDS: " + str(date_time), "espn_player_info.py")
 
@@ -120,64 +127,89 @@ def run_function(function, name="none given"):
 
 
 def main():
-    run_begin_day_process = 1
-    run_end_day_process = 1
-    run_roster_suite = 1
+    run_begin_day_process = True
+    run_end_day_process = True
+    run_roster_suite = True
     begin_day_time = 10000
     end_day_time = 211500
+    MIN_SLEEP = 15
+    MAX_SLEEP = 25
 
-    while 1:
+
+    try:
+        bdb.update("update ProcessUpdateTimes set Active = 1 where Process = 'PlayerInfo'")
+    except Exception as ex:
+        print(str(ex))
+
+    while True:
         ts = datetime.now()  # current date and time
         formatted_date_time = ts.strftime("%Y%m%d-%H%M%S")
         time6 = ts.strftime("%H%M%S")
         current_time = int(time6)
         print("Start at " + formatted_date_time)
 
+        update_time = ts.strftime("%Y%m%d%H%M%S")
+
+        cmd = ""
+        try:
+            cmd = "update ProcessUpdateTimes set UpdateTime = {} where Process = 'PlayerInfo'".format(update_time)
+            fantasy.post_log_msg(cmd)
+            bdb.update(cmd)
+        except Exception as ex:
+            print(str(ex))
+            inst.push("DB error in player_info", str(ex))
+            inst.tweet("DB error in player_info\n" + cmd + ":\n" + str(ex))
+
         if current_time >= end_day_time and run_end_day_process:
             # ESPNPlayerDataCurrent -> ESPNPlayerDataHistory
             eod_process()
-            run_end_day_process = 0
+            run_end_day_process = False
 
         if current_time >= 235500:
-            exit(0)
+            try:
+                bdb.update("update ProcessUpdateTimes set Active = 0 where Process = 'PlayerInfo'")
+            except Exception as ex:
+                print(str(ex))
+            break
 
         if begin_day_time <= current_time and run_begin_day_process:
             begin_day_process()
-            run_begin_day_process = 0
+            run_begin_day_process = False
 
-        run_function(fantasy.refresh_rosters())
+        tools.tryfunc(fantasy.refresh_rosters)
 
         if run_roster_suite:
-            run_function(fantasy.tweet_add_drops())
-            run_function(fantasy.tweet_daily_schedule())
-            run_function(fantasy.tweet_sprk_on_opponents())
-            run_function(fantasy.tweet_fran_on_opponents())
-            run_function(fantasy.tweet_oppo_rosters())
+            tools.tryfunc(fantasy.tweet_add_drops)
+            tools.tryfunc(fantasy.tweet_daily_schedule)
+            tools.tryfunc(fantasy.tweet_sprk_on_opponents)
+            tools.tryfunc(fantasy.tweet_fran_on_opponents)
+            tools.tryfunc(fantasy.tweet_oppo_rosters)
             ##
-            run_function(fantasy.refresh_statcast_schedule())
-            run_function(fantasy.refresh_espn_schedule())
-            run_roster_suite = 0
+            tools.tryfunc(fantasy.refresh_statcast_schedule)
+            tools.tryfunc(fantasy.refresh_espn_schedule)
+            run_roster_suite = False
 
         # Retrieve baseline information from ESPNPlayerDataCurrent
-        run_function(fantasy.get_db_player_info())
+        tools.tryfunc(fantasy.get_db_player_info)
 
         # ESPNPlayerDataCurrent, ESPNPlayerDataHistory, StatusChanges
         # Retrieve fron ESPN API
-        run_function(fantasy.get_espn_player_info())
+        tools.tryfunc(fantasy.get_espn_player_info)
 
         # Check against ESPNPlayerDataCurrent table and make changes
         # Now done in get_espn_player_info: run_function(fantasy.get_player_info_changes())
 
-        run_function(fantasy.send_push_msg_list())
+        tools.tryfunc(fantasy.send_push_msg_list)
 
         # Rosters and RosterChanges
-        run_function(fantasy.run_transactions())
+        tools.tryfunc(fantasy.run_transactions)
 
         print("Sleep at " + formatted_date_time)
-        num1 = random.randint(15, 25)
+        num1 = random.randint(MIN_SLEEP, MAX_SLEEP)
         print("Sleep for " + str(num1) + " seconds")
         time.sleep(num1)
 
+    exit(0)
 
 if __name__ == "__main__":
     main()

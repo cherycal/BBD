@@ -1,21 +1,11 @@
 __author__ = 'chance'
 
-import json
-import os
 import sys
-import time
-import urllib.request
-from datetime import datetime
-import pandas as pd
 
-sys.path.append('./modules')
-from bs4 import BeautifulSoup
-import requests
+sys.path.append('../modules')
 import pandas as pd
-import tools
 import time
 import push
-from datetime import timedelta, datetime, date
 
 inst = push.Push()
 

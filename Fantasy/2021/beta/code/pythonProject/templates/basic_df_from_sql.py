@@ -1,7 +1,6 @@
 import sys
 
-sys.path.append('./modules')
-import push
+sys.path.append('../modules')
 import pandas as pd
 import fantasy
 import dataframe_image as dfi

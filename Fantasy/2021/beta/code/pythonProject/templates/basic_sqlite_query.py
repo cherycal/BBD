@@ -1,6 +1,6 @@
 __author__ = 'chance'
 import sys
-sys.path.append('./modules')
+sys.path.append('../modules')
 import sqldb
 
 # My python class: sqldb.py

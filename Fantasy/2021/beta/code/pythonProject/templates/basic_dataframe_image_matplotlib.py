@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from pandas.plotting import table
-import numpy as np
 
 df = pd.DataFrame(np.random.rand(6,4))
 ax = plt.subplot(111, frame_on=False) # no visible frame

@@ -1,12 +1,10 @@
 __author__ = 'chance'
 
-import os.path
-from os import path
 import sys
+
 import pandas as pd
 
-sys.path.append('./modules')
-import sqldb
+sys.path.append('../modules')
 import fantasy
 
 # My python class: sqldb.py
