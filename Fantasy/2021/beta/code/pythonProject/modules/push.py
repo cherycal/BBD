@@ -1,36 +1,57 @@
 __author__ = 'chance'
 
-from pyfcm import FCMNotification
+import inspect
+import logging
+import os
 import time
 from datetime import datetime
-import tweepy
+
+import colorlog
 import dataframe_image as dfi
 import pandas as pd
-import inspect
-
+import tweepy
+from pyfcm import FCMNotification
 
 # APP ID: 20456708
 
-APIKEY = "xFROaRKqUGekYP7XtybD5SKic"
+APIKEY = os.environ.get('APIKEY')
+APISECRETKEY = os.environ.get('APISECRETKEY')
+ACCESSTOKEN = os.environ.get('ACCESSTOKEN')
+ACCESSTOKENSECRET = os.environ.get('ACCESSTOKENSECRET')
+API_KEY = os.environ.get('api_key')
+REG_ID = os.environ.get('reg_id')
 
-APISECRETKEY = "9qQGFm27JDOCJtMs3SnlBPRhOeAv28ujqy6qXoUbB8t8q1zeQr"
+def get_logger(logfilename = 'push_default.log',
+               logformat = '%(asctime)s:%(levelname)s'
+                           ':%(funcName)s:%(lineno)d:%(message)s:%(pathname)s\n'):
 
-ACCESSTOKEN = "1375606437410299905-47aXO2g5nwt5K0p1Qw69iVKJ5Mz4wN"
+    bold_seq = '\033[1m'
+    colorlog_format = (
+        f'{bold_seq} '
+        '%(log_color)s '
+        f'{logformat}'
+    )
+    colorlog.basicConfig(format=colorlog_format)
 
-ACCESSTOKENSECRET = "pF84t0Xukgaaf4QL6khVTuBjsLBMdfH0ibuJSGa0CdUnr"
+    logger_instance = logging.getLogger(__name__)
+    logger_instance.setLevel(logging.DEBUG)
 
+    formatter = logging.Formatter(logformat)
+    file_handler = logging.FileHandler(logfilename)
+    file_handler.setFormatter(formatter)
+    logger_instance.addHandler(file_handler)
+
+    return logger_instance
+
+def set_tweepy(self, *args, **kwargs):
+    api = tweepy.API(self.auth)
+    return api
 
 class Push(object):
     MAX_MSG_LENGTH: int
-
-    # message_body: str
-
-    def __init__(self):
-        api_key = "AAAARAUK_1U:APA91bEWDFmhqWVEicI1xWh7R41lB8DGyjiRrLlfaa" \
-                  "-CqLtMLvbGzLtL6nCBYgXVKKuiLas8hsX6YnHFQUoWqHZS_crAssz2B" \
-                  "-msCzOAYqWqsTuc9AgPnTJL0OtPnEjBG9FC4hFd9339"
-        reg_id = "fyOoafoZVl8:APA91bHk3CwpzBXTKbEZiFs6i57NZqnSDPrkA0vZI" \
-                 "-rUbMmK6t1ov9bhqFULtLOUAfi0BXs0y4VCoRiu1nBdo82NK7iDCcIkMnV7eqpTDOP3a9X3bmMCPb4gk0OSIGPl5UANaOKFQjNl"
+    def __init__(self, logger_instance=None, *args, **kwargs):
+        api_key = API_KEY
+        reg_id = REG_ID
         self.push_service = FCMNotification(api_key=api_key)
         self.registration_id = reg_id
         self.message_title = "Python test 1"
@@ -43,9 +64,14 @@ class Push(object):
         self.str = ""
         self.auth = tweepy.OAuthHandler(APIKEY, APISECRETKEY)
         self.auth.set_access_token(ACCESSTOKEN, ACCESSTOKENSECRET)
+        if logger_instance is None:
+            logname = './logs/pushlog.log'
+            self.logger_instance = get_logger(logfilename=logname)
+        else:
+            self.logger_instance = logger_instance
 
         # Create API object
-        self.api = tweepy.API(self.auth)
+        self.api = set_tweepy(self, *args, **kwargs)
 
     def print_calling_function(self):
         print('\n')
@@ -66,6 +92,12 @@ class Push(object):
                                                      message_body=body, sound="whisper.mp3",
                                                      badge="Test2")
         return res
+
+    def get_twitter_api(self):
+        return self.api
+
+    def get_twitter_auth(self):
+        return self.auth
 
     def tweet(self, msg):
         ts = datetime.now()  # current date and time
@@ -126,6 +158,7 @@ class Push(object):
                 full_msg += str(msg)
         # Push the remainder out
         print("Message remainder:\n" + full_msg)
+        self.logger_instance.info(full_msg)
         self.push(title, full_msg)
         self.tweet(full_msg)
         return
