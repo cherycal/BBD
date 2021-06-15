@@ -1,10 +1,11 @@
 import sys
 
-sys.path.append('./modules')
+sys.path.append('../modules')
 import sqldb
 import push
 from datetime import date, datetime
 from datetime import timedelta
+#import datetime
 
 inst = push.Push()
 bdb = sqldb.DB('Baseball.db')
@@ -23,5 +24,29 @@ date_time = now.strftime("%Y%m%d%H%M%S")
 out_date = now.strftime("%Y%m%d")
 
 # timedelta
+DAYS_AGO = 5
+print("Time delta:")
 today = date.today()
 yesterday = today - timedelta(days=1)
+start_date = today - timedelta(days=DAYS_AGO)
+# print(f'Today: {today.strftime("%Y%m%d")}')
+# print(f'Yesterday: {yesterday.strftime("%Y%m%d")}')
+#range of dates
+print("Range of dates:")
+#date1 = '2021-03-31'
+#date2 = '2021-05-12'
+#start = datetime.strptime(start_date, '%Y-%m-%d')
+#end = datetime.strptime(today, '%Y-%m-%d')
+step = timedelta(days=1)
+while start_date <= today:
+    print(start_date.strftime("%Y%m%d"))
+    start_date += step
+
+
+
+
+# range of dates
+# print("Range of dates")
+# start_date = date(2011, 5, 3)
+# end_date = date(2011, 5, 10)
+# [print(date.fromordinal(i)) for i in range(start_date.toordinal(), end_date.toordinal())]

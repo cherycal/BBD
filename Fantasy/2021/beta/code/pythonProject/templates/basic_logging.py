@@ -6,7 +6,16 @@ from pathlib import Path
 sys.path.append('../modules')
 import tools
 import colorlog
+import sqldb
 
+# My python class: sqldb.py
+
+mode = "TEST"
+
+if mode == "TEST":
+    bdb = sqldb.DB('BaseballTest.db')
+else:
+    bdb = sqldb.DB('Baseball.db')
 
 p = Path.cwd()
 log_dir = p / 'logs'
@@ -32,7 +41,7 @@ print("Log file is {} ".format(log_file))
 
 def main():
 	logger_instance = tools.get_logger()
-	logger_instance.debug("Hello, debug")
+	#logger_instance.debug("Hello, debug")
 
 	logformat = '%(log_color)s%(asctime)s:%(levelname)s:%(funcName)s:%(lineno)d:%(message)s:%(pathname)s\n'
 	logger = colorlog.getLogger()
@@ -42,11 +51,25 @@ def main():
 	handler.setFormatter(colorlog.ColoredFormatter(logformat))
 	logger.addHandler(handler)
 
-	logger.debug("Debug message")
-	logger.info("Information message")
-	logger.warning("Warning message")
-	logger.error("Error message")
-	logger.critical("Critical message")
+	#logger.debug("Debug message")
+	# logger.info("Information message")
+	# logger.warning("Warning message")
+	# logger.error("Error message")
+	# logger.critical("Critical message")
+
+	try:
+		names, c = bdb.select_w_cols("SELECT * FROM ESPNLeague")
+
+		# names = list(map(lambda x: x[0], c.description))
+		print(names)
+		for t in c:
+			print(t)
+	except Exception as ex:
+		logger.exception('Exception found')
+
+	bdb.close()
+
+
 
 	# log = logging.getLogger("my-logger")
 	# logging.basicConfig(filename=log_filename,
