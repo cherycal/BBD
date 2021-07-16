@@ -73,6 +73,7 @@ class Push(object):
         # Create API object
         self.api = set_tweepy(self, *args, **kwargs)
 
+
     def print_calling_function(self):
         print('\n')
         print("Printing calling information (fantasy.py)")
@@ -99,12 +100,13 @@ class Push(object):
     def get_twitter_auth(self):
         return self.auth
 
+
     def tweet(self, msg):
         ts = datetime.now()  # current date and time
-        formatted_date_time = ts.strftime("%I%M%S.%f")[0:9]
+        formatted_date_time = ts.strftime("%I%M")
         if msg != "" and len(msg) < self.MAX_MSG_LENGTH:
             try:
-                self.api.update_status(msg + " (" + str(formatted_date_time) + ")")
+                self.api.update_status(msg + " " + str(len(msg)) + "-" + str(formatted_date_time))
             except Exception as ex:
                 print("try failed" + ": " + str(ex))
                 self.print_calling_function()
