@@ -1,10 +1,12 @@
 __author__ = 'chance'
 
-import sqlite3
-import tools
 import inspect
-import push
+import sqlite3
 import time
+
+import push
+import tools
+
 
 # import logging
 
@@ -58,6 +60,25 @@ class DB:
 		self.conn.commit()
 		return self.cursor.fetchall()
 
+	def select_plus(self, query, verbose=0):
+		ret_dict = dict()
+		if verbose:
+			print_calling_function(query)
+		self.cursor.execute(query)
+		self.conn.commit()
+		col_headers = list(map(lambda x: x[0], self.cursor.description))
+		rows = list()
+		dicts = list()
+		for row in self.cursor.fetchall():
+			rows.append(row)
+			res = dict(zip(col_headers, list(row)))
+			dicts.append(res)
+		ret_dict['column_names'] = col_headers
+		ret_dict['rows'] = rows
+		ret_dict['dicts'] = dicts
+		return ret_dict
+
+
 	def select_w_cols(self, query, verbose=0):
 		if verbose:
 			print_calling_function(query)
@@ -95,25 +116,32 @@ class DB:
 			print(str(ex))
 		return
 
-	def insert_list(self, table, in_list):
+	def insert_list(self, table, in_list, verbose=0):
 		# inserts one row given a list of values that *precisely* matches the columns in a table
 		# print_calling_function()
 		# print(table)
 		# print(in_list)
-		cursor = self.conn.execute('select * from ' + table)
-		out_list = list(map(lambda x: x[0], cursor.description))
-		cols = self.string_from_list(out_list)
-		# print(cols)
-		question_mark_string = "("
-		for _ in in_list:
-			question_mark_string += "?,"
-		question_mark_string = question_mark_string[: -1] + ")"
+
 		try:
-			self.conn.execute("INSERT INTO " + table +
-			                  " ( " + cols + " ) VALUES " +
-			                  question_mark_string, in_list)
+			cursor = self.conn.execute('select * from ' + table)
+			out_list = list(map(lambda x: x[0], cursor.description))
+			cols = self.string_from_list(out_list)
+			# print(cols)
+			question_mark_string = "("
+			for _ in in_list:
+				question_mark_string += "?,"
+			question_mark_string = question_mark_string[: -1] + ")"
+			cmd = "INSERT INTO " + table + " ( " + cols + " ) VALUES (" + self.string_from_list2(in_list) + ")"
+			if verbose:
+				print(cmd)
+			# self.conn.execute("INSERT INTO " + table +
+			#                   " ( " + cols + " ) VALUES " +
+			#                   question_mark_string, in_list)
+			self.cmd(cmd, verbose)
 			# self.cursor.execute(list)
 			self.conn.commit()
+			if verbose:
+				print(f'inserted {in_list} into {table}')
 		except Exception as ex:
 			print(str(ex))
 
@@ -156,10 +184,10 @@ class DB:
 				if verbose:
 					print("DB command succeeded: " + command)
 			except Exception as ex:
-				print(str(ex))
+				print(str(ex) + ": " + command)
 				tries += 1
 				self.push_instance.push("DB command failed", str(ex) + ": " + command)
-				time.sleep(5)
+				time.sleep(.5)
 		if tries == max_tries:
 			print("DB command failed: " + command)
 			print_calling_function(command)
@@ -168,8 +196,25 @@ class DB:
 		if verbose:
 			print(command, data)
 			print_calling_function(command)
-		self.cursor.execute(command, data)
-		self.conn.commit()
+		tries = 0
+		max_tries = 5
+		incomplete = 1
+		while incomplete and tries < max_tries:
+			try:
+				self.cursor.execute(command, data)
+				self.conn.commit()
+				incomplete = 0
+				if verbose:
+					print("DB command succeeded: " + command)
+			except Exception as ex:
+				print(str(ex))
+				tries += 1
+				self.push_instance.push("DB command failed", str(ex) + ": " + command)
+				time.sleep(2.5)
+
+		if tries == max_tries:
+			print("DB command failed: " + command)
+			print_calling_function(command)
 
 	def close(self):
 		print("Closing " + self.db)
@@ -180,5 +225,13 @@ class DB:
 		out_string = ""
 		for i in in_list:
 			out_string += i + ","
+		out_string = out_string[:-1]
+		return out_string
+
+	def string_from_list2(self, in_list):
+		self.msg = ""
+		out_string = ""
+		for i in in_list:
+			out_string += "\"" + i + "\","
 		out_string = out_string[:-1]
 		return out_string
