@@ -24,10 +24,10 @@ import sqldb
 bdb = sqldb.DB('Baseball.db')
 
 plat = tools.get_platform()
-#print(plat)
+# print(plat)
 cur_dir = Path.cwd()
 data_dir = cur_dir / 'data'
-data_dir.mkdir(mode=0o755,exist_ok=True)
+data_dir.mkdir(mode=0o755, exist_ok=True)
 
 
 def daterange(date1, date2):
@@ -35,7 +35,18 @@ def daterange(date1, date2):
 		yield date1 + timedelta(n)
 
 
-# https://baseballsavant.mlb.com/statcast_search?hfPT=&hfAB=single%7Cdouble%7Ctriple%7Chome%5C.%5C.run%7Cfield%5C.%5C.out%7Cstrikeout%7Cstrikeout%5C.%5C.double%5C.%5C.play%7Cwalk%7Cdouble%5C.%5C.play%7Cfield%5C.%5C.error%7Cgrounded%5C.%5C.into%5C.%5C.double%5C.%5C.play%7Cfielders%5C.%5C.choice%7Cfielders%5C.%5C.choice%5C.%5C.out%7Cforce%5C.%5C.out%7Chit%5C.%5C.by%5C.%5C.pitch%7Cintent%5C.%5C.walk%7Csac%5C.%5C.bunt%7Csac%5C.%5C.bunt%5C.%5C.double%5C.%5C.play%7Csac%5C.%5C.fly%7Csac%5C.%5C.fly%5C.%5C.double%5C.%5C.play%7Ctriple%5C.%5C.play%7C&hfGT=R%7C&hfPR=&hfZ=&stadium=&hfBBL=&hfNewZones=&hfPull=&hfC=&hfSea=2019%7C&hfSit=&player_type=batter&hfOuts=&opponent=&pitcher_throws=&batter_stands=&hfSA=&game_date_gt=2019-07-17&game_date_lt=2019-07-17&hfInfield=&team=&position=&hfOutfield=&hfRO=&home_road=&hfFlag=&hfBBT=&metric_1=&hfInn=&min_pitches=0&min_results=0&group_by=name-event&sort_col=xwoba&player_event_sort=api_p_release_speed&sort_order=desc&min_pas=0&chk_event_launch_speed=on
+# https://baseballsavant.mlb.com/statcast_search?hfPT=&hfAB=single%7Cdouble%7Ctriple
+# %7Chome%5C.%5C.run%7Cfield%5C.%5C.out%7Cstrikeout%7Cstrikeout%5C.%5C.double%5C.%5C.play
+# %7Cwalk%7Cdouble%5C.%5C.play%7Cfield%5C.%5C.error%7Cgrounded%5C.%5C.into%5C.%5C.double
+# %5C.%5C.play%7Cfielders%5C.%5C.choice%7Cfielders%5C.%5C.choice%5C.%5C.out%7Cforce
+# %5C.%5C.out%7Chit%5C.%5C.by%5C.%5C.pitch%7Cintent%5C.%5C.walk%7Csac%5C.%5C.bunt
+# %7Csac%5C.%5C.bunt%5C.%5C.double%5C.%5C.play%7Csac%5C.%5C.fly%7Csac%5C.%5C.fly
+# %5C.%5C.double%5C.%5C.play%7Ctriple%5C.%5C.play%7C&hfGT=R%7C&hfPR=&hfZ=&stadium=
+# &hfBBL=&hfNewZones=&hfPull=&hfC=&hfSea=2019%7C&hfSit=&player_type=batter&hfOuts=
+# &opponent=&pitcher_throws=&batter_stands=&hfSA=&game_date_gt=2019-07-17
+# &game_date_lt=2019-07-17&hfInfield=&team=&position=&hfOutfield=&hfRO=&home_road=
+# &hfFlag=&hfBBT=&metric_1=&hfInn=&min_pitches=0&min_results=0&group_by=name-event
+# &sort_col=xwoba&player_event_sort=api_p_release_speed&sort_order=desc&min_pas=0&chk_event_launch_speed=on
 
 
 # Pitch speed and spin rate
@@ -83,17 +94,16 @@ def single_day(**kwargs):
 	url_details_text = url_base + url_csv_text + url_body + url_checks + url_details
 	url_text = url_base + url_basic_search_text + url_body + url_checks + url_footer
 
-	#print(url_details_text)
-	#print(url_text)
+	# print(url_details_text)
+	# print(url_text)
 
 	print("sleeping ....")
 	time.sleep(.5)
 
-
 	r = requests.get(url_details_text, allow_redirects=True)
 	filename = dirname + "_events_daily.csv"
 	csvfile = data_dir / filename
-	#print(csvfile)
+	# print(csvfile)
 	open(csvfile, 'wb').write(r.content)
 	df = pd.read_csv(csvfile, encoding='unicode_escape')
 
@@ -111,10 +121,14 @@ def single_day(**kwargs):
 
 	filename = dirname + "_events_daily.csv"
 	csvfile2 = data_dir / filename
-	#csvfile2 = "C:\\Users\\chery\\Documents\\BBD\\Statcast\\" + dirname + "\\" + "events_daily2.csv"
+	# csvfile2 = "C:\\Users\\chery\\Documents\\BBD\\Statcast\\" + dirname + "\\" + "events_daily2.csv"
 
-	df2 = pd.read_html(url_text)[0]
-	df2.to_csv(csvfile2, index=False)
+	try:
+		df2 = pd.read_html(url_text)[0]
+		df2.to_csv(csvfile2, index=False)
+	except Exception as ex:
+		print(str(ex))
+		return 0
 
 	if os.path.getsize(csvfile2) > 0:
 		df2 = pd.read_csv(csvfile2, encoding='unicode_escape')
@@ -388,7 +402,7 @@ def single_year(year, bp, dates=(4, 6, 4, 6)):
 		filename = bpdir + "_events_combined_daily.csv"
 		outfile = data_dir / filename
 
-		#outfile = "C:\\Users\chery\Documents\BBD\Statcast\\" + bpdir + "\\" + "events_combined_daily.csv"
+		# outfile = "C:\\Users\chery\Documents\BBD\Statcast\\" + bpdir + "\\" + "events_combined_daily.csv"
 		if isinstance(df, pd.DataFrame):
 			df.to_csv(outfile, index=False)
 		dt8 = int(str.replace(str(dt), "-", ""))
@@ -413,12 +427,12 @@ def main():
 	# single_year(2016, "bat", (5, 1, 5, 1))
 	# single_year(2016, "pitch")
 	today = date.today()
-	yest = today - timedelta(days=1)
+	past = today - timedelta(days=3)
 
 	for year in [2021]:
 		for bp in ["bat", "pitch"]:
-			#single_year(year, bp, (4, 18, 4, 18))
-			single_year(year, bp, (yest.month, yest.day, yest.month, yest.day))
+			# single_year(year, bp, (4, 18, 4, 18))
+			single_year(year, bp, (past.month, past.day, today.month, today.day))
 
 
 if __name__ == "__main__":
