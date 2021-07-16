@@ -61,6 +61,11 @@ class DB:
 		return self.cursor.fetchall()
 
 	def select_plus(self, query, verbose=0):
+		# returns:
+		# - 'column_names': a list of column names
+		# - 'rows': rows in query, ordered by columns as described in 'column_names'
+		# - 'dicts': a list of dictionaries, each item in list is a
+		#    dict representing a row in the query as key/value pairs ( column_name / row value ) 
 		ret_dict = dict()
 		if verbose:
 			print_calling_function(query)

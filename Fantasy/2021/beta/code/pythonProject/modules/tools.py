@@ -45,17 +45,10 @@ def get_logger(logfilename = 'test.log',
     logger_instance.setLevel(logging.DEBUG)
 
     formatter = logging.Formatter(logformat)
-    #stream_handler = colorlog.StreamHandler()
-
     file_handler = logging.FileHandler(logfilename)
-    #file_handler.setLevel(logging.ERROR)
-
     file_handler.setFormatter(formatter)
-
-    #stream_handler.setFormatter(formatter)
-
     logger_instance.addHandler(file_handler)
-    #logger_instance.addHandler(stream_handler)
+
     return logger_instance
 
 
@@ -117,3 +110,24 @@ def tryfunc(func):
                 traceback.print_exc(file=sys.stdout)
                 print("-" * 60)
                 push_instance.push("Attempt failed:", f'Error: {ex}\nFunction: {func}')
+
+def try_wrap(func):
+    def tryfunction(*args, **kwargs):
+        tries = 0
+        max_tries = 3
+        while tries < max_tries:
+            try:
+                return func(*args, **kwargs)
+            except Exception as ex:
+                print(str(ex))
+                # push_instance.push("Attempt failed", str(ex))
+                tries += 1
+                time.sleep(2)
+        if tries == max_tries:
+            print("Process failed: ")
+            print("Exception in user code:")
+            print("-" * 60)
+            traceback.print_exc(file=sys.stdout)
+            print("-" * 60)
+
+    return tryfunction
