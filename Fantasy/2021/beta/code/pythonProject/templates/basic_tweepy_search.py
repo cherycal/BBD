@@ -33,5 +33,7 @@ tweets_list = api.search(q_str, count=20, lang='en', result_type='recent')
 
 for tweet in tweets_list:
     print("--------------")
-    print(tweet)
+    print(tweet.user.screen_name)
+    print(tweet.created_at)
     print(tweet._json['text'])
+    print("")

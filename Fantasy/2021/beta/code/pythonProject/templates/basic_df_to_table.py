@@ -51,7 +51,7 @@ df = pd.DataFrame(entries, columns=column_names)
 table_name = "ESPNKeepers"
 df.to_sql(table_name, bdb.conn, if_exists='append', index=False)
 
-
+bdb.close()
 # for index, row in df.iterrows():
 #     print(index)
 #     print(row)
