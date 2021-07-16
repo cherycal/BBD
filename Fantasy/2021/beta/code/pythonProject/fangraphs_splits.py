@@ -11,7 +11,7 @@ import time
 import push
 import sqldb
 from pathlib import Path
-from datetime import date, datetime
+from datetime import datetime
 
 now = datetime.now()
 
@@ -86,7 +86,7 @@ def do_split(bat_pitch, left_right, from_yr, to_yr):
 	      str(stat_group) + "&startDate=" + str(from_yr) + "-03-01&endDate=" + str(to_yr) + \
 	      "-11-01&players=&filter=" + filter_indicator + "%7Cgt%7C1&groupBy=season&sort=-1,1"
 
-	not_loaded = 1
+	not_loaded = True
 	raw_data = ""
 
 	while not_loaded:
@@ -100,7 +100,7 @@ def do_split(bat_pitch, left_right, from_yr, to_yr):
 			results = soup.find_all('a', attrs={"class": "data-export"})
 			# print(results)
 			raw_data = results[0]['href']
-			not_loaded = 0
+			not_loaded = False
 		except Exception as ex:
 			print("Retrieval failed: " + str(ex))
 
