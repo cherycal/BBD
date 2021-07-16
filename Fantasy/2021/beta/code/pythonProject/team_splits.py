@@ -1,6 +1,5 @@
 __author__ = 'chance'
 
-import string
 import sys
 
 sys.path.append('./modules')
@@ -8,7 +7,7 @@ import pandas as pd
 import time
 import push
 from pathlib import Path
-from datetime import date, datetime
+from datetime import datetime
 
 p = Path.cwd()
 data_dir = p / 'data'
@@ -92,6 +91,8 @@ def do_splits(split_name, yr):
 	bdb.update("Update TeamSplits set Team = 'SF' where Team = 'SFG'")
 	bdb.update("Update TeamSplits set Team = 'SD' where Team = 'SDP'")
 	bdb.update("Update TeamSplits set Team = 'KC' where Team = 'KCR'")
+
+	bdb.cmd("INSERT INTO TeamSplitsHistory SELECT * FROM TeamSplits", True)
 
 	print("done")
 
