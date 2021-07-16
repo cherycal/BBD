@@ -1,18 +1,25 @@
+import re
 import sys
 import time
 from datetime import datetime
+from operator import itemgetter
+
+import pytz
+import unidecode
 
 sys.path.append('./modules')
 import push
 import fantasy
 import inspect
 import random
-import tools
+import os
+import traceback
+import pandas as pd
 
 mode = "PROD"
 
 inst = push.Push()
-fantasy = fantasy.Fantasy(mode)
+fantasy = fantasy.Fantasy(mode, caller=os.path.basename(__file__))
 bdb = fantasy.get_db()
 
 now = datetime.now()  # current date and time
@@ -23,6 +30,26 @@ integer_today = int(out_date)
 string_today = out_date
 integer_yesterday = integer_today - 1
 string_yesterday = str(integer_yesterday)
+
+def trywrap(func):
+    tries = 0
+    max_tries = 4
+    incomplete = True
+    while incomplete and tries < max_tries:
+        try:
+            func()
+            incomplete = False
+        except Exception as ex:
+            print(str(ex))
+            tries += 1
+            time.sleep(.5)
+            if tries == max_tries:
+                print("Process failed: ")
+                print("Exception in user code:")
+                print("-" * 60)
+                traceback.print_exc(file=sys.stdout)
+                print("-" * 60)
+                inst.push("Attempt failed:", f'Error: {ex}\nFunction: {func}')
 
 
 def print_calling_function():
@@ -36,47 +63,118 @@ def print_calling_function():
     return
 
 
+def process_oddsline(text):
+
+    splittext = re.split('(SF)|(Giants)|'
+                         '(SD)|(Padres)|'
+                         '(HOU)|(Astros)|'
+                         '(BAL)|(Orioles)|'
+                         '(KC)|(Royals)|'
+                         '(NY)|(Yankees)|'
+                         '(Mets)|'
+                         '(BOS)|(Red Sox)|'
+                         '(TB)|(Rays)|'
+                         '(TOR)|(Blue Jays)|'
+                         '(ATL)|(Braves)|'
+                         '(OAK)|(Athletics)|'
+                         '(TEX)|(Rangers)|'
+                         '(LA)|(Angels)|'
+                         '(Dodgers)|'
+                         '(OAK)|(Athletics)|'
+                         '(SEA)|(Mariners)|'
+                         '(COL)|(Rockies)|'
+                         '(MIL)|(Brewers)|'
+                         '(ARI)|(Diamondbacks)|'
+                         '(MIN)|(Twins)|'
+                         '(CHI)|(White Sox)|(Cubs)|'
+                         '(PHI)|(Phillies)|'
+                         '(PIT)|(Pirates)|'
+                         '(WAS)|(Nationals)|'
+                         '(BOS)|(Red Sox)|'
+                         '(STL)|(Cardinals)|'
+                         '(MIA)|(Marlins)|'
+                         '(CLE)|(Indians)|'
+                         '(CIN)|(Reds)|'
+                         '(DET)|(Tigers)|'
+                         ' +|\xa0|(-\d+\.?\d+)|\+', text)
+    # print(text)
+    # print(splittext)
+    res = [i for i in splittext if i]
+    return res
+
+
+def run_odds():
+    utc_now = datetime.now(pytz.UTC)
+
+    odds_date8 = utc_now.strftime("%Y%m%d")
+    odds_update_time = utc_now.strftime("%Y%m%d%H%M%S")
+
+    url = "https://sportsbook.draftkings.com/leagues/baseball/2003?category=game-lines-&subcategory=game"
+    dfs = pd.read_html(url)
+    tbl = dfs[0]
+
+    entries = []
+    column_names = ["date", "name", "time", "Tm", "Team", "OU", "ML", "UpdateTime"]
+    table_name = "Odds"
+
+    for i in dfs:
+        oddslines = i.iloc[:, 0:4]
+        for oddsline in oddslines.values:
+            oddslist = process_oddsline(' '.join(map(str, oddsline)))
+            if len(oddslist) > 10:
+                # print(oddslist)
+                if any(char.isdigit() for char in oddslist[5]):
+                    name = f'{oddslist[3]} {oddslist[4]}'
+                else:
+                    name = f'{oddslist[3]} {oddslist[4]} {oddslist[5]}'
+                name = unidecode.unidecode(name)
+                odds = list(itemgetter(0, 1, 2, -3, -1)(oddslist))
+                odds.insert(0, name)
+                odds.insert(0, odds_date8)
+                odds.append(odds_update_time)
+                #print(f'{odds}')
+                bdb.insert_list(table_name, odds, verbose=False)
+                time.sleep(.25)
+                entries.append(odds)
+
+
 def begin_day_process():
     ts = datetime.now()  # current date and time
     out_time = ts.strftime("%Y%m%d-%H%M%S")
-    print(out_time)
+    # print(out_time)
 
     fantasy.get_db_player_info()
 
-    #command = ""
-    #tries = 0
+    # command = ""
+    # tries = 0
     TRIES_BEFORE_QUITTING = 3
-    SLEEP = 5
+    SLEEP = 1
 
     insert_many_list = fantasy.get_espn_player_info()
 
     tries = 0
-    passed = 0
+    passed = False
 
     while tries < TRIES_BEFORE_QUITTING:
         tries += 1
         try:
-            #print("First row of insert many list:")
-            #print(insert_many_list[0])
-            # print("Length of insert many list:")
-            #print(len(insert_many_list))
             if len(insert_many_list) > 3000:
                 command = "Delete from ESPNPlayerDataCurrent"
                 bdb.delete(command)
-                #print("\nDelete ESPNPlayerDataCurrent worked\n")
+                time.sleep(.5)
                 bdb.insert_many("ESPNPlayerDataCurrent", insert_many_list)
-                #print("\ninsert ESPNPlayerDataCurrent worked\n")
-                time.sleep(2)
-                passed = 1
+                time.sleep(.5)
+                passed = True
                 break
             else:
                 print("Skipping ESPNPlayerDataCurrent Refresh phase")
                 time.sleep(2)
-                passed = 1
+                passed = True
                 break
         except Exception as ex:
             inst.push("DATABASE ERROR - try " + str(tries) + " at " + str(date_time),
                       "Insert ESPNPlayerDataCurrent" + ": " + str(ex))
+            fantasy.logger_exception(f'begin_day_process ERROR:')
 
         time.sleep(SLEEP)
 
@@ -88,14 +186,12 @@ def begin_day_process():
                   "insert ESPNPlayerDataCurrent, espn_player_info")
 
 
-
-
 def eod_process():
     command = "delete from ESPNPlayerDataHistory where Date = '" + str(date8) + "'"
     try:
         bdb.delete(command)
     except Exception as ex:
-        print(str(ex))
+        fantasy.logger_exception(f'DB error in cmd {command}: Exception: {ex}')
 
     tries = 0
     passed = 0
@@ -103,14 +199,21 @@ def eod_process():
     SLEEP = 2.5
     while tries < TRIES_BEFORE_QUITTING:
         tries += 1
+        command = "insert into ESPNPlayerDataHistory select * from ESPNPlayerDataCurrent"
         try:
-            command = "insert into ESPNPlayerDataHistory select * from ESPNPlayerDataCurrent"
             bdb.insert(command)
             passed = 1
             break
         except Exception as ex:
             inst.push("DATABASE ERROR - try " + str(tries) + " at " + str(date_time), command + ": " + str(ex))
+            fantasy.logger_exception(f'DB error in cmd {command}: Exception: {ex}')
         time.sleep(SLEEP)
+
+    try:
+        run_odds()
+    except Exception as ex:
+        print(ex)
+    fantasy.refresh_starter_history()
 
     if not passed:
         inst.push("DB ERROR eod_process(): " + str(date_time), "espn_player_info.py")
@@ -122,7 +225,7 @@ def eod_process():
 
 # noinspection PyUnusedLocal
 def run_function(function, name="none given"):
-    #print("Function: " + str(inspect.stack()[-2].code_context))
+    # print("Function: " + str(inspect.stack()[-2].code_context))
     return
 
 
@@ -135,34 +238,36 @@ def main():
     MIN_SLEEP = 15
     MAX_SLEEP = 25
 
-
     try:
         bdb.update("update ProcessUpdateTimes set Active = 1 where Process = 'PlayerInfo'")
     except Exception as ex:
-        print(str(ex))
+        fantasy.logger_exception(f'update ProcessUpdateTimes ERROR')
 
     while True:
         ts = datetime.now()  # current date and time
         formatted_date_time = ts.strftime("%Y%m%d-%H%M%S")
         time6 = ts.strftime("%H%M%S")
         current_time = int(time6)
-        print("Start at " + formatted_date_time)
+        print(f'Start at {formatted_date_time}')
 
         update_time = ts.strftime("%Y%m%d%H%M%S")
 
         cmd = ""
         try:
             cmd = "update ProcessUpdateTimes set UpdateTime = {} where Process = 'PlayerInfo'".format(update_time)
-            fantasy.post_log_msg(cmd)
             bdb.update(cmd)
         except Exception as ex:
             print(str(ex))
             inst.push("DB error in player_info", str(ex))
             inst.tweet("DB error in player_info\n" + cmd + ":\n" + str(ex))
+            # fantasy.post_log_msg(f'DB error in cmd {cmd}: Exception: {ex}')
+            fantasy.logger_exception(f'DB error in cmd {cmd}: Exception: {ex}')
 
         if current_time >= end_day_time and run_end_day_process:
             # ESPNPlayerDataCurrent -> ESPNPlayerDataHistory
+            fantasy.logger_instance.debug(f'Start eod_process at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
             eod_process()
+            fantasy.logger_instance.debug(f'End eod_process at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
             run_end_day_process = False
 
         if current_time >= 235500:
@@ -173,43 +278,59 @@ def main():
             break
 
         if begin_day_time <= current_time and run_begin_day_process:
+            fantasy.logger_instance.debug(f'Start begin_day_process at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
             begin_day_process()
+            fantasy.logger_instance.debug(f'End begin_day_process at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
             run_begin_day_process = False
 
-        tools.tryfunc(fantasy.refresh_rosters)
+        print(f'refresh_rosters at  {datetime.now().strftime("%Y%m%d-%H%M%S")}')
+        fantasy.refresh_rosters()
 
         if run_roster_suite:
-            tools.tryfunc(fantasy.tweet_add_drops)
-            tools.tryfunc(fantasy.tweet_daily_schedule)
-            tools.tryfunc(fantasy.tweet_sprk_on_opponents)
-            tools.tryfunc(fantasy.tweet_fran_on_opponents)
-            tools.tryfunc(fantasy.tweet_oppo_rosters)
+            fantasy.tweet_daily_schedule()
+            fantasy.tweet_sprk_on_opponents()
+            fantasy.tweet_fran_on_opponents()
+            fantasy.tweet_oppo_rosters()
             ##
-            tools.tryfunc(fantasy.refresh_statcast_schedule)
-            tools.tryfunc(fantasy.refresh_espn_schedule)
+            fantasy.refresh_statcast_schedule()
+            fantasy.refresh_espn_schedule()
+            fantasy.tweet_add_drops()
+            fantasy.refresh_starter_history()
+            try:
+                run_odds()
+            except Exception as ex:
+                print(str(ex))
             run_roster_suite = False
 
+        fantasy.check_roster_lock_time()
+
         # Retrieve baseline information from ESPNPlayerDataCurrent
-        tools.tryfunc(fantasy.get_db_player_info)
+        print(f'get_db_player_info at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
+        fantasy.get_db_player_info()
 
         # ESPNPlayerDataCurrent, ESPNPlayerDataHistory, StatusChanges
         # Retrieve fron ESPN API
-        tools.tryfunc(fantasy.get_espn_player_info)
+        print(f'get_espn_player_info at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
+        fantasy.get_espn_player_info()
 
         # Check against ESPNPlayerDataCurrent table and make changes
         # Now done in get_espn_player_info: run_function(fantasy.get_player_info_changes())
-
-        tools.tryfunc(fantasy.send_push_msg_list)
+        print(f'send_push_msg_list at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
+        fantasy.send_push_msg_list()
 
         # Rosters and RosterChanges
-        tools.tryfunc(fantasy.run_transactions)
+        print(f'run_transactions at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
+        fantasy.run_transactions()
 
-        print("Sleep at " + formatted_date_time)
         num1 = random.randint(MIN_SLEEP, MAX_SLEEP)
-        print("Sleep for " + str(num1) + " seconds")
+
+        # formatted_date_time = datetime.now().strftime("%Y%m%d-%H%M%S")
+        print(f'Sleep at {datetime.now().strftime("%Y%m%d-%H%M%S")} for {num1} seconds')
+        # fantasy.logger_instance.debug(f'Sleep at {datetime.now().strftime("%Y%m%d-%H%M%S")} for {num1} seconds')
         time.sleep(num1)
 
     exit(0)
+
 
 if __name__ == "__main__":
     main()
