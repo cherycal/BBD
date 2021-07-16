@@ -9,13 +9,14 @@ import pandas as pd
 
 sys.path.append('./modules')
 import fantasy
+import os
 
 # My python class: sqldb.py
 
 # NB: Use create_daily_scoring_table.py to create the ESPNDailyScoring table
 
 mode = "PROD"
-fantasy = fantasy.Fantasy(mode)
+fantasy = fantasy.Fantasy(mode, caller=os.path.basename(__file__))
 bdb = fantasy.get_db()
 statid_dict = fantasy.get_statid_dict(verbose=False)
 
@@ -44,9 +45,11 @@ def one_day(scoring_period, league):
 			delcmd = "delete from " + table_name + " where Date = " + \
 			         str(date8) + " and LeagueID = " + str(league) + \
 			         " and teamID = " + str(team_id)
-			bdb.delete(delcmd)
-			for entry in entries:
+			#print(delcmd)
 
+			bdb.delete(delcmd)
+
+			for entry in entries:
 				entryhasstats = 0
 				lineup_slot = entry['lineupSlotId']
 				player_id = entry['playerPoolEntry']['player']['id']
@@ -61,6 +64,13 @@ def one_day(scoring_period, league):
 						cols = ['Name', 'playerid', 'Date', 'leagueId',
 						        'teamId', 'lineupSlotId', 'points']
 						vals = ['', 0, 0, 0, 0, 0, None]
+						vals[0] = player_name
+						vals[1] = player_id
+						vals[2] = date8
+						vals[3] = league
+						vals[4] = team_id
+						vals[5] = fantasy.get_position(lineup_slot)
+						vals[6] = 0
 						for stat in player_stats:
 							stat_int = int(stat)
 							if stat_int in statid_dict:
@@ -74,40 +84,67 @@ def one_day(scoring_period, league):
 								vals[6] = points
 								cols.append(str(statid_dict[stat_int]))
 								vals.append(player_stats[stat])
-							# print(player_name + " :teamid: " + str(team_id) +
-							# " :lineupslot: " +
-							#       fantasy.get_position(lineup_slot) +
-							#       " :stat: " + stat + " :id: " + str(player_id) +
-							#       " :statname: " + str(statid_dict[stat_int]) +
-							#       " :value: " + str(player_stats[stat]) +
-							#       " :date: " + str(date8) )
-							else:
-								pass
+
 						# print("Stat not found: " + str(stat) +
 						# " Value: " + str(player_stats[stat]))
-						if entryhasstats:
+						if entryhasstats or True:
 							lol.append(vals)
-							# print(len(cols))
-							# print(cols)
-							# print(len(vals))
-							# print(vals)
+							#print(vals)
 							df = pd.DataFrame(lol, columns=cols)
 							table_name = "ESPNDailyScoring"
-							df.to_sql(table_name, bdb.conn, if_exists='append',
-							          index=False)
+							tries = 0
+							max_tries = 4
+							incomplete = True
+							while incomplete and tries < max_tries:
+								try:
+									df.to_sql(table_name, bdb.conn, if_exists='append', index=False)
+									incomplete = False
+									#print("DB insert succeeded on try {}".format(tries + 1))
+								except Exception as ex:
+									print(str(ex))
+									tries += 1
+							if tries >= max_tries:
+								print("DB insert failed")
+								exit(-1)
+
+def main():
+	leagues = [162788, 6455, 87301, 37863846]
+	#leagues = [162788]
+	season_start = date(2021, 3, 31)
+	today = date.today()
+	#previous = today - timedelta(days=2)
+	previous = today - timedelta(days=5)
+
+	#print(yesterday.strftime("%Y%m%d"))
+
+	today_scoring_pd = (today - season_start).days
+	previous_scoring_pd = (previous - season_start).days
+
+	#five_days_ago = today - timedelta(days=5)
+	#five_ago_scoring_pd = (five_days_ago - season_start).days
+
+	start_scoring_pd = previous_scoring_pd
+	end_scoring_pd = today_scoring_pd + 1
 
 
-leagues = [162788, 6455, 87301, 37863846]
-season_start = date(2021, 3, 31)
-today = date.today()
-yesterday = today - timedelta(days=1)
-five_days_ago = today - timedelta(days=5)
-today_scoring_pd = (today - season_start).days
-yest_scoring_pd = (yesterday - season_start).days
-five_ago_scoring_pd = (five_days_ago - season_start).days
+	## Override for ad hoc runs
+	override = False
+	if override:
 
-for lg in leagues:
-	for i in range(yest_scoring_pd, today_scoring_pd + 1, 1):
-		one_day(i, lg)
+		start_date = date(2021, 4, 15)
+		end_date = date(2021, 5, 16)
 
-bdb.close()
+		start_scoring_pd = (start_date - season_start).days
+		end_scoring_pd = (end_date - season_start).days
+
+
+
+	for lg in leagues:
+		for i in range(start_scoring_pd, end_scoring_pd, 1):
+			one_day(i, lg)
+
+	bdb.close()
+
+
+if __name__ == "__main__":
+	main()

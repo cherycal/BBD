@@ -2,6 +2,7 @@ __author__ = 'chance'
 
 import inspect
 import json
+import os
 import pickle
 import time
 import urllib.request
@@ -62,13 +63,12 @@ def get_time():
 
 class Fantasy(object):
 
-	def __init__(self, mode="PROD"):
+	def __init__(self, mode="PROD",caller= os.path.basename(__file__)):
 		self.espn_player_json = None
 		self.timedict = {}
 		filename = str(inspect.stack()[-1].filename).split('/')[-1]
-		logname = filename.replace('.py','.log')
-		logname = './logs/' + logname
-		print("Initializing Fantasy Object from " + filename)
+		logname = './logs/' + caller + '.log'
+		print("Initializing Fantasy Object from " + caller )
 		print("Log name " + logname)
 		self.push_msg = ""
 		db = 'Baseball.db'
@@ -86,7 +86,6 @@ class Fantasy(object):
 		self.roster_year = "2021"
 		self.msg = "Msg: "
 		self.DB = sqldb.DB(db)
-		self.push_instance = push.Push()
 		self.teamName = self.set_ID_team_map()
 		self.MLBTeamName = self.set_espn_MLB_team_map()
 		self.ownerTeam = self.set_owner_team_map()
@@ -108,16 +107,31 @@ class Fantasy(object):
 		self.transactions = {}
 		self.player_data_json = object()
 		self.TIMEOUT = 30
-		self.roster_lock_time = self.set_roster_lock_time()
+		self.roster_lock_date = None
+		self.roster_lock_time = None
+		self.set_roster_lock_time()
 		now = datetime.now()  # current date and time
 		self.date = now.strftime("%Y%m%d")
 		self.statcast_date = now.strftime("%Y-%m-%d")
 		self.hhmmss = self.get_hhmmss()
-		self.logger_instance = tools.get_logger(logfilename=logname)
-		self.logger_instance.debug("Initializing fantasy object")
+		self.logger_instance = tools.get_logger(logfilename=f'{logname}_{self.date}')
+		self.logger_instance.debug(f'Initializing fantasy object: {caller}')
+		self.push_instance = push.Push(self.logger_instance)
 
 	def post_log_msg(self,msg):
 		self.logger_instance.debug(msg)
+
+	def logger_exception(self,msg):
+		self.logger_instance.exception(msg)
+
+	def logger_debug(self,msg):
+		self.logger_instance.debug(msg)
+
+	def logger_info(self,msg):
+		self.logger_instance.info(msg)
+
+	def logger_warning(self,msg):
+		self.logger_instance.warning(msg)
 
 	def get_date8(self):
 		now = datetime.now()
@@ -153,7 +167,6 @@ class Fantasy(object):
 		d = datetime.strptime(str(start_date), '%Y%m%d')
 		date_ = d + timedelta(days=scoring_id - 1)
 		date8 = date_.strftime('%Y%m%d')
-		print(date8)
 		return date8
 
 	##########################################################################
@@ -364,7 +377,7 @@ class Fantasy(object):
 			fields.append(self.get_player_name())
 			fields.append(self.get_to_position())
 			fields.append(self.get_to_team())
-			fields.append(self.get_leg_type())
+			fields.append(self.get_leg_type() or "NA")
 			fields.append(self.get_espnid())
 			return tuple(fields)
 
@@ -474,21 +487,39 @@ class Fantasy(object):
 	def get_roster_lock_time(self):
 		return self.roster_lock_time
 
+	def check_roster_lock_time(self):
+		print(f'Roster lock date: {self.get_roster_lock_date()}, today: {self.get_date8()}')
+		if self.get_roster_lock_date() and int(self.get_roster_lock_date()) < int(self.get_date8()):
+			self.set_roster_lock_time()
+		else:
+			pass
+			#print(f'Roster lock time has been set to {self.get_roster_lock_time()}')
+
+	def get_roster_lock_date(self):
+		return self.roster_lock_date
+
 	def set_roster_lock_time(self):
-		url_name = "http://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard"
+		try:
+			url_name = "http://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard"
+			with urllib.request.urlopen(url_name, timeout=self.TIMEOUT) as url:
+				data = json.loads(url.read().decode())
+				first_game_time = 235959
+				for i in data['events']:
+					date_str = str(i['date'])
+					date_str = date_str.replace("T", " ")
+					date_str = date_str.replace("Z", "")
+					datetime_object = datetime.strptime(date_str, '%Y-%m-%d %H:%M')
+					datetime_object = datetime_object - timedelta(hours=7)
+					lock_time = int(datetime.strftime(datetime_object, '%H%M%S'))
+					self.roster_lock_date = int(datetime.strftime(datetime_object, '%Y%m%d'))
+					if lock_time < first_game_time:
+						first_game_time = lock_time
+				if self.roster_lock_date == self.get_date8():
+					print(f'Setting roster lock time to {first_game_time}')
+				self.roster_lock_time = first_game_time
+		except Exception as ex:
+			print(str(ex))
 
-		with urllib.request.urlopen(url_name, timeout=self.TIMEOUT) as url:
-			data = json.loads(url.read().decode())
-
-			for i in data['events']:
-				date_str = str(i['date'])
-				date_str = date_str.replace("T", " ")
-				date_str = date_str.replace("Z", "")
-				datetime_object = datetime.strptime(date_str, '%Y-%m-%d %H:%M')
-				datetime_object = datetime_object - timedelta(hours=7)
-				lock_time = int(datetime.strftime(datetime_object, '%H%M%S'))
-				self.roster_lock_time = lock_time
-				return lock_time
 
 	def get_time(self):
 		now = datetime.now()  # current date and time
@@ -529,11 +560,9 @@ class Fantasy(object):
 		url_name = "http://fantasy.espn.com/apis/v3/games/flb/seasons/" + self.year + \
 		           "/segments/0/leagues/" + \
 		           str(leagueID) + "?view=standings"
-		print("league_standings: " + url_name)
+		self.logger_instance.debug(f'league_standings: {url_name}')
 		with urllib.request.urlopen(url_name, timeout=self.TIMEOUT) as url:
 			json_object = json.loads(url.read().decode())
-		# json_formatted = json.dumps(json_object, indent=2)
-		# print(json_formatted)
 		return json_object
 
 	def get_espn_player_json(self):
@@ -614,7 +643,7 @@ class Fantasy(object):
 		url_name = "http://fantasy.espn.com/apis/v3/games/flb/seasons/" + self.year + \
 		           "/segments/0/leagues/" + \
 		           str(leagueID) + "?view=kona_playercard"
-		print("set_espn_player_json: " + url_name)
+		self.logger_instance.debug(f'set_espn_player_json: {url_name}')
 		with urllib.request.urlopen(url_name, timeout=self.TIMEOUT) as url:
 			json_object = json.loads(url.read().decode())
 		# json_formatted = json.dumps(json_object, indent=2)
@@ -676,7 +705,7 @@ class Fantasy(object):
 
 		return
 
-
+	@tools.try_wrap
 	def get_db_player_info(self):
 		# print_calling_function()
 		player_status = {}
@@ -704,6 +733,12 @@ class Fantasy(object):
 
 		self.db_player_status = player_status.copy()
 
+	@tools.try_wrap
+	def refresh_starter_history(self):
+		self.DB.cmd("INSERT INTO StarterHistory SELECT * FROM UpcomingStartsWithStats", True)
+
+
+	@tools.try_wrap
 	def refresh_rosters(self):
 		pos_map = self.set_espn_position_map()
 		now = datetime.now()
@@ -749,6 +784,7 @@ class Fantasy(object):
 	def get_current_player_status(self):
 		return self.current_player_status
 
+	@tools.try_wrap
 	def get_espn_player_info(self):
 		# print_calling_function()
 		player_status = {}
@@ -846,8 +882,8 @@ class Fantasy(object):
 		           'x-fantasy-source: kona',
 		           'x-fantasy-filter: {"players":{"filterStatus":{"value":["FREEAGENT","WAIVERS","ONTEAM"]},'
 		           '"filterSlotIds":{"value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}}']
-		print("get_player_data_json: " + url_name)
-		self.logger_instance.debug(f'get_player_data_json: {url_name}')
+		#print("get_player_data_json: " + url_name)
+		# self.logger_instance.debug(f'get_player_data_json: {url_name}')
 		try:
 			buffer = BytesIO()
 			c = pycurl.Curl()
@@ -861,7 +897,7 @@ class Fantasy(object):
 			data = buffer.getvalue()
 			self.player_data_json = json.loads(data)
 		except Exception as ex:
-			print(str(ex))
+			self.logger_exception(f'Exception in get_player_data_json')
 
 	# json_formatted = json.dumps(self.player_data_json, indent=2)
 	# print(json_formatted)
@@ -894,6 +930,7 @@ class Fantasy(object):
 						self.DB.insert_list("ESPNStatusChanges", [out_date, date_time, espnid, set_attr, old, new])
 			else:
 				print("No corresponding data in ESPNPlayerDataCurrent for " + i)
+				self.logger_instance.warning(f'No corresponding data in ESPNPlayerDataCurrent for {i}')
 				# Insert into PlayerDataCurrent
 				insert_many_list = list()
 				insert_many_list.append(self.players[str(i)].get_player_data_fields())
@@ -902,6 +939,7 @@ class Fantasy(object):
 		if run_injury_updates:
 			self.run_injury_updates()
 
+	@tools.try_wrap
 	def send_push_msg_list(self):
 		if len(self.push_msg_list):
 			self.push_instance.push_list(self.push_msg_list, "Status changes")
@@ -931,6 +969,7 @@ class Fantasy(object):
 		# adding a gradient based on values in cell
 		return
 
+	@tools.try_wrap
 	def tweet_add_drops(self, dt=""):
 		if dt == "":
 			dt = self.date
@@ -938,28 +977,32 @@ class Fantasy(object):
 		        " percentOwned, LeagueID from AddDrops A," \
 		        " ESPNPlayerDataCurrent E where A.ESPNID = E.ESPNID and" \
 		        " A.UpdateDate like '" + dt + "%' order by percentOwned desc"
-		print(query)
+		#print(query)
 		self.run_query(query, "Adds / drops: ")
 		return
 
+	@tools.try_wrap
 	def tweet_sprk_on_opponents(self):
 		query = "select * from SPRKOnOpponents"
 		#print(query)
 		self.run_query(query, "SPRK on Opponents: ")
 		return
 
+	@tools.try_wrap
 	def tweet_fran_on_opponents(self):
 		query = "select * from FRANOnOpponents"
 		#print(query)
 		self.run_query(query, "FRAN on Opponents: ")
 		return
 
+	@tools.try_wrap
 	def tweet_oppo_rosters(self):
 		query = "select * from OppoRosters"
 		#print(query)
 		self.run_query(query, "Oppo Rosters ")
 		return
 
+	@tools.try_wrap
 	def tweet_daily_schedule(self, dt="", msg=""):
 		if dt == "":
 			dt = self.date
@@ -981,6 +1024,7 @@ class Fantasy(object):
 		self.run_query(query, msg)
 		return
 
+	@tools.try_wrap
 	def refresh_espn_schedule(self):
 		nextyear = str(int(self.year) + 1)
 		fromdate = self.year + "0000"
@@ -1018,6 +1062,7 @@ class Fantasy(object):
 			self.DB.delete(delcmd)
 			self.DB.insert_many("ESPNGameData", entries)
 
+	@tools.try_wrap
 	def refresh_statcast_schedule(self):
 		url_name = "http://statsapi.mlb.com/api/v1/schedule?sportId=1,&date=" + \
 		           self.statcast_date
@@ -1036,7 +1081,7 @@ class Fantasy(object):
 
 		table_name = "StatcastGameData"
 		delcmd = "delete from " + table_name + " where date = " + self.date
-		print(delcmd)
+		self.logger_instance.debug(f'refresh_statcast_schedule: {delcmd}')
 		self.DB.delete(delcmd)
 		df.to_sql(table_name, self.DB.conn, if_exists='append', index=False)
 
@@ -1100,13 +1145,15 @@ class Fantasy(object):
 		           self.roster_year + \
 		           "/segments/0/leagues/" + \
 		           str(leagueID) + "?view=mTransactions2"
-		# print("build_transactions: " + url_name)
+		print("build_transactions: " + url_name)
 		add_drop_count = 0
 		try:
 			with urllib.request.urlopen(url_name, timeout=self.TIMEOUT) as url:
 				json_object = json.loads(url.read().decode())
 				push_list = list()
 				# push_list_twtr = list()
+				espnid_list = list()
+				rr_msg = ""
 				if 'transactions' in json_object:
 					for transaction in json_object['transactions']:
 						espn_transaction_id = transaction['id']
@@ -1193,25 +1240,37 @@ class Fantasy(object):
 
 										if (espn_transaction_id not in self.espn_trans_ids) \
 												and i['type'] != '':
-											print("Build transactions "
-											      "insert ESPNRosterChanges fields:")
-											print(fields)
+											# print("Build transactions "
+											#       "insert ESPNRosterChanges fields:")
+											# print(fields)
+											self.logger_instance.debug(f'build_transactions {fields}')
 
-											self.DB.insert_list("ESPNRosterChanges", fields)
+											try:
+												self.DB.insert_list("ESPNRosterChanges", fields)
+											except Exception as ex:
+												self.logger_exception(f'Error: build_transactions insert ESPNRosterChanges')
 
 											team_list = ["Called Shots",
 											             "Gotta B'leve",
 											             "High And Tight",
+														 "Great Bambi",
+														 "The Terminators",
 											             "When Franimals Attack",
 											             "Spring Rakers",
 											             "Flip Mode",
 											             "Avengers: Age Of Beltran",
 											             "wOBA Barons"]
 
+											if ( i['type'] == "ADD" or i['type'] == "DROP" ) and team_name == "Called Shots":
+												espnid_list.append(espnid)
+												rr_msg += f'{player_name} {i["type"]}\n'
+
 											if i['type'] == "LINEUP" and team_name \
 													not in team_list:
-												print("Skipping lineup change team"
-												      " not on watch list: " + team_name)
+												# print("Skipping lineup change team"
+												#       " not on watch list: " + team_name)
+												self.logger_instance.debug(f'Skipping lineup change team'
+																  f'not on watch list: {team_name}')
 											else:
 												if trans_obj.get_type() != "FUTURE_ROSTER":
 													push_str = \
@@ -1222,9 +1281,21 @@ class Fantasy(object):
 					                                     "to:",
 					                                     to_position, from_team,
 					                                     to_team,
-					                                     player_name, i['type']])
+					                                     player_name, str(i['type'] or "")])
 													print("Push String: " + push_str)
+													self.logger_instance.debug(f'PUSH: {push_str}')
 													push_list.append(push_str)
+
+			if len(espnid_list) > 0:
+				list_str = str(tuple(espnid_list))
+				list_str = list_str.replace(",)",")")
+				query = f'select Player, Team, LeagueID,Position from ESPNRosters' \
+						f' where espnid in {list_str} order by Player, Team'
+				print(query)
+				try:
+					self.run_query(query, f'Relevant rosters: {rr_msg}')
+				except Exception as ex:
+					self.push_instance.push("Error in relevant roster query", "Error: " + str(ex))
 
 			if len(push_list) > 4:
 				self.push_instance.push("Over 4 transactions", "Look for table tweet")
@@ -1234,7 +1305,7 @@ class Fantasy(object):
 				push_list.clear()
 
 		except Exception as ex:
-			print(str(ex))
+			self.logger_exception(f'ERROR in build_transactions')
 
 		return add_drop_count
 
@@ -1281,6 +1352,7 @@ class Fantasy(object):
 			#print(transaction.get_to_position())
 			espnid = transaction.get_espnid()
 			#print(transaction.get_espnid())
+			#self.logger_instance.debug(f'process_updates: {}')
 			self.DB.update_data("Update ESPNRosters set Position = ? "
 			                    "where ESPNID = ? and LeagueID = ?",
 			                    (to_position, espnid, leagueID))
@@ -1349,6 +1421,7 @@ class Fantasy(object):
 					               str(team['location']) + " " + team['nickname']]
 					self.DB.insert_list("ESPNTeamOwners", insert_list)
 
+	@tools.try_wrap
 	def run_transactions(self, teams=0):
 		#print_calling_function()
 		if not teams:
@@ -1362,14 +1435,13 @@ class Fantasy(object):
 		if add_drop_count > 0:
 			self.tweet_add_drops()
 		if int(self.get_hhmmss()) > int(self.get_roster_lock_time()):
-			print("Process transactions:")
-			time.sleep(.5)
+			#print("Process transactions:")
+			time.sleep(.05)
 			self.process_transactions()
-			time.sleep(.5)
+			time.sleep(.05)
 		else:
-			print("Time: " + str(self.get_hhmmss()) +
-			      " vs roster lock at " +
-			      str(int(self.get_roster_lock_time())))
+			print(f'Time: {self.get_hhmmss()} vs roster lock at {self.get_roster_lock_time()}')
+
 
 	def set_espn_default_league(self):
 		leagueID = 0
