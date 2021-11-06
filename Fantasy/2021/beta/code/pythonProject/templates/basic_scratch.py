@@ -16,6 +16,7 @@ if mode == "TEST":
 else:
     bdb = sqldb.DB('Baseball.db')
 
+# Twitter KEYS ( see push module for usage )
 APIKEY = os.environ.get('APIKEY')
 APISECRETKEY = os.environ.get('APISECRETKEY')
 ACCESSTOKEN = os.environ.get('ACCESSTOKEN')
