@@ -22,6 +22,7 @@ import os
 script_name = os.path.basename(__file__)
 
 def roster_list():
+    global PLAYOFFS
     teams = dict()
     try:
         r = bdb.select_plus("SELECT * FROM ESPNRostersWithMLBID")
@@ -32,9 +33,11 @@ def roster_list():
             team = team.replace("The ","")
             team = team[0:4]
             pos = "-"+str(d["Position"])
-            if team not in ["Call","Aven","Flip","When","wOBA","Spri","Grea","Gott","High","Big ","Term"]:
-                team = leagueID
-                pos = ""
+            #PLAYOFFS = True
+            if PLAYOFFS == False:
+                if team not in ["Call","Aven","Flip","When","wOBA","Spri","Grea","Gott","High","Rich","Term"]:
+                    team = leagueID
+                    pos = ""
             if teams.get(mlbid):
                 teams[mlbid] += f'{team}{pos} '
             else:
@@ -101,7 +104,7 @@ string_yesterday = str(integer_yesterday)
 # logging.info(f'Game data for {out_date}')
 
 watch_ids = list()
-q = "select distinct MLBID, Name from ( select  round(MLBID,0) as MLBID, " \
+query = "select distinct MLBID, Name from ( select  round(MLBID,0) as MLBID, " \
     "Name,R.Team, AuctionValueAverage from ESPNPlayerDataCurrent E, IDMap I," \
     " ESPNRosters R  where E.espnid = R.ESPNID and  E.espnid = I.ESPNID " \
     "and AuctionValueAverage >= 50 ) union select distinct round(MLBID,0) as MLBID," \
@@ -109,14 +112,22 @@ q = "select distinct MLBID, Name from ( select  round(MLBID,0) as MLBID, " \
     " E.espnid = R.ESPNID and  E.espnid = I.ESPNID and R.Team in" \
     " ('When Franimals Attack' ,'Spring Rakers', 'Flip Mode', " \
     "'Called Shots','wOBA Barons','Avengers:  Age Of Beltran'," \
-    "'Avengers: Age Of Beltran','The Big Bang Theory','Great Bambi','The Terminators')"
+    "'Avengers: Age Of Beltran','Rich White Underachievers','Great Bambi','The Terminators')"
 
-print(q)
+PLAYOFFS = True
 
-c = bdb.select(q)
+if PLAYOFFS == True:
+    query = "select distinct MLBID, Name from ( select  round(MLBID,0) as MLBID, " \
+            "Name, AuctionValueAverage from ESPNPlayerDataCurrent E, IDMap I where " \
+            " E.espnid = I.ESPNID ) union select distinct round(MLBID,0) as MLBID, Name " \
+            "from ESPNPlayerDataCurrent E, IDMap I where  E.espnid = I.ESPNID"
 
-for t in c:
-    watch_ids.append(str(int(t[0])))
+print(query)
+
+query_result = bdb.select(query)
+
+for row in query_result:
+    watch_ids.append(str(int(row[0])))
 
 gamepks = list()
 
@@ -125,18 +136,25 @@ for t in c:
     gamepks.append(str(t[0]))
 
 sc_first_run = 1
+
+if PLAYOFFS == True:
+    sc_first_run = 0
+
 mlb_first_run = 1
 reported_event_count = dict()
 reported_statcast_count = dict()
 event_count: Dict[Any, Any] = dict()
 statcast_count: Dict[Any, Any] = dict()
 has_statcast = dict()
+is_in_pitching_change = False
 
 def process_mlb(data, gamepk, player_teams):
     global watch_ids
     global reported_event_count
     global event_count
+    global PLAYOFFS
     global sc_first_run
+    global is_in_pitching_change
     plays = data['liveData']['plays']['allPlays']
     #print("Game: " + str(gamepk))
     home_team = str(data['gameData']['teams']['away']['name']).split()[-1]
@@ -162,6 +180,14 @@ def process_mlb(data, gamepk, player_teams):
         if play['result'].get('eventType') and play['result']['eventType'] == "game_advisory":
             print(f'Game advisory {away_team} vs {home_team}')
             continue
+        if play['result'].get('eventType') and play['result']['eventType'] == 'pitching_substitution':
+            if is_in_pitching_change:
+                continue
+            else:
+                is_in_pitching_change = True
+            time.sleep(100)
+        else:
+            is_in_pitching_change = False
         if play['result'].get('description'):
             description = str(play['result']['description'])
             description = description.replace("first baseman", "1B")
@@ -198,8 +224,8 @@ def process_mlb(data, gamepk, player_teams):
             pitcher_id = str(play['matchup']['pitcher']['id'])
             pitcher_name = str(play['matchup']['pitcher']['fullName'])
 
-            batter_teams = player_teams.get(batter_id,"No teams")
-            pitcher_teams = player_teams.get(pitcher_id,"No teams")
+            batter_teams = player_teams.get(batter_id,"No teams") if PLAYOFFS == False else ""
+            pitcher_teams = player_teams.get(pitcher_id,"No teams") if PLAYOFFS == False else ""
 
             print("At bat: " + str(at_bat))
             logger_instance.info(f'At bat {at_bat}, Batter: {batter_name}, Pitcher: {pitcher_name}')
@@ -220,9 +246,9 @@ def process_mlb(data, gamepk, player_teams):
                     msg = description[0:125]
                     logger_instance.info(f'Play description: {msg}')
                     msg += "\nP: " + pitcher_name + \
-                           f' ({pitcher_teams}) {home_team} {home_score}, ' \
+                           f' {pitcher_teams}\n{home_team} {home_score}, ' \
                            f'{away_team} {away_score}, {inning} {outs} O, AB {at_bat}\n' \
-                           f'Ts: {batter_teams}\n'
+                           f'{batter_teams}\n'
                     msg = msg[0:220]
                     #print("----------")
                     print(msg)
@@ -263,6 +289,7 @@ def process_statcast(data, gamepk):
     global reported_statcast_count
     global statcast_count
     global mlb_first_run
+    global PLAYOFFS
     msg2 = ""
     events = data['exit_velocity']
     #print("Game: " + str(gamepk))
@@ -308,7 +335,7 @@ def process_statcast(data, gamepk):
                 if event.get('hit_speed'):
                     msg2 += "\n" + "hit speed: " + str(event['hit_speed'])
                 if event.get('hit_angle'):
-                    msg2 += "\n" + "hit angle: " + str(event['hit_angle'])
+                    msg2 += "\n" + "hit angle: " + str(event['hit_angle']) + "\n"
                 msg += "\n" + "-----------------------------------------------"
                 print(msg)
                 print("--------------------")
@@ -482,8 +509,8 @@ def main():
                     process_lineups(lineups)
 
                     if data.get('exit_velocity'):
-                        print("Skipping statcast data")
-                    # process_statcast(data, gamepk)
+                        #print("Skipping statcast data")
+                        process_statcast(data, gamepk)
             except Exception as ex:
                 print("Exception in user code:")
                 print("-" * 60)
