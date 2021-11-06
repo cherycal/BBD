@@ -1257,11 +1257,13 @@ class Fantasy(object):
 														 "The Terminators",
 											             "When Franimals Attack",
 											             "Spring Rakers",
+											             "Bush Did 9/11",
 											             "Flip Mode",
 											             "Avengers: Age Of Beltran",
 											             "wOBA Barons"]
 
-											if ( i['type'] == "ADD" or i['type'] == "DROP" ) and team_name == "Called Shots":
+											if ( i['type'] == "ADD" or i['type'] == "DROP" ) and \
+													( team_name == "Great Bambi" or team_name == "Bush Did 9/11"):
 												espnid_list.append(espnid)
 												rr_msg += f'{player_name} {i["type"]}\n'
 
