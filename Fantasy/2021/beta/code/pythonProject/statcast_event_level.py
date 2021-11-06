@@ -427,7 +427,7 @@ def main():
 	# single_year(2016, "bat", (5, 1, 5, 1))
 	# single_year(2016, "pitch")
 	today = date.today()
-	past = today - timedelta(days=3)
+	past = today - timedelta(days=5)
 
 	for year in [2021]:
 		for bp in ["bat", "pitch"]:

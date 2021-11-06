@@ -95,10 +95,10 @@ def process_statcast(data, gamepk, game_date):
             print(str(ex))
 
         column_names = ['name', 'team', 'date', 'points', 'qs', 'outs', 'strikeOuts', 'wins', 'saves', 'holds',
-                        'earnedRuns', 'baseOnBalls', 'losses', 'hits', 'mlbid', 'gamepk']
+                        'earnedRuns', 'baseOnBalls', 'losses', 'hits', 'gamesStarted', 'mlbid', 'gamepk']
 
         pitchcats = ['points', 'qs', 'outs', 'strikeOuts', 'wins', 'saves', 'holds',
-                     'earnedRuns', 'baseOnBalls', 'losses', 'hits', 'gamepk', 'mlbid',
+                     'earnedRuns', 'baseOnBalls', 'losses', 'hits', 'gamesStarted','gamepk', 'mlbid',
                      'name', 'team', 'date']
 
         index.clear()
@@ -212,8 +212,8 @@ def main():
     end_date = date.today()
     start_date = end_date - timedelta(days=DAYS_AGO)
     step = timedelta(days=1)
-    # date1 = '2021-04-13'
-    # date2 = '2021-04-13'
+    # date1 = '2021-07-02'
+    # date2 = '2021-07-02'
     # start_date = datetime.strptime(date1, '%Y-%m-%d')
     # end_date = datetime.strptime(date2, '%Y-%m-%d')
     while start_date <= end_date:
