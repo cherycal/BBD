@@ -4,7 +4,6 @@ import time
 from datetime import datetime
 from operator import itemgetter
 
-import pytz
 import unidecode
 
 sys.path.append('./modules')
@@ -12,9 +11,13 @@ import push
 import fantasy
 import inspect
 import random
-import os
 import traceback
 import pandas as pd
+import pytz
+from datetime import date, timedelta
+import os, ssl
+if (not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None)):
+	ssl._create_default_https_context = ssl._create_unverified_context
 
 mode = "PROD"
 
@@ -105,7 +108,7 @@ def process_oddsline(text):
 
 def run_odds():
     utc_now = datetime.now(pytz.UTC)
-
+    dt = date.today()
     odds_date8 = utc_now.strftime("%Y%m%d")
     odds_update_time = utc_now.strftime("%Y%m%d%H%M%S")
 
@@ -117,6 +120,7 @@ def run_odds():
     column_names = ["date", "name", "time", "Tm", "Team", "OU", "ML", "UpdateTime"]
     table_name = "Odds"
 
+    count = 0
     for i in dfs:
         oddslines = i.iloc[:, 0:4]
         for oddsline in oddslines.values:
@@ -132,10 +136,26 @@ def run_odds():
                 odds.insert(0, name)
                 odds.insert(0, odds_date8)
                 odds.append(odds_update_time)
+                if odds[4] == "Yankees":
+                    odds[3] = "NYY"
+                if odds[4] == "Mets":
+                    odds[3] = "NYM"
+                if odds[4] == "Angels":
+                    odds[3] = "LAA"
+                if odds[4] == "Dodgers":
+                    odds[3] = "LAD"
+                if odds[4] == "Cubs":
+                    odds[3] = "CHC"
+                if odds[4] == "White Sox":
+                    odds[3] = "CHW"
                 #print(f'{odds}')
                 bdb.insert_list(table_name, odds, verbose=False)
                 time.sleep(.25)
                 entries.append(odds)
+        if count == 0:
+            dt = dt + timedelta(days=1)
+            dt8 = dt.strftime("%Y%m%d")
+        count += 1
 
 
 def begin_day_process():
@@ -233,6 +253,7 @@ def main():
     run_begin_day_process = True
     run_end_day_process = True
     run_roster_suite = True
+    run_odds_bool = True
     begin_day_time = 10000
     end_day_time = 211500
     MIN_SLEEP = 15
@@ -248,6 +269,17 @@ def main():
         formatted_date_time = ts.strftime("%Y%m%d-%H%M%S")
         time6 = ts.strftime("%H%M%S")
         current_time = int(time6)
+        minute = int(ts.strftime("%M"))
+        if ( minute == 20 or minute == 0 ) and run_odds_bool:
+            print("Running odds")
+            try:
+                run_odds()
+            except Exception as ex:
+                print(ex)
+            run_odds_bool = False
+        else:
+            run_odds_bool = True
+
         print(f'Start at {formatted_date_time}')
 
         update_time = ts.strftime("%Y%m%d%H%M%S")
