@@ -11,4 +11,3 @@ time.sleep(4)
 exec(open('team_splits.py').read())
 time.sleep(4)
 exec(open('fangraphs_splits.py').read())
-
