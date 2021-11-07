@@ -113,7 +113,7 @@ def main():
 	season_start = date(2021, 3, 31)
 	today = date.today()
 	#previous = today - timedelta(days=2)
-	previous = today - timedelta(days=5)
+	previous = today - timedelta(days=8)
 
 	#print(yesterday.strftime("%Y%m%d"))
 
