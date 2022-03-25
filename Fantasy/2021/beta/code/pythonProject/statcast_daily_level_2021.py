@@ -143,6 +143,12 @@ def post_process_csv_file(infile, outfile):
 
 
 def main():
+
+	print("")
+	print("*********************************************************")
+	print("Do not use this. Use statcast_data_daily_range.py instead")
+	exit(0)
+
 	###################
 	###################
 	# Hard coded:
