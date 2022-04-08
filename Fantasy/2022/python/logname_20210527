@@ -1,0 +1,433 @@
+2021-05-27 14:14:52,101:DEBUG:__init__:116:Initializing fantasy object:./modules\fantasy.py
+
+2021-05-27 17:59:25,758:DEBUG:__init__:116:Initializing fantasy object:./modules\fantasy.py
+
+2021-05-27 17:59:34,204:DEBUG:__init__:116:Initializing fantasy object:./modules\fantasy.py
+
+2021-05-27 17:59:34,219:DEBUG:main:195:Start begin_day_process at 20210527-175934:C:/Ubuntu/Shared/BBD/Fantasy/2021/beta/code/pythonProject/espn_player_info.py
+
+2021-05-27 17:59:49,831:DEBUG:main:197:End begin_day_process at 20210527-175949:C:/Ubuntu/Shared/BBD/Fantasy/2021/beta/code/pythonProject/espn_player_info.py
+
+2021-05-27 18:00:03,126:DEBUG:refresh_statcast_schedule:1049:refresh_statcast_schedule: delete from StatcastGameData where date = 20210527:./modules\fantasy.py
+
+2021-05-27 18:00:17,579:INFO:push_list:157:Adbert Alzolay, status, old:ONTEAM, new:WAIVERS
+:./modules\push.py
+
+2021-05-27 18:00:18,142:DEBUG:build_transactions:1209:build_transactions ('68dc932d-65ab-40ec-ab7d-3efcf24829da', '20210527', '20210527-163752.338', 'NM Rockies', 'EXECUTED', 'FUTURE_ROSTER', '68dc932d-65ab-40ec-ab7d-3efcf24829da1', '2B', '', 'Chris Taylor', 'B', '', 'LINEUP', '32900'):./modules\fantasy.py
+
+2021-05-27 18:00:18,157:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: NM Rockies:./modules\fantasy.py
+
+2021-05-27 18:00:18,157:DEBUG:build_transactions:1209:build_transactions ('68dc932d-65ab-40ec-ab7d-3efcf24829da', '20210527', '20210527-163752.338', 'NM Rockies', 'EXECUTED', 'FUTURE_ROSTER', '68dc932d-65ab-40ec-ab7d-3efcf24829da2', 'B', '', 'Jose Altuve', '2B', '', 'LINEUP', '31662'):./modules\fantasy.py
+
+2021-05-27 18:00:18,173:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: NM Rockies:./modules\fantasy.py
+
+2021-05-27 18:00:18,173:DEBUG:build_transactions:1209:build_transactions ('008f0581-f5b2-4963-99fc-67077811db1e', '20210527', '20210527-163911.665', 'NM Rockies', 'EXECUTED', 'ROSTER', '008f0581-f5b2-4963-99fc-67077811db1e1', 'B', '', 'Joey Gallo', 'RF', '', 'LINEUP', '32818'):./modules\fantasy.py
+
+2021-05-27 18:00:18,173:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: NM Rockies:./modules\fantasy.py
+
+2021-05-27 18:00:18,173:DEBUG:build_transactions:1209:build_transactions ('008f0581-f5b2-4963-99fc-67077811db1e', '20210527', '20210527-163911.665', 'NM Rockies', 'EXECUTED', 'ROSTER', '008f0581-f5b2-4963-99fc-67077811db1e2', 'RF', '', 'Kyle Garlick', 'B', '', 'LINEUP', '35431'):./modules\fantasy.py
+
+2021-05-27 18:00:18,188:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: NM Rockies:./modules\fantasy.py
+
+2021-05-27 18:00:18,188:DEBUG:build_transactions:1209:build_transactions ('66b2b4b3-963e-46bb-9262-ada7dc16804b', '20210527', '20210527-163740.078', 'NM Rockies', 'EXECUTED', 'ROSTER', '66b2b4b3-963e-46bb-9262-ada7dc16804b1', 'B', '', 'Chris Taylor', '2B', '', 'LINEUP', '32900'):./modules\fantasy.py
+
+2021-05-27 18:00:18,188:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: NM Rockies:./modules\fantasy.py
+
+2021-05-27 18:00:18,188:DEBUG:build_transactions:1209:build_transactions ('66b2b4b3-963e-46bb-9262-ada7dc16804b', '20210527', '20210527-163740.078', 'NM Rockies', 'EXECUTED', 'ROSTER', '66b2b4b3-963e-46bb-9262-ada7dc16804b2', '2B', '', 'Jose Altuve', 'B', '', 'LINEUP', '31662'):./modules\fantasy.py
+
+2021-05-27 18:00:18,204:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: NM Rockies:./modules\fantasy.py
+
+2021-05-27 18:00:18,204:DEBUG:build_transactions:1209:build_transactions ('315931c3-832d-4336-b6fe-36a21b69ce83', '20210527', '20210527-163822.333', 'NM Rockies', 'EXECUTED', 'FUTURE_ROSTER', '315931c3-832d-4336-b6fe-36a21b69ce831', 'B', '', 'Madison Bumgarner', 'SP', '', 'LINEUP', '29949'):./modules\fantasy.py
+
+2021-05-27 18:00:18,219:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: NM Rockies:./modules\fantasy.py
+
+2021-05-27 18:00:18,219:DEBUG:build_transactions:1209:build_transactions ('315931c3-832d-4336-b6fe-36a21b69ce83', '20210527', '20210527-163822.333', 'NM Rockies', 'EXECUTED', 'FUTURE_ROSTER', '315931c3-832d-4336-b6fe-36a21b69ce832', 'SP', '', 'Ryan Yarbrough', 'B', '', 'LINEUP', '33735'):./modules\fantasy.py
+
+2021-05-27 18:00:18,219:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: NM Rockies:./modules\fantasy.py
+
+2021-05-27 18:00:18,219:DEBUG:build_transactions:1209:build_transactions ('5cc4454a-a7aa-412c-aa0d-ce0ac44d8b60', '20210527', '20210527-161739.849', 'Miami Hurricanes', 'EXECUTED', 'FUTURE_ROSTER', '5cc4454a-a7aa-412c-aa0d-ce0ac44d8b601', 'UTIL', '', 'Nolan Arenado', '3B', '', 'LINEUP', '31261'):./modules\fantasy.py
+
+2021-05-27 18:00:18,235:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Miami Hurricanes:./modules\fantasy.py
+
+2021-05-27 18:00:18,235:DEBUG:build_transactions:1209:build_transactions ('5cc4454a-a7aa-412c-aa0d-ce0ac44d8b60', '20210527', '20210527-161739.849', 'Miami Hurricanes', 'EXECUTED', 'FUTURE_ROSTER', '5cc4454a-a7aa-412c-aa0d-ce0ac44d8b602', 'B', '', 'Alex Bregman', 'UTIL', '', 'LINEUP', '34886'):./modules\fantasy.py
+
+2021-05-27 18:00:18,235:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Miami Hurricanes:./modules\fantasy.py
+
+2021-05-27 18:00:18,235:DEBUG:build_transactions:1209:build_transactions ('5cc4454a-a7aa-412c-aa0d-ce0ac44d8b60', '20210527', '20210527-161739.849', 'Miami Hurricanes', 'EXECUTED', 'FUTURE_ROSTER', '5cc4454a-a7aa-412c-aa0d-ce0ac44d8b603', 'UTIL', '', 'Brad Miller', 'B', '', 'LINEUP', '32206'):./modules\fantasy.py
+
+2021-05-27 18:00:18,250:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Miami Hurricanes:./modules\fantasy.py
+
+2021-05-27 18:00:18,250:DEBUG:build_transactions:1209:build_transactions ('5cc4454a-a7aa-412c-aa0d-ce0ac44d8b60', '20210527', '20210527-161739.849', 'Miami Hurricanes', 'EXECUTED', 'FUTURE_ROSTER', '5cc4454a-a7aa-412c-aa0d-ce0ac44d8b604', 'UTIL', '', 'Trevor Story', 'B', '', 'LINEUP', '32150'):./modules\fantasy.py
+
+2021-05-27 18:00:18,250:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Miami Hurricanes:./modules\fantasy.py
+
+2021-05-27 18:00:18,250:DEBUG:build_transactions:1209:build_transactions ('5cc4454a-a7aa-412c-aa0d-ce0ac44d8b60', '20210527', '20210527-161739.849', 'Miami Hurricanes', 'EXECUTED', 'FUTURE_ROSTER', '5cc4454a-a7aa-412c-aa0d-ce0ac44d8b605', 'B', '', 'Ronald Acuna Jr.', 'UTIL', '', 'LINEUP', '36185'):./modules\fantasy.py
+
+2021-05-27 18:00:18,266:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Miami Hurricanes:./modules\fantasy.py
+
+2021-05-27 18:00:18,266:DEBUG:build_transactions:1209:build_transactions ('5cc4454a-a7aa-412c-aa0d-ce0ac44d8b60', '20210527', '20210527-161739.849', 'Miami Hurricanes', 'EXECUTED', 'FUTURE_ROSTER', '5cc4454a-a7aa-412c-aa0d-ce0ac44d8b606', 'B', '', 'Carlos Correa', 'UTIL', '', 'LINEUP', '32653'):./modules\fantasy.py
+
+2021-05-27 18:00:18,266:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Miami Hurricanes:./modules\fantasy.py
+
+2021-05-27 18:00:18,266:DEBUG:build_transactions:1209:build_transactions ('5cc4454a-a7aa-412c-aa0d-ce0ac44d8b60', '20210527', '20210527-161739.849', 'Miami Hurricanes', 'EXECUTED', 'FUTURE_ROSTER', '5cc4454a-a7aa-412c-aa0d-ce0ac44d8b607', 'UTIL', '', 'Edmundo Sosa', 'B', '', 'LINEUP', '33809'):./modules\fantasy.py
+
+2021-05-27 18:00:18,282:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Miami Hurricanes:./modules\fantasy.py
+
+2021-05-27 18:00:19,985:DEBUG:build_transactions:1209:build_transactions ('c5f08f25-97cf-4e11-b3a4-96befbc4f215', '20210527', '20210527-161113.2', 'Staten Island Pizza Rats', 'EXECUTED', 'FUTURE_ROSTER', 'c5f08f25-97cf-4e11-b3a4-96befbc4f2151', 'P', '', 'Jack Flaherty', 'B', '', 'LINEUP', '33837'):./modules\fantasy.py
+
+2021-05-27 18:00:20,000:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Staten Island Pizza Rats:./modules\fantasy.py
+
+2021-05-27 18:00:20,000:DEBUG:build_transactions:1209:build_transactions ('c5f08f25-97cf-4e11-b3a4-96befbc4f215', '20210527', '20210527-161113.2', 'Staten Island Pizza Rats', 'EXECUTED', 'FUTURE_ROSTER', 'c5f08f25-97cf-4e11-b3a4-96befbc4f2152', 'B', '', 'Walker Buehler', 'P', '', 'LINEUP', '39251'):./modules\fantasy.py
+
+2021-05-27 18:00:20,000:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Staten Island Pizza Rats:./modules\fantasy.py
+
+2021-05-27 18:00:20,000:DEBUG:build_transactions:1209:build_transactions ('3e930204-b18d-4286-8f21-76056acf5e56', '20210527', '20210527-161134.29', 'Staten Island Pizza Rats', 'EXECUTED', 'ROSTER', '3e930204-b18d-4286-8f21-76056acf5e561', 'P', '', 'Michael Kopech', 'IL', '', 'LINEUP', '33763'):./modules\fantasy.py
+
+2021-05-27 18:00:20,016:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Staten Island Pizza Rats:./modules\fantasy.py
+
+2021-05-27 18:00:20,016:DEBUG:build_transactions:1209:build_transactions ('87a697e2-00c3-4f7f-b1be-ef0b68983e9f', '20210527', '20210527-143029.525', 'High And Tight', 'EXECUTED', 'ROSTER', '87a697e2-00c3-4f7f-b1be-ef0b68983e9f1', 'IL', '', "Tyler O'Neill", 'B', '', 'LINEUP', '34168'):./modules\fantasy.py
+
+2021-05-27 18:00:20,016:DEBUG:build_transactions:1244:PUSH: 20210527-143029.525 High And Tight from: IL to: B   Tyler O'Neill LINEUP
+:./modules\fantasy.py
+
+2021-05-27 18:00:20,031:DEBUG:build_transactions:1209:build_transactions ('2b87e2d0-513b-41fa-ba99-458761a438a4', '20210527', '20210527-143020.872', 'High And Tight', 'EXECUTED', 'ROSTER', '2b87e2d0-513b-41fa-ba99-458761a438a41', '', 'High And Tight', 'Adam Duvall', 'B', '', 'DROP', '32664'):./modules\fantasy.py
+
+2021-05-27 18:00:20,031:DEBUG:build_transactions:1244:PUSH: 20210527-143020.872 High And Tight from:  to: B High And Tight  Adam Duvall DROP
+:./modules\fantasy.py
+
+2021-05-27 18:00:20,031:INFO:push_list:157:20210527-143029.525 High And Tight from: IL to: B   Tyler O'Neill LINEUP
+20210527-143020.872 High And Tight from:  to: B High And Tight  Adam Duvall DROP
+:./modules\push.py
+
+2021-05-27 18:00:23,734:DEBUG:build_transactions:1209:build_transactions ('d3a5263b-bf62-42bc-a026-f4fd393a9460', '20210527', '20210527-150829.886', 'Texas Stars', 'EXECUTED', 'FREEAGENT', 'd3a5263b-bf62-42bc-a026-f4fd393a94601', '', '', 'Jose Iglesias', 'B', 'Texas Stars', 'ADD', '30382'):./modules\fantasy.py
+
+2021-05-27 18:00:23,749:DEBUG:build_transactions:1244:PUSH: 20210527-150829.886 Texas Stars from:  to: B  Texas Stars Jose Iglesias ADD
+:./modules\fantasy.py
+
+2021-05-27 18:00:23,749:DEBUG:build_transactions:1209:build_transactions ('e40da408-81ca-474a-abb5-9a2144b2ee8b', '20210527', '20210527-144703.096', 'Team hesse', 'EXECUTED', 'ROSTER', 'e40da408-81ca-474a-abb5-9a2144b2ee8b1', 'B', '', 'Mookie Betts', 'OF', '', 'LINEUP', '33039'):./modules\fantasy.py
+
+2021-05-27 18:00:23,749:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Team hesse:./modules\fantasy.py
+
+2021-05-27 18:00:23,749:DEBUG:build_transactions:1209:build_transactions ('e40da408-81ca-474a-abb5-9a2144b2ee8b', '20210527', '20210527-144703.096', 'Team hesse', 'EXECUTED', 'ROSTER', 'e40da408-81ca-474a-abb5-9a2144b2ee8b2', 'OF', '', 'Marcell Ozuna', 'B', '', 'LINEUP', '31668'):./modules\fantasy.py
+
+2021-05-27 18:00:23,765:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Team hesse:./modules\fantasy.py
+
+2021-05-27 18:00:23,765:DEBUG:build_transactions:1209:build_transactions ('927f4bbf-7430-4537-be98-cef5a12afcd9', '20210527', '20210527-150932.002', 'Texas Stars', 'EXECUTED', 'FUTURE_ROSTER', '927f4bbf-7430-4537-be98-cef5a12afcd91', '2B/SS', '', 'Adalberto Mondesi', 'B', '', 'LINEUP', '32821'):./modules\fantasy.py
+
+2021-05-27 18:00:23,765:DEBUG:build_transactions:1209:build_transactions ('927f4bbf-7430-4537-be98-cef5a12afcd9', '20210527', '20210527-150932.002', 'Texas Stars', 'EXECUTED', 'FUTURE_ROSTER', '927f4bbf-7430-4537-be98-cef5a12afcd92', 'B', '', 'Jose Iglesias', '2B/SS', '', 'LINEUP', '30382'):./modules\fantasy.py
+
+2021-05-27 18:00:23,780:DEBUG:build_transactions:1209:build_transactions ('d02cf551-1a94-47f2-ac60-c7705c102323', '20210527', '20210527-150410.296', 'Texas Stars', 'EXECUTED', 'FREEAGENT', 'd02cf551-1a94-47f2-ac60-c7705c1023231', '', '', 'Zach McKinstry', 'B', 'Texas Stars', 'ADD', '38420'):./modules\fantasy.py
+
+2021-05-27 18:00:23,780:DEBUG:build_transactions:1244:PUSH: 20210527-150410.296 Texas Stars from:  to: B  Texas Stars Zach McKinstry ADD
+:./modules\fantasy.py
+
+2021-05-27 18:00:23,780:DEBUG:build_transactions:1209:build_transactions ('d02cf551-1a94-47f2-ac60-c7705c102323', '20210527', '20210527-150410.296', 'Texas Stars', 'EXECUTED', 'FREEAGENT', 'd02cf551-1a94-47f2-ac60-c7705c1023232', '', 'Texas Stars', 'Adbert Alzolay', 'B', '', 'DROP', '39802'):./modules\fantasy.py
+
+2021-05-27 18:00:23,796:DEBUG:build_transactions:1244:PUSH: 20210527-150410.296 Texas Stars from:  to: B Texas Stars  Adbert Alzolay DROP
+:./modules\fantasy.py
+
+2021-05-27 18:00:23,796:DEBUG:build_transactions:1209:build_transactions ('127c02d9-099b-4e2b-aaa5-4130cc1e0335', '20210527', '20210527-150432.754', 'Texas Stars', 'EXECUTED', 'ROSTER', '127c02d9-099b-4e2b-aaa5-4130cc1e03351', 'B', '', 'Zach McKinstry', 'IL', '', 'LINEUP', '38420'):./modules\fantasy.py
+
+2021-05-27 18:00:23,796:DEBUG:build_transactions:1244:PUSH: 20210527-150432.754 Texas Stars from: B to: IL   Zach McKinstry LINEUP
+:./modules\fantasy.py
+
+2021-05-27 18:00:26,617:INFO:push_list:157:20210527-150410.296 Texas Stars from:  to: B Texas Stars  Adbert Alzolay DROP
+20210527-150432.754 Texas Stars from: B to: IL   Zach McKinstry LINEUP
+:./modules\push.py
+
+2021-05-27 18:00:28,661:DEBUG:build_transactions:1209:build_transactions ('58a063f5-8407-4c4e-850f-ea5567131a93', '20210527', '20210527-160202.562', 'Aardvarks of Annihilation   ', 'EXECUTED', 'FUTURE_ROSTER', '58a063f5-8407-4c4e-850f-ea5567131a931', 'B', '', 'Cody Poteet', 'SP', '', 'LINEUP', '4728692'):./modules\fantasy.py
+
+2021-05-27 18:00:28,671:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Aardvarks of Annihilation   :./modules\fantasy.py
+
+2021-05-27 18:00:28,671:DEBUG:build_transactions:1209:build_transactions ('58a063f5-8407-4c4e-850f-ea5567131a93', '20210527', '20210527-160202.562', 'Aardvarks of Annihilation   ', 'EXECUTED', 'FUTURE_ROSTER', '58a063f5-8407-4c4e-850f-ea5567131a932', 'SP', '', 'John Means', 'B', '', 'LINEUP', '39948'):./modules\fantasy.py
+
+2021-05-27 18:00:28,679:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Aardvarks of Annihilation   :./modules\fantasy.py
+
+2021-05-27 18:00:28,679:DEBUG:build_transactions:1209:build_transactions ('12dde50e-0ed5-4fd2-a6a1-56558ca02a19', '20210527', '20210527-160150.419', 'Aardvarks of Annihilation   ', 'EXECUTED', 'FREEAGENT', '12dde50e-0ed5-4fd2-a6a1-56558ca02a191', '', '', 'Cody Poteet', 'B', 'Aardvarks of Annihilation   ', 'ADD', '4728692'):./modules\fantasy.py
+
+2021-05-27 18:00:28,688:DEBUG:build_transactions:1244:PUSH: 20210527-160150.419 Aardvarks of Annihilation    from:  to: B  Aardvarks of Annihilation    Cody Poteet ADD
+:./modules\fantasy.py
+
+2021-05-27 18:00:28,688:DEBUG:build_transactions:1209:build_transactions ('12dde50e-0ed5-4fd2-a6a1-56558ca02a19', '20210527', '20210527-160150.419', 'Aardvarks of Annihilation   ', 'EXECUTED', 'FREEAGENT', '12dde50e-0ed5-4fd2-a6a1-56558ca02a192', '', 'Aardvarks of Annihilation   ', 'Luis Urias', 'B', '', 'DROP', '35383'):./modules\fantasy.py
+
+2021-05-27 18:00:28,696:DEBUG:build_transactions:1244:PUSH: 20210527-160150.419 Aardvarks of Annihilation    from:  to: B Aardvarks of Annihilation     Luis Urias DROP
+:./modules\fantasy.py
+
+2021-05-27 18:00:28,697:DEBUG:build_transactions:1209:build_transactions ('75bb7009-1ec2-40ba-ad2d-e5b958ee69ca', '20210527', '20210527-150724.253', "Gotta B'leve", 'EXECUTED', 'FUTURE_ROSTER', '75bb7009-1ec2-40ba-ad2d-e5b958ee69ca1', '3B', '', 'Joey Wendle', 'B', '', 'LINEUP', '33017'):./modules\fantasy.py
+
+2021-05-27 18:00:28,705:DEBUG:build_transactions:1209:build_transactions ('75bb7009-1ec2-40ba-ad2d-e5b958ee69ca', '20210527', '20210527-150724.253', "Gotta B'leve", 'EXECUTED', 'FUTURE_ROSTER', '75bb7009-1ec2-40ba-ad2d-e5b958ee69ca2', 'B', '', 'Matt Chapman', '3B', '', 'LINEUP', '33857'):./modules\fantasy.py
+
+2021-05-27 18:00:28,713:DEBUG:build_transactions:1209:build_transactions ('75bb7009-1ec2-40ba-ad2d-e5b958ee69ca', '20210527', '20210527-150724.253', "Gotta B'leve", 'EXECUTED', 'FUTURE_ROSTER', '75bb7009-1ec2-40ba-ad2d-e5b958ee69ca3', 'CF', '', 'Manuel Margot', 'B', '', 'LINEUP', '33599'):./modules\fantasy.py
+
+2021-05-27 18:00:28,720:DEBUG:build_transactions:1209:build_transactions ('75bb7009-1ec2-40ba-ad2d-e5b958ee69ca', '20210527', '20210527-150724.253', "Gotta B'leve", 'EXECUTED', 'FUTURE_ROSTER', '75bb7009-1ec2-40ba-ad2d-e5b958ee69ca4', 'B', '', 'Ronald Acuna Jr.', 'CF', '', 'LINEUP', '36185'):./modules\fantasy.py
+
+2021-05-27 18:00:28,728:DEBUG:build_transactions:1209:build_transactions ('75bb7009-1ec2-40ba-ad2d-e5b958ee69ca', '20210527', '20210527-150724.253', "Gotta B'leve", 'EXECUTED', 'FUTURE_ROSTER', '75bb7009-1ec2-40ba-ad2d-e5b958ee69ca5', 'C', '', 'Carson Kelly', 'B', '', 'LINEUP', '32797'):./modules\fantasy.py
+
+2021-05-27 18:00:28,739:DEBUG:build_transactions:1209:build_transactions ('75bb7009-1ec2-40ba-ad2d-e5b958ee69ca', '20210527', '20210527-150724.253', "Gotta B'leve", 'EXECUTED', 'FUTURE_ROSTER', '75bb7009-1ec2-40ba-ad2d-e5b958ee69ca6', 'B', '', 'Yasmani Grandal', 'C', '', 'LINEUP', '30950'):./modules\fantasy.py
+
+2021-05-27 18:00:28,748:DEBUG:build_transactions:1209:build_transactions ('aafc2d35-8b24-43b4-912f-02b0976f5943', '20210527', '20210527-150730.849', "Gotta B'leve", 'EXECUTED', 'FUTURE_ROSTER', 'aafc2d35-8b24-43b4-912f-02b0976f59431', 'RP', '', 'Anthony Bass', 'B', '', 'LINEUP', '31144'):./modules\fantasy.py
+
+2021-05-27 18:00:28,757:DEBUG:build_transactions:1209:build_transactions ('aafc2d35-8b24-43b4-912f-02b0976f5943', '20210527', '20210527-150730.849', "Gotta B'leve", 'EXECUTED', 'FUTURE_ROSTER', 'aafc2d35-8b24-43b4-912f-02b0976f59432', 'B', '', 'Adam Ottavino', 'RP', '', 'LINEUP', '29705'):./modules\fantasy.py
+
+2021-05-27 18:00:28,764:INFO:push_list:157:20210527-160150.419 Aardvarks of Annihilation    from:  to: B  Aardvarks of Annihilation    Cody Poteet ADD
+20210527-160150.419 Aardvarks of Annihilation    from:  to: B Aardvarks of Annihilation     Luis Urias DROP
+:./modules\push.py
+
+2021-05-27 18:08:03,447:DEBUG:build_transactions:1209:build_transactions ('f1b02c93-70ae-426d-a462-e77386ad4390', '20210527', '20210527-180741.547', 'Holly Hill Mafia', 'EXECUTED', 'ROSTER', 'f1b02c93-70ae-426d-a462-e77386ad43901', 'B', '', 'Austin Hays', 'IL', '', 'LINEUP', '36928'):./modules\fantasy.py
+
+2021-05-27 18:08:03,463:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Holly Hill Mafia:./modules\fantasy.py
+
+2021-05-27 18:09:25,780:DEBUG:build_transactions:1209:build_transactions ('1b35e3d2-2290-4ded-87a0-2a834a01795f', '20210527', '20210527-180850.719', 'Holly Hill Mafia', 'EXECUTED', 'FREEAGENT', '1b35e3d2-2290-4ded-87a0-2a834a01795f1', '', '', 'Vladimir Gutierrez', 'B', 'Holly Hill Mafia', 'ADD', '36092'):./modules\fantasy.py
+
+2021-05-27 18:09:25,795:DEBUG:build_transactions:1244:PUSH: 20210527-180850.719 Holly Hill Mafia from:  to: B  Holly Hill Mafia Vladimir Gutierrez ADD
+:./modules\fantasy.py
+
+2021-05-27 18:09:25,795:INFO:push_list:157:20210527-180850.719 Holly Hill Mafia from:  to: B  Holly Hill Mafia Vladimir Gutierrez ADD
+:./modules\push.py
+
+2021-05-27 18:10:01,982:DEBUG:build_transactions:1209:build_transactions ('1e9ad937-d933-4e02-98ca-fd42df5f65f5', '20210527', '20210527-180948.093', 'wOBA Barons', 'EXECUTED', 'ROSTER', '1e9ad937-d933-4e02-98ca-fd42df5f65f51', 'P', '', 'Alex Wood', 'B', '', 'LINEUP', '32620'):./modules\fantasy.py
+
+2021-05-27 18:10:01,982:DEBUG:build_transactions:1244:PUSH: 20210527-180948.093 wOBA Barons from: P to: B   Alex Wood LINEUP
+:./modules\fantasy.py
+
+2021-05-27 18:10:01,982:INFO:push_list:157:20210527-180948.093 wOBA Barons from: P to: B   Alex Wood LINEUP
+:./modules\push.py
+
+2021-05-27 18:15:28,691:INFO:push_list:157:Matt Wisler, injuryStatus, old:BEREAVEMENT, new:ACTIVE
+:./modules\push.py
+
+2021-05-27 18:16:46,581:DEBUG:build_transactions:1209:build_transactions ('cc54b5b9-764a-42b7-8690-d783992e184f', '20210527', '20210527-181640.477', 'Holly Hill Mafia', 'EXECUTED', 'FUTURE_ROSTER', 'cc54b5b9-764a-42b7-8690-d783992e184f1', 'UTIL', '', 'Miguel Rojas', 'B', '', 'LINEUP', '30791'):./modules\fantasy.py
+
+2021-05-27 18:16:46,594:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Holly Hill Mafia:./modules\fantasy.py
+
+2021-05-27 18:16:46,595:DEBUG:build_transactions:1209:build_transactions ('cc54b5b9-764a-42b7-8690-d783992e184f', '20210527', '20210527-181640.477', 'Holly Hill Mafia', 'EXECUTED', 'FUTURE_ROSTER', 'cc54b5b9-764a-42b7-8690-d783992e184f2', 'B', '', 'Eugenio Suarez', 'UTIL', '', 'LINEUP', '32367'):./modules\fantasy.py
+
+2021-05-27 18:16:46,603:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Holly Hill Mafia:./modules\fantasy.py
+
+2021-05-27 18:17:19,226:DEBUG:build_transactions:1209:build_transactions ('de67463f-5be1-4a26-ab6c-5975504ec813', '20210527', '20210527-181659.483', 'Holly Hill Mafia', 'EXECUTED', 'FUTURE_ROSTER', 'de67463f-5be1-4a26-ab6c-5975504ec8131', 'B', '', 'Christian Vazquez', 'C', '', 'LINEUP', '31389'):./modules\fantasy.py
+
+2021-05-27 18:17:19,238:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Holly Hill Mafia:./modules\fantasy.py
+
+2021-05-27 18:17:19,239:DEBUG:build_transactions:1209:build_transactions ('de67463f-5be1-4a26-ab6c-5975504ec813', '20210527', '20210527-181659.483', 'Holly Hill Mafia', 'EXECUTED', 'FUTURE_ROSTER', 'de67463f-5be1-4a26-ab6c-5975504ec8132', 'C', '', 'Tucker Barnhart', 'B', '', 'LINEUP', '31173'):./modules\fantasy.py
+
+2021-05-27 18:17:19,247:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Holly Hill Mafia:./modules\fantasy.py
+
+2021-05-27 18:20:58,601:DEBUG:build_transactions:1209:build_transactions ('c2ea0af8-dd3c-4ac2-b149-23dc943f3e6d', '20210527', '20210527-182030.014', 'Holly Hill Mafia', 'EXECUTED', 'FREEAGENT', 'c2ea0af8-dd3c-4ac2-b149-23dc943f3e6d1', '', '', 'Nate Lowe', 'B', 'Holly Hill Mafia', 'ADD', '40538'):./modules\fantasy.py
+
+2021-05-27 18:20:58,617:DEBUG:build_transactions:1244:PUSH: 20210527-182030.014 Holly Hill Mafia from:  to: B  Holly Hill Mafia Nate Lowe ADD
+:./modules\fantasy.py
+
+2021-05-27 18:20:58,617:DEBUG:build_transactions:1209:build_transactions ('c2ea0af8-dd3c-4ac2-b149-23dc943f3e6d', '20210527', '20210527-182030.014', 'Holly Hill Mafia', 'EXECUTED', 'FREEAGENT', 'c2ea0af8-dd3c-4ac2-b149-23dc943f3e6d2', '', 'Holly Hill Mafia', 'Andrew Heaney', 'B', '', 'DROP', '32672'):./modules\fantasy.py
+
+2021-05-27 18:20:58,617:DEBUG:build_transactions:1244:PUSH: 20210527-182030.014 Holly Hill Mafia from:  to: B Holly Hill Mafia  Andrew Heaney DROP
+:./modules\fantasy.py
+
+2021-05-27 18:20:58,617:DEBUG:build_transactions:1209:build_transactions ('a8e715cf-2801-45ad-b193-157508ea07b8', '20210527', '20210527-182050.47', 'Holly Hill Mafia', 'EXECUTED', 'FUTURE_ROSTER', 'a8e715cf-2801-45ad-b193-157508ea07b81', 'B', '', 'Nate Lowe', '1B', '', 'LINEUP', '40538'):./modules\fantasy.py
+
+2021-05-27 18:20:58,632:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Holly Hill Mafia:./modules\fantasy.py
+
+2021-05-27 18:20:58,632:DEBUG:build_transactions:1209:build_transactions ('a8e715cf-2801-45ad-b193-157508ea07b8', '20210527', '20210527-182050.47', 'Holly Hill Mafia', 'EXECUTED', 'FUTURE_ROSTER', 'a8e715cf-2801-45ad-b193-157508ea07b82', '1B', '', 'Ryan Mountcastle', 'B', '', 'LINEUP', '34940'):./modules\fantasy.py
+
+2021-05-27 18:20:58,632:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Holly Hill Mafia:./modules\fantasy.py
+
+2021-05-27 18:20:58,648:INFO:push_list:157:20210527-182030.014 Holly Hill Mafia from:  to: B  Holly Hill Mafia Nate Lowe ADD
+20210527-182030.014 Holly Hill Mafia from:  to: B Holly Hill Mafia  Andrew Heaney DROP
+:./modules\push.py
+
+2021-05-27 18:21:37,620:DEBUG:build_transactions:1209:build_transactions ('6308a492-c205-450d-8165-8dfa6495eaeb', '20210527', '20210527-182123.391', 'Holly Hill Mafia', 'EXECUTED', 'FUTURE_ROSTER', '6308a492-c205-450d-8165-8dfa6495eaeb1', 'B', '', 'Vladimir Gutierrez', 'SP', '', 'LINEUP', '36092'):./modules\fantasy.py
+
+2021-05-27 18:21:37,630:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Holly Hill Mafia:./modules\fantasy.py
+
+2021-05-27 18:45:38,448:INFO:push_list:157:Aroldis Chapman, injuryStatus, old:ACTIVE, new:DAY_TO_DAY
+:./modules\push.py
+
+2021-05-27 19:25:20,359:DEBUG:build_transactions:1209:build_transactions ('2817bf3d-3bc1-41f1-b469-e4e0feacfdf5', '20210527', '20210527-192458.326', 'The Big Bang Theory', 'EXECUTED', 'FUTURE_ROSTER', '2817bf3d-3bc1-41f1-b469-e4e0feacfdf51', 'B', '', 'Ozzie Albies', '2B', '', 'LINEUP', '33783'):./modules\fantasy.py
+
+2021-05-27 19:25:20,395:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: The Big Bang Theory:./modules\fantasy.py
+
+2021-05-27 19:25:20,396:DEBUG:build_transactions:1209:build_transactions ('2817bf3d-3bc1-41f1-b469-e4e0feacfdf5', '20210527', '20210527-192458.326', 'The Big Bang Theory', 'EXECUTED', 'FUTURE_ROSTER', '2817bf3d-3bc1-41f1-b469-e4e0feacfdf52', '2B', '', 'Brendan Rodgers', 'B', '', 'LINEUP', '35073'):./modules\fantasy.py
+
+2021-05-27 19:25:20,402:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: The Big Bang Theory:./modules\fantasy.py
+
+2021-05-27 19:25:20,403:DEBUG:build_transactions:1209:build_transactions ('53ddbef9-dc14-413d-b703-c57011738a97', '20210527', '20210527-192504.022', 'The Big Bang Theory', 'EXECUTED', 'FUTURE_ROSTER', '53ddbef9-dc14-413d-b703-c57011738a971', 'B', '', 'Bobby Dalbec', 'UTIL', '', 'LINEUP', '39382'):./modules\fantasy.py
+
+2021-05-27 19:25:20,439:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: The Big Bang Theory:./modules\fantasy.py
+
+2021-05-27 19:25:20,440:DEBUG:build_transactions:1209:build_transactions ('53ddbef9-dc14-413d-b703-c57011738a97', '20210527', '20210527-192504.022', 'The Big Bang Theory', 'EXECUTED', 'FUTURE_ROSTER', '53ddbef9-dc14-413d-b703-c57011738a972', 'UTIL', '', 'Miguel Rojas', 'B', '', 'LINEUP', '30791'):./modules\fantasy.py
+
+2021-05-27 19:25:20,446:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: The Big Bang Theory:./modules\fantasy.py
+
+2021-05-27 19:25:20,448:DEBUG:build_transactions:1209:build_transactions ('be64838a-7a47-45c6-906b-3d07b97ae905', '20210527', '20210527-192501.339', 'The Big Bang Theory', 'EXECUTED', 'FUTURE_ROSTER', 'be64838a-7a47-45c6-906b-3d07b97ae9051', 'B', '', 'Brendan Rodgers', 'UTIL', '', 'LINEUP', '35073'):./modules\fantasy.py
+
+2021-05-27 19:25:20,456:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: The Big Bang Theory:./modules\fantasy.py
+
+2021-05-27 19:25:20,457:DEBUG:build_transactions:1209:build_transactions ('be64838a-7a47-45c6-906b-3d07b97ae905', '20210527', '20210527-192501.339', 'The Big Bang Theory', 'EXECUTED', 'FUTURE_ROSTER', 'be64838a-7a47-45c6-906b-3d07b97ae9052', 'UTIL', '', 'Randy Arozarena', 'B', '', 'LINEUP', '36488'):./modules\fantasy.py
+
+2021-05-27 19:25:20,482:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: The Big Bang Theory:./modules\fantasy.py
+
+2021-05-27 20:13:11,362:DEBUG:build_transactions:1209:build_transactions ('4d1f2956-ecc7-412b-a4c3-2cb9de32cef1', '20210527', '20210527-201303.858', 'Toxic Whiteness', 'EXECUTED', 'FUTURE_ROSTER', '4d1f2956-ecc7-412b-a4c3-2cb9de32cef11', '2B/SS', '', 'Taylor Walls', 'B', '', 'LINEUP', '40576'):./modules\fantasy.py
+
+2021-05-27 20:13:11,393:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Toxic Whiteness:./modules\fantasy.py
+
+2021-05-27 20:13:11,393:DEBUG:build_transactions:1209:build_transactions ('4d1f2956-ecc7-412b-a4c3-2cb9de32cef1', '20210527', '20210527-201303.858', 'Toxic Whiteness', 'EXECUTED', 'FUTURE_ROSTER', '4d1f2956-ecc7-412b-a4c3-2cb9de32cef12', 'B', '', 'Ozzie Albies', '2B/SS', '', 'LINEUP', '33783'):./modules\fantasy.py
+
+2021-05-27 20:13:11,424:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Toxic Whiteness:./modules\fantasy.py
+
+2021-05-27 20:13:11,424:DEBUG:build_transactions:1209:build_transactions ('ef27ff96-3063-4182-81a8-fa4e3d7b88b7', '20210527', '20210527-201257.827', 'Toxic Whiteness', 'EXECUTED', 'FUTURE_ROSTER', 'ef27ff96-3063-4182-81a8-fa4e3d7b88b71', 'SS', '', 'Taylor Walls', '2B/SS', '', 'LINEUP', '40576'):./modules\fantasy.py
+
+2021-05-27 20:13:11,471:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Toxic Whiteness:./modules\fantasy.py
+
+2021-05-27 20:13:11,471:DEBUG:build_transactions:1209:build_transactions ('ef27ff96-3063-4182-81a8-fa4e3d7b88b7', '20210527', '20210527-201257.827', 'Toxic Whiteness', 'EXECUTED', 'FUTURE_ROSTER', 'ef27ff96-3063-4182-81a8-fa4e3d7b88b72', '2B/SS', '', 'Javier Baez', 'SS', '', 'LINEUP', '32127'):./modules\fantasy.py
+
+2021-05-27 20:13:11,502:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Toxic Whiteness:./modules\fantasy.py
+
+2021-05-27 20:29:03,167:INFO:push_list:157:Cody Poteet, status, old:FREEAGENT, new:ONTEAM
+:./modules\push.py
+
+2021-05-27 20:29:08,937:DEBUG:build_transactions:1209:build_transactions ('cde2bd56-7aaf-4092-ba3e-2a31150fca9e', '20210527', '20210527-202842.071', 'Toxic Whiteness', 'EXECUTED', 'FREEAGENT', 'cde2bd56-7aaf-4092-ba3e-2a31150fca9e1', '', '', 'Cody Poteet', 'B', 'Toxic Whiteness', 'ADD', '4728692'):./modules\fantasy.py
+
+2021-05-27 20:29:08,968:DEBUG:build_transactions:1244:PUSH: 20210527-202842.071 Toxic Whiteness from:  to: B  Toxic Whiteness Cody Poteet ADD
+:./modules\fantasy.py
+
+2021-05-27 20:29:08,968:INFO:push_list:157:20210527-202842.071 Toxic Whiteness from:  to: B  Toxic Whiteness Cody Poteet ADD
+:./modules\push.py
+
+2021-05-27 20:35:00,522:DEBUG:build_transactions:1209:build_transactions ('6a8d5624-0c0f-48a8-a300-dec9815bb0ca', '20210527', '20210527-203447.053', 'Aardvarks of Annihilation   ', 'EXECUTED', 'FUTURE_ROSTER', '6a8d5624-0c0f-48a8-a300-dec9815bb0ca1', 'B', '', 'DJ LeMahieu', 'UTIL', '', 'LINEUP', '30765'):./modules\fantasy.py
+
+2021-05-27 20:35:00,537:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Aardvarks of Annihilation   :./modules\fantasy.py
+
+2021-05-27 20:35:00,537:DEBUG:build_transactions:1209:build_transactions ('6a8d5624-0c0f-48a8-a300-dec9815bb0ca', '20210527', '20210527-203447.053', 'Aardvarks of Annihilation   ', 'EXECUTED', 'FUTURE_ROSTER', '6a8d5624-0c0f-48a8-a300-dec9815bb0ca2', 'UTIL', '', 'Corey Dickerson', 'B', '', 'LINEUP', '31684'):./modules\fantasy.py
+
+2021-05-27 20:35:00,553:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Aardvarks of Annihilation   :./modules\fantasy.py
+
+2021-05-27 20:35:00,553:DEBUG:build_transactions:1209:build_transactions ('5091e5c9-f682-484a-9d6b-a28c815593d4', '20210527', '20210527-203434.521', 'Aardvarks of Annihilation   ', 'EXECUTED', 'FUTURE_ROSTER', '5091e5c9-f682-484a-9d6b-a28c815593d41', 'B', '', 'Freddie Freeman', '1B', '', 'LINEUP', '30193'):./modules\fantasy.py
+
+2021-05-27 20:35:00,568:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Aardvarks of Annihilation   :./modules\fantasy.py
+
+2021-05-27 20:35:00,568:DEBUG:build_transactions:1209:build_transactions ('5091e5c9-f682-484a-9d6b-a28c815593d4', '20210527', '20210527-203434.521', 'Aardvarks of Annihilation   ', 'EXECUTED', 'FUTURE_ROSTER', '5091e5c9-f682-484a-9d6b-a28c815593d42', '1B', '', 'DJ LeMahieu', 'B', '', 'LINEUP', '30765'):./modules\fantasy.py
+
+2021-05-27 20:35:00,584:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Aardvarks of Annihilation   :./modules\fantasy.py
+
+2021-05-27 20:35:43,203:DEBUG:build_transactions:1209:build_transactions ('24838090-43a5-435b-92b9-1b07c36b8068', '20210527', '20210527-203501.807', 'Aardvarks of Annihilation   ', 'EXECUTED', 'FUTURE_ROSTER', '24838090-43a5-435b-92b9-1b07c36b80681', 'B', '', 'Austin Riley', 'UTIL', '', 'LINEUP', '34982'):./modules\fantasy.py
+
+2021-05-27 20:35:43,214:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Aardvarks of Annihilation   :./modules\fantasy.py
+
+2021-05-27 20:35:43,214:DEBUG:build_transactions:1209:build_transactions ('24838090-43a5-435b-92b9-1b07c36b8068', '20210527', '20210527-203501.807', 'Aardvarks of Annihilation   ', 'EXECUTED', 'FUTURE_ROSTER', '24838090-43a5-435b-92b9-1b07c36b80682', 'UTIL', '', 'DJ LeMahieu', 'B', '', 'LINEUP', '30765'):./modules\fantasy.py
+
+2021-05-27 20:35:43,237:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Aardvarks of Annihilation   :./modules\fantasy.py
+
+2021-05-27 20:49:01,078:DEBUG:build_transactions:1209:build_transactions ('22d10b9e-5c29-4b3e-a46d-ffcef299ff54', '20210527', '20210527-204848.289', 'The Terminators', 'EXECUTED', 'FUTURE_ROSTER', '22d10b9e-5c29-4b3e-a46d-ffcef299ff541', 'B', '', 'C.J. Cron', '1B', '', 'LINEUP', '32155'):./modules\fantasy.py
+
+2021-05-27 20:49:01,091:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: The Terminators:./modules\fantasy.py
+
+2021-05-27 20:52:49,603:DEBUG:build_transactions:1209:build_transactions ('6c56539a-4ac9-4aff-8b18-69fcf75d8d62', '20210527', '20210527-205224.566', 'The Terminators', 'EXECUTED', 'FUTURE_ROSTER', '6c56539a-4ac9-4aff-8b18-69fcf75d8d621', 'B', '', 'Dansby Swanson', '2B/SS', '', 'LINEUP', '34895'):./modules\fantasy.py
+
+2021-05-27 20:52:49,633:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: The Terminators:./modules\fantasy.py
+
+2021-05-27 20:52:49,634:DEBUG:build_transactions:1209:build_transactions ('ebea5d77-22a9-4e5a-812b-c41ae8bfdde6', '20210527', '20210527-205217.335', 'The Terminators', 'EXECUTED', 'FUTURE_ROSTER', 'ebea5d77-22a9-4e5a-812b-c41ae8bfdde61', '2B/SS', '', 'Max Muncy', '1B', '', 'LINEUP', '33303'):./modules\fantasy.py
+
+2021-05-27 20:52:49,661:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: The Terminators:./modules\fantasy.py
+
+2021-05-27 20:52:49,662:DEBUG:build_transactions:1209:build_transactions ('ebea5d77-22a9-4e5a-812b-c41ae8bfdde6', '20210527', '20210527-205217.335', 'The Terminators', 'EXECUTED', 'FUTURE_ROSTER', 'ebea5d77-22a9-4e5a-812b-c41ae8bfdde62', '1B', '', 'C.J. Cron', 'B', '', 'LINEUP', '32155'):./modules\fantasy.py
+
+2021-05-27 20:52:49,687:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: The Terminators:./modules\fantasy.py
+
+2021-05-27 20:53:28,996:DEBUG:build_transactions:1209:build_transactions ('acde2b48-790a-476c-88de-4c0c88eb7403', '20210527', '20210527-205254.058', 'The Terminators', 'EXECUTED', 'FUTURE_ROSTER', 'acde2b48-790a-476c-88de-4c0c88eb74031', 'OF', '', 'Tommy Edman', '1B/3B', '', 'LINEUP', '39907'):./modules\fantasy.py
+
+2021-05-27 20:53:29,007:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: The Terminators:./modules\fantasy.py
+
+2021-05-27 20:53:29,008:DEBUG:build_transactions:1209:build_transactions ('acde2b48-790a-476c-88de-4c0c88eb7403', '20210527', '20210527-205254.058', 'The Terminators', 'EXECUTED', 'FUTURE_ROSTER', 'acde2b48-790a-476c-88de-4c0c88eb74032', '1B/3B', '', 'Matt Chapman', 'B', '', 'LINEUP', '33857'):./modules\fantasy.py
+
+2021-05-27 20:53:29,042:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: The Terminators:./modules\fantasy.py
+
+2021-05-27 20:53:29,042:DEBUG:build_transactions:1209:build_transactions ('5a284aec-a510-4918-bc67-3e6718fc9882', '20210527', '20210527-205258.592', 'The Terminators', 'EXECUTED', 'FUTURE_ROSTER', '5a284aec-a510-4918-bc67-3e6718fc98821', 'B', '', 'J.D. Martinez', 'OF', '', 'LINEUP', '31065'):./modules\fantasy.py
+
+2021-05-27 20:53:29,050:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: The Terminators:./modules\fantasy.py
+
+2021-05-27 20:59:29,736:DEBUG:build_transactions:1209:build_transactions ('1a7edc3a-dcaa-4c22-b1fb-15438be86060', '20210527', '20210527-205919.703', 'wOBA Barons', 'EXECUTED', 'ROSTER', '1a7edc3a-dcaa-4c22-b1fb-15438be860601', 'B', '', 'George Springer', 'IL', '', 'LINEUP', '32078'):./modules\fantasy.py
+
+2021-05-27 20:59:29,748:DEBUG:build_transactions:1244:PUSH: 20210527-205919.703 wOBA Barons from: B to: IL   George Springer LINEUP
+:./modules\fantasy.py
+
+2021-05-27 20:59:29,749:DEBUG:build_transactions:1209:build_transactions ('1a7edc3a-dcaa-4c22-b1fb-15438be86060', '20210527', '20210527-205919.703', 'wOBA Barons', 'EXECUTED', 'ROSTER', '1a7edc3a-dcaa-4c22-b1fb-15438be860602', 'IL', '', 'Taijuan Walker', 'B', '', 'LINEUP', '31864'):./modules\fantasy.py
+
+2021-05-27 20:59:29,756:DEBUG:build_transactions:1244:PUSH: 20210527-205919.703 wOBA Barons from: IL to: B   Taijuan Walker LINEUP
+:./modules\fantasy.py
+
+2021-05-27 20:59:29,757:INFO:push_list:157:20210527-205919.703 wOBA Barons from: B to: IL   George Springer LINEUP
+20210527-205919.703 wOBA Barons from: IL to: B   Taijuan Walker LINEUP
+:./modules\push.py
+
+2021-05-27 21:00:02,685:DEBUG:build_transactions:1209:build_transactions ('5ba54aa9-d078-4268-8339-978e6d7e4eae', '20210527', '20210527-205940.312', 'wOBA Barons', 'EXECUTED', 'FUTURE_ROSTER', '5ba54aa9-d078-4268-8339-978e6d7e4eae1', 'B', '', 'Xander Bogaerts', '2B/SS', '', 'LINEUP', '31606'):./modules\fantasy.py
+
+2021-05-27 21:00:02,696:DEBUG:build_transactions:1209:build_transactions ('5ba54aa9-d078-4268-8339-978e6d7e4eae', '20210527', '20210527-205940.312', 'wOBA Barons', 'EXECUTED', 'FUTURE_ROSTER', '5ba54aa9-d078-4268-8339-978e6d7e4eae2', '2B/SS', '', 'Wander Franco', 'B', '', 'LINEUP', '40929'):./modules\fantasy.py
+
+2021-05-27 21:00:02,707:DEBUG:build_transactions:1209:build_transactions ('791ce7f1-4205-4d01-8a4f-9f29f935a010', '20210527', '20210527-205933.729', 'wOBA Barons', 'EXECUTED', 'FUTURE_ROSTER', '791ce7f1-4205-4d01-8a4f-9f29f935a0101', 'B', '', 'Austin Riley', '1B/3B', '', 'LINEUP', '34982'):./modules\fantasy.py
+
+2021-05-27 21:00:02,717:DEBUG:build_transactions:1209:build_transactions ('8341cf8f-2943-4d41-8e0a-9afb236b7efc', '20210527', '20210527-210000.509', 'wOBA Barons', 'EXECUTED', 'FUTURE_ROSTER', '8341cf8f-2943-4d41-8e0a-9afb236b7efc1', 'B', '', 'Taijuan Walker', 'P', '', 'LINEUP', '31864'):./modules\fantasy.py
+
+2021-05-27 21:00:02,726:DEBUG:build_transactions:1209:build_transactions ('8341cf8f-2943-4d41-8e0a-9afb236b7efc', '20210527', '20210527-210000.509', 'wOBA Barons', 'EXECUTED', 'FUTURE_ROSTER', '8341cf8f-2943-4d41-8e0a-9afb236b7efc2', 'P', '', 'Chris Bassitt', 'B', '', 'LINEUP', '33148'):./modules\fantasy.py
+
+2021-05-27 21:00:02,735:DEBUG:build_transactions:1209:build_transactions ('e467817f-3e80-483d-a013-04856db30ce8', '20210527', '20210527-205945.558', 'wOBA Barons', 'EXECUTED', 'FUTURE_ROSTER', 'e467817f-3e80-483d-a013-04856db30ce81', 'B', '', 'Michael Brantley', 'OF', '', 'LINEUP', '30043'):./modules\fantasy.py
+
+2021-05-27 21:00:02,742:DEBUG:build_transactions:1209:build_transactions ('e467817f-3e80-483d-a013-04856db30ce8', '20210527', '20210527-205945.558', 'wOBA Barons', 'EXECUTED', 'FUTURE_ROSTER', 'e467817f-3e80-483d-a013-04856db30ce82', 'OF', '', 'Randy Arozarena', 'B', '', 'LINEUP', '36488'):./modules\fantasy.py
+
+2021-05-27 21:00:02,750:DEBUG:build_transactions:1209:build_transactions ('e207a484-06ca-4a1d-a583-4326702cd465', '20210527', '20210527-205949.31', 'wOBA Barons', 'EXECUTED', 'FUTURE_ROSTER', 'e207a484-06ca-4a1d-a583-4326702cd4651', 'B', '', 'Yordan Alvarez', 'UTIL', '', 'LINEUP', '36018'):./modules\fantasy.py
+
+2021-05-27 21:00:02,760:DEBUG:build_transactions:1209:build_transactions ('e207a484-06ca-4a1d-a583-4326702cd465', '20210527', '20210527-205949.31', 'wOBA Barons', 'EXECUTED', 'FUTURE_ROSTER', 'e207a484-06ca-4a1d-a583-4326702cd4652', 'UTIL', '', 'Taylor Walls', 'B', '', 'LINEUP', '40576'):./modules\fantasy.py
+
+2021-05-27 21:00:02,769:DEBUG:build_transactions:1209:build_transactions ('6be3b87a-89b9-4fce-ae11-a7f8e648bfb2', '20210527', '20210527-205956.598', 'wOBA Barons', 'EXECUTED', 'FUTURE_ROSTER', '6be3b87a-89b9-4fce-ae11-a7f8e648bfb21', 'B', '', 'Framber Valdez', 'P', '', 'LINEUP', '36581'):./modules\fantasy.py
+
+2021-05-27 21:07:23,381:DEBUG:build_transactions:1209:build_transactions ('b4fec80d-c4d5-4c37-9842-60ee79f81ce4', '20210527', '20210527-210709.847', 'Lucille Sluggers', 'EXECUTED', 'FUTURE_ROSTER', 'b4fec80d-c4d5-4c37-9842-60ee79f81ce41', 'B', '', 'Miguel Sano', '1B/3B', '', 'LINEUP', '31260'):./modules\fantasy.py
+
+2021-05-27 21:07:23,419:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Lucille Sluggers:./modules\fantasy.py
+
+2021-05-27 21:07:23,419:DEBUG:build_transactions:1209:build_transactions ('b4fec80d-c4d5-4c37-9842-60ee79f81ce4', '20210527', '20210527-210709.847', 'Lucille Sluggers', 'EXECUTED', 'FUTURE_ROSTER', 'b4fec80d-c4d5-4c37-9842-60ee79f81ce42', '1B/3B', '', 'Keston Hiura', 'B', '', 'LINEUP', '39879'):./modules\fantasy.py
+
+2021-05-27 21:07:23,457:DEBUG:build_transactions:1230:Skipping lineup change teamnot on watch list: Lucille Sluggers:./modules\fantasy.py
+
+2021-05-27 21:15:20,319:DEBUG:main:182:Start eod_process at 20210527-211520:C:/Ubuntu/Shared/BBD/Fantasy/2021/beta/code/pythonProject/espn_player_info.py
+
+2021-05-27 21:15:20,506:DEBUG:main:184:End eod_process at 20210527-211520:C:/Ubuntu/Shared/BBD/Fantasy/2021/beta/code/pythonProject/espn_player_info.py
+
+2021-05-27 22:11:26,508:INFO:push_list:157:Garrett Cooper, injuryStatus, old:DAY_TO_DAY, new:ACTIVE
+:./modules\push.py
+
+2021-05-27 22:15:28,862:DEBUG:build_transactions:1209:build_transactions ('dfcd2295-4bed-4d9f-b82c-c24d230cd889', '20210527', '20210527-221520.75', 'Flip Mode', 'EXECUTED', 'FUTURE_ROSTER', 'dfcd2295-4bed-4d9f-b82c-c24d230cd8891', 'RP', '', 'Austin Gomber', 'B', '', 'LINEUP', '34897'):./modules\fantasy.py
+
+2021-05-27 22:16:08,720:DEBUG:build_transactions:1209:build_transactions ('c6ad4ea3-3026-485e-80fa-dc3921663a0c', '20210527', '20210527-221548.013', 'Flip Mode', 'EXECUTED', 'FUTURE_ROSTER', 'c6ad4ea3-3026-485e-80fa-dc3921663a0c1', 'B', '', 'Jazz Chisholm Jr.', 'UTIL', '', 'LINEUP', '41433'):./modules\fantasy.py
+
+2021-05-27 22:16:08,751:DEBUG:build_transactions:1209:build_transactions ('c6ad4ea3-3026-485e-80fa-dc3921663a0c', '20210527', '20210527-221548.013', 'Flip Mode', 'EXECUTED', 'FUTURE_ROSTER', 'c6ad4ea3-3026-485e-80fa-dc3921663a0c2', 'UTIL', '', 'Ji-Man Choi', 'B', '', 'LINEUP', '31779'):./modules\fantasy.py
+
+2021-05-27 22:16:45,934:DEBUG:build_transactions:1209:build_transactions ('da2d37cc-c735-404c-9976-93e204788e9f', '20210527', '20210527-221631.271', 'Avengers: Age Of Beltran', 'EXECUTED', 'FUTURE_ROSTER', 'da2d37cc-c735-404c-9976-93e204788e9f1', 'B', '', 'Carson Kelly', 'UTIL', '', 'LINEUP', '32797'):./modules\fantasy.py
+
+2021-05-27 22:16:45,975:DEBUG:build_transactions:1209:build_transactions ('da2d37cc-c735-404c-9976-93e204788e9f', '20210527', '20210527-221631.271', 'Avengers: Age Of Beltran', 'EXECUTED', 'FUTURE_ROSTER', 'da2d37cc-c735-404c-9976-93e204788e9f2', 'UTIL', '', 'Justin Turner', 'B', '', 'LINEUP', '29607'):./modules\fantasy.py
+
+2021-05-27 22:16:45,982:DEBUG:build_transactions:1209:build_transactions ('5f41b930-cb74-4ed4-ac8e-9320ead54cfa', '20210527', '20210527-221623.994', 'Avengers: Age Of Beltran', 'EXECUTED', 'FUTURE_ROSTER', '5f41b930-cb74-4ed4-ac8e-9320ead54cfa1', 'B', '', 'Alex Bregman', '3B', '', 'LINEUP', '34886'):./modules\fantasy.py
+
+2021-05-27 22:16:46,020:DEBUG:build_transactions:1209:build_transactions ('5f41b930-cb74-4ed4-ac8e-9320ead54cfa', '20210527', '20210527-221623.994', 'Avengers: Age Of Beltran', 'EXECUTED', 'FUTURE_ROSTER', '5f41b930-cb74-4ed4-ac8e-9320ead54cfa2', '3B', '', 'Alec Bohm', 'B', '', 'LINEUP', '41169'):./modules\fantasy.py
+
+2021-05-27 22:19:16,048:DEBUG:__init__:116:Initializing fantasy object:./modules\fantasy.py
+
+2021-05-27 22:21:37,987:DEBUG:__init__:116:Initializing fantasy object:./modules\fantasy.py
+
+2021-05-27 22:28:08,289:DEBUG:build_transactions:1209:build_transactions ('5cae512a-5bdd-4789-ad5d-62e602e2e1f7', '20210527', '20210527-222800.511', 'Spring Rakers', 'EXECUTED', 'FUTURE_ROSTER', '5cae512a-5bdd-4789-ad5d-62e602e2e1f71', 'B', '', 'Cody Bellinger', 'OF', '', 'LINEUP', '33912'):./modules\fantasy.py
+
+2021-05-27 22:28:08,301:DEBUG:build_transactions:1209:build_transactions ('5cae512a-5bdd-4789-ad5d-62e602e2e1f7', '20210527', '20210527-222800.511', 'Spring Rakers', 'EXECUTED', 'FUTURE_ROSTER', '5cae512a-5bdd-4789-ad5d-62e602e2e1f72', 'OF', '', 'Austin Meadows', 'B', '', 'LINEUP', '33197'):./modules\fantasy.py
+
+2021-05-27 22:37:31,836:DEBUG:build_transactions:1209:build_transactions ('a016f5e9-95bc-4e7a-aab2-ebc69343eacf', '20210527', '20210527-223713.537', 'When Franimals Attack', 'EXECUTED', 'FREEAGENT', 'a016f5e9-95bc-4e7a-aab2-ebc69343eacf1', '', '', 'Deivi Garcia', 'B', 'When Franimals Attack', 'ADD', '41218'):./modules\fantasy.py
+
+2021-05-27 22:37:31,871:DEBUG:build_transactions:1244:PUSH: 20210527-223713.537 When Franimals Attack from:  to: B  When Franimals Attack Deivi Garcia ADD
+:./modules\fantasy.py
+
+2021-05-27 22:37:31,872:DEBUG:build_transactions:1209:build_transactions ('a016f5e9-95bc-4e7a-aab2-ebc69343eacf', '20210527', '20210527-223713.537', 'When Franimals Attack', 'EXECUTED', 'FREEAGENT', 'a016f5e9-95bc-4e7a-aab2-ebc69343eacf2', '', 'When Franimals Attack', 'Adbert Alzolay', 'B', '', 'DROP', '39802'):./modules\fantasy.py
+
+2021-05-27 22:37:31,905:DEBUG:build_transactions:1244:PUSH: 20210527-223713.537 When Franimals Attack from:  to: B When Franimals Attack  Adbert Alzolay DROP
+:./modules\fantasy.py
+
+2021-05-27 22:37:31,907:DEBUG:build_transactions:1209:build_transactions ('f841f146-3df8-4e11-be5f-3d72fb68ede5', '20210527', '20210527-223726.606', 'When Franimals Attack', 'EXECUTED', 'FUTURE_ROSTER', 'f841f146-3df8-4e11-be5f-3d72fb68ede51', 'B', '', 'Deivi Garcia', 'SP', '', 'LINEUP', '41218'):./modules\fantasy.py
+
+2021-05-27 22:37:31,948:INFO:push_list:157:20210527-223713.537 When Franimals Attack from:  to: B  When Franimals Attack Deivi Garcia ADD
+20210527-223713.537 When Franimals Attack from:  to: B When Franimals Attack  Adbert Alzolay DROP
+:./modules\push.py
+

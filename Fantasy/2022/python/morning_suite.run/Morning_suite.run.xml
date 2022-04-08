@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Morning_suite" type="Multirun" separateTabs="false" reuseTabsWithFailures="false" startOneByOne="true" markFailedProcess="true" hideSuccessProcess="true" delayTime="60.0">
+    <runConfiguration name="odds" type="Python" />
+    <runConfiguration name="fangraphs_splits" type="Python" />
+    <method v="2" />
+  </configuration>
+</component>
