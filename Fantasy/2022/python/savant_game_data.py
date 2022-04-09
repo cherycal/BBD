@@ -27,27 +27,16 @@ def roster_list():
     try:
         r = bdb.select_plus("SELECT * FROM ESPNRostersWithMLBID")
         for d in r['dicts']:
-            #leagueID = int(str(d["LeagueID"])[0:2])
             mlbid = str(d["MLBID"])
-            #team = d["Team"]
-            #full_team = str(team) #make a copy
-            #team = team.replace("The ","")
-            #team = team[0:4]
-            #pos = "-"+str(d["Position"])
             roster_spot = str(d["RosterSpot"])
             #PLAYOFFS = True
             if PLAYOFFS == False:
-                # if team not in ["Pitc","Senz","Flip","When","wOBA","Prac"]:
-                #     team = leagueID
-                #     pos = ""
                 if teams.get(mlbid):
                     teams[mlbid] += f'{roster_spot} '
                 else:
                     teams[mlbid] = f'{roster_spot} '
-
     except Exception as ex:
         print(f'Exception: {str(ex)}')
-
     return teams
 
 
@@ -112,7 +101,7 @@ query = "select distinct MLBID, Name from ( select  round(MLBID,0) as MLBID, " \
     "and AuctionValueAverage >= 50 ) union select distinct round(MLBID,0) as MLBID," \
     " Name from ESPNPlayerDataCurrent E, IDMap I, ESPNRosters R where" \
     " E.espnid = R.ESPNID and  E.espnid = I.ESPNID and R.Team in" \
-    " ('When Franimals Attack' , 'Flip Mode', 'wOBA Barons', 'Senzeless Violence','Practice Squad','Pitchers .')"
+    " (select TeamName as Team from ESPNTeamOwners where WatchLevel > 0)"
 
 PLAYOFFS = False
 
