@@ -15,7 +15,6 @@ import sqldb
 
 bdb = sqldb.DB('Baseball.db')
 
-
 def do_range(start_date, end_date, player_type, spring_training):
 
     year = start_date[6:10]
