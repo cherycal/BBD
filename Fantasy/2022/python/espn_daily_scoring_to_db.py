@@ -20,7 +20,7 @@ fantasy = fantasy.Fantasy(mode, caller=os.path.basename(__file__))
 bdb = fantasy.get_db()
 statid_dict = fantasy.get_statid_dict(verbose=False)
 
-year = 2021
+year = 2022
 
 
 def one_day(scoring_period, league):
@@ -108,12 +108,12 @@ def one_day(scoring_period, league):
 								exit(-1)
 
 def main():
-	leagues = [162788, 6455, 87301, 37863846]
+	leagues = [6455, 37863846,1095816069]
 	#leagues = [162788]
-	season_start = date(2021, 3, 31)
+	season_start = date(2022, 4, 7)
 	today = date.today()
 	#previous = today - timedelta(days=2)
-	previous = today - timedelta(days=8)
+	previous = today - timedelta(days=1)
 
 	#print(yesterday.strftime("%Y%m%d"))
 

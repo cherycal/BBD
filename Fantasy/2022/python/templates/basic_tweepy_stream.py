@@ -45,7 +45,5 @@ class MyStreamListener(tweepy.StreamListener):
 myStreamListener = MyStreamListener()
 myStream = tweepy.Stream(auth = api.auth, listener=myStreamListener)
 
-myStream.filter(track=['lineup MLB','odorizzi',"#MLBPicks"])
-# myStream.filter(follow=['FantasyLabsMLB','@FantasyLabsMLB',
-#                         'RotoWireMLB','GSMLBPicks', '@GSMLBPicks',
-#                         'agholorpooch','@agholorpooch'])
+myStream.filter(track=['1375606437410299905'],  is_async=True)
+#myStream.filter(follow=['1375606437410299905'],  is_async=True)
