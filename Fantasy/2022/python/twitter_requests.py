@@ -3,7 +3,7 @@ __author__ = 'chance'
 import sys
 import time
 
-sys.path.append('../modules')
+sys.path.append('./modules')
 import sqldb
 import push
 from datetime import datetime
@@ -34,23 +34,21 @@ tweet_cache = list()
 # start_dt = end_dt - datetime.timedelta(days=3)
 # print(str(end_dt), str(start_dt))
 
-q_strs = {"alerts baseball name": "fantasy.run_query",
-          "qabb schedule": "fantasy.tweet_daily_schedule"}
 
 
-# time_str = "2022-04-11 05:19:08"
-# then = datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S")
-# now = datetime.utcnow()
-# diff = now - then
-# print(diff.seconds)
-# exit(0)
-sleepint = 15
-tweetage = 120
+
+q_strs = {"alerts baseball schedule": fantasy.tweet_daily_schedule,
+          "alerts baseball adds": fantasy.tweet_add_drops}
+
+
+sleepint = 5
+tweetage = 50
 
 while 1:
 
     for q_str in q_strs.keys():
 
+        print(f'Searching term {q_str}')
         tweets_list = api.search(q_str, count=20, lang='en', result_type='recent')
 
         for tweet in tweets_list:
@@ -60,9 +58,12 @@ while 1:
             term = term.replace("alerts baseball name ","")
 
             if id not in tweet_cache:
-                print(f'search term: {term}')
+                print(tweet._json['text'])
+                tweet_cache.append(id)
                 now = datetime.utcnow()
                 diff = now - tweet.created_at
+                now = datetime.utcnow()
+                print(f'{diff.seconds} seconds ago')
                 if diff.seconds < tweetage:
                     print("--------------")
                     print(tweet.user.screen_name)
@@ -77,14 +78,13 @@ while 1:
                     print(tweet._json['text'])
                     print("--------------")
                     print(f'Function: {q_str} => {q_strs[q_str]}')
-                    query = f'SELECT Player, Team, LeagueID, Position FROM ESPNRosters WHERE Player like "%{term}%" order by Player, LeagueId'
-                    print(f'query: {query}')
-                    fantasy.run_query(query)
-                    # q_strs[q_str]
+                    # query = f'SELECT Player, Team, LeagueID, Position FROM ESPNRosters WHERE Player like "%{term}%" order by Player, LeagueId'
+                    # print(f'query: {query}')
+                    # fantasy.run_query(query)
+                    q_strs[q_str]()
                 else:
                     pass
                     #print(f'Not processing tweet because it is too old ({diff.seconds} seconds)')
-                tweet_cache.append(tweet._json['id'])
             else:
                 pass
                 #print(f'ID: {id} already processed')
