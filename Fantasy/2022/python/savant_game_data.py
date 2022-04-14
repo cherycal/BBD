@@ -499,8 +499,8 @@ def main():
                     process_lineups(lineups)
 
                     if data.get('exit_velocity'):
-                        #print("Skipping statcast data")
-                        process_statcast(data, gamepk)
+                        print("Skipping statcast data")
+                        #process_statcast(data, gamepk)
             except Exception as ex:
                 print("Exception in user code:")
                 print("-" * 60)
