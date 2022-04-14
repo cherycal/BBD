@@ -124,7 +124,7 @@ def main():
 	#five_ago_scoring_pd = (five_days_ago - season_start).days
 
 	start_scoring_pd = previous_scoring_pd
-	end_scoring_pd = today_scoring_pd + 1
+	end_scoring_pd = today_scoring_pd + 2
 
 
 	## Override for ad hoc runs
