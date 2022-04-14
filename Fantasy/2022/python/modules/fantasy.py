@@ -95,6 +95,7 @@ class Fantasy(object):
 		# self.espn_player_json = self.set_espn_player_json()
 		self.espn_trans_ids = self.get_espn_trans_ids()
 		self.leagues = self.get_leagues()
+		self.abbrs = self.get_league_abbr()
 		self.active_leagues = self.get_active_leagues()
 		self.default_league = self.set_espn_default_league()
 		self.game_dates = self.set_game_dates()
@@ -981,6 +982,8 @@ class Fantasy(object):
 		self.run_query(query, "Adds / drops: ")
 		return
 
+
+
 	@tools.try_wrap
 	def tweet_sprk_on_opponents(self):
 		query = "select * from SPRKOnOpponents"
@@ -1123,6 +1126,14 @@ class Fantasy(object):
 			teamName[str(row['LeagueID'])][str(row['TeamID'])] = str(row['TeamName'])
 		return teamName
 
+	def get_league_abbr(self):
+		abbrs = {}
+		query = "select LeagueID, Abbr from ESPNLeagues"
+		rows = self.DB.query(query)
+		for row in rows:
+			abbrs[str(row['LeagueID'])] = str(row['Abbr'])
+		return abbrs
+
 	def get_leagues(self):
 		leagues = {}
 		query = "select distinct LeagueID from ESPNLeagues"
@@ -1164,6 +1175,7 @@ class Fantasy(object):
 						update_time_hhmmss = time.strftime("%H%M%S", time.localtime(seconds))
 						update_time += str(sub_seconds)
 						team_name = self.teamName[str(leagueID)][str(transaction['teamId'])]
+						league_abbr = self.abbrs[str(leagueID)]
 
 						item_count = 0
 						if 'items' in transaction:
@@ -1269,7 +1281,7 @@ class Fantasy(object):
 													push_str = \
 														self.push_instance.string_from_list(
 														[update_time,
-														team_name,
+														team_name, f'({league_abbr})',
 														"from:", from_position,
 					                                     "to:",
 					                                     to_position, from_team,
