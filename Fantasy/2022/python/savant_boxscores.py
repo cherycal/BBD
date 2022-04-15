@@ -9,7 +9,6 @@ import random
 import push
 import pandas as pd
 import fantasy
-import dataframe_image as dfi
 from datetime import date, datetime
 from datetime import timedelta
 import os
@@ -46,6 +45,9 @@ def process_statcast(data, gamepk, game_date):
             bid = "ID" + str(batter)
             bname = team['players'][bid]['person']['fullName']
             game_stats = team['players'][bid]['stats']['batting']
+            season = str(game_date)
+            season = season[0:4]
+            gametype = "R"
             for cat in batcats:
                 if game_stats.get(cat):
                     statlist.append(game_stats[cat])
@@ -80,10 +82,12 @@ def process_statcast(data, gamepk, game_date):
         df['SLG'] = (df['singles'] * 1.0 + df['doubles'] * 2.0 + df['triples'] * 3.0 + df['homeRuns'] * 4.0) / df[
             'atBats']
         df['SLG'] = df['SLG'].apply(lambda x: round(x, 4))
+        df['GameType'] = "R"
+        df['Season'] = season
         # df_styled = df.style.background_gradient()  # adding a gradient based on values in cell
         img = "mytable.png"
-        dfi.export(df, img)
-        # inst.tweet_media(img, "Batting stats: " + teamname)
+        #dfi.export(df, img)
+        #inst.tweet_media(img, "Batting stats: " + teamname)
 
         table_name = "StatcastBoxscores"
         del_cmd = f'delete from {table_name} where gamepk = {gamepk} and team = \'{teamname}\''
@@ -154,10 +158,12 @@ def process_statcast(data, gamepk, game_date):
         print(df.columns)
         df = df.sort_values(by=['points'], ascending=[False])
         df = df[column_names]
+        df['GameType'] = "R"
+        df['Season'] = season
         # df_styled = df.style.background_gradient()  # adding a gradient based on values in cell
-        # img = "mytable.png"
-        # dfi.export(df, img)
-        # inst.tweet_media(img, "Pitching stats: " + teamname)
+        img = "mytable.png"
+        #dfi.export(df, img)
+        #inst.tweet_media(img, "Pitching stats: " + teamname)
 
         table_name = "StatcastBoxscoresPitching"
         del_cmd = f'delete from {table_name} where gamepk = {gamepk} and team = \'{teamname}\''
@@ -178,7 +184,7 @@ def one_day(dt):
     gamepks = dict()
 
     q = f'select game, date from StatcastGameData where date >= {out_date} and date <= {out_date} ' \
-        f'and game_state = "Final" or game_state is NULL'
+        f'and (game_state = "Final" or game_state is NULL)'
 
     c = bdb.select(q)
 
@@ -220,7 +226,7 @@ def one_day(dt):
 
 
 def main():
-    DAYS_AGO = 1
+    DAYS_AGO = 2
     end_date = date.today()
     start_date = end_date - timedelta(days=DAYS_AGO)
     step = timedelta(days=1)
