@@ -128,14 +128,14 @@ def main():
 
 
 	## Override for ad hoc runs
-	override = False
+	override = True
 	if override:
 
-		start_date = date(2021, 4, 15)
-		end_date = date(2021, 5, 16)
+		start_date = date(2022, 4, 7)
+		#end_date = date(2022, 4, 14)
 
 		start_scoring_pd = (start_date - season_start).days
-		end_scoring_pd = (end_date - season_start).days
+		#end_scoring_pd = (end_date - season_start).days
 
 
 

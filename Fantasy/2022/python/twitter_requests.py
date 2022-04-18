@@ -9,6 +9,7 @@ import push
 from datetime import datetime
 import fantasy
 import os
+import espn_h2h_current_scores
 
 mode = "PROD"
 fantasy = fantasy.Fantasy(mode, caller=os.path.basename(__file__))
@@ -29,6 +30,7 @@ auth_url = auth.get_authorization_url()
 
 tweet_cache = list()
 
+
 # end_dt = datetime.date.today()
 # end_dt = end_dt - datetime.timedelta(days=-2)
 # start_dt = end_dt - datetime.timedelta(days=3)
@@ -36,12 +38,13 @@ tweet_cache = list()
 
 
 
+# q_strs = {"alerts baseball schedule": fantasy.tweet_daily_schedule,
+#           "alerts baseball adds": fantasy.tweet_add_drops,
+#           "alerts baseball flip score": espn_head_to_head_scores.get_page}
 
-q_strs = {"alerts baseball schedule": fantasy.tweet_daily_schedule,
-          "alerts baseball adds": fantasy.tweet_add_drops}
+q_strs = {"alerts baseball flip score": espn_h2h_current_scores.get_page}
 
-
-sleepint = 5
+sleepint = 8
 tweetage = 50
 
 while 1:
@@ -52,14 +55,14 @@ while 1:
         tweets_list = api.search(q_str, count=20, lang='en', result_type='recent')
 
         for tweet in tweets_list:
-            id = tweet._json['id']
+            tid = tweet._json['id']
             text = tweet._json['text']
             term = str(text)
-            term = term.replace("alerts baseball name ","")
+            term = term.replace("alerts baseball name ", "")
 
-            if id not in tweet_cache:
+            if tid not in tweet_cache:
                 print(tweet._json['text'])
-                tweet_cache.append(id)
+                tweet_cache.append(tid)
                 now = datetime.utcnow()
                 diff = now - tweet.created_at
                 now = datetime.utcnow()
@@ -72,7 +75,7 @@ while 1:
                     now = datetime.utcnow()
                     diff = now - tweet.created_at
                     print(f'{diff.seconds} seconds ago')
-                    print(id)
+                    print(tid)
                     print(tweet._json['user']['name'])
                     print("--------------")
                     print(tweet._json['text'])
@@ -84,10 +87,11 @@ while 1:
                     q_strs[q_str]()
                 else:
                     pass
-                    #print(f'Not processing tweet because it is too old ({diff.seconds} seconds)')
+                    # print(f'Not processing tweet because it is too old ({diff.seconds} seconds)')
             else:
                 pass
-                #print(f'ID: {id} already processed')
+                # print(f'ID: {id} already processed')
 
-    print(f'Sleeping for {sleepint} seconds at {datetime.now()}')
-    time.sleep(sleepint)
+
+        print(f'Sleeping for {sleepint} seconds at {datetime.now()}')
+        time.sleep(sleepint)

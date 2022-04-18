@@ -45,7 +45,7 @@ def trywrap(func):
         except Exception as ex:
             print(str(ex))
             tries += 1
-            time.sleep(.5)
+            time.sleep(2.5)
             if tries == max_tries:
                 print("Process failed: ")
                 print("Exception in user code:")
@@ -150,7 +150,7 @@ def run_odds():
                     odds[3] = "CHW"
                 #print(f'{odds}')
                 bdb.insert_list(table_name, odds, verbose=False)
-                time.sleep(.25)
+                time.sleep(.5)
                 entries.append(odds)
         if count == 0:
             dt = dt + timedelta(days=1)
@@ -320,7 +320,6 @@ def main():
 
         if run_roster_suite:
             fantasy.tweet_daily_schedule()
-            fantasy.tweet_sprk_on_opponents()
             fantasy.tweet_fran_on_opponents()
             fantasy.tweet_oppo_rosters()
             ##

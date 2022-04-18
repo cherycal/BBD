@@ -158,8 +158,8 @@ def do_split(bat_pitch, left_right, from_yr, to_yr):
 
 
 def main():
-	from_yr = 2021
-	to_yr = 2021
+	from_yr = 2022
+	to_yr = 2022
 	for left_right in ["Left", "Right"]:
 		for bat_pitch in ["Batting", "Pitching"]:
 			do_split(bat_pitch, left_right, from_yr, to_yr)
