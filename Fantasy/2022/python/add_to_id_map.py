@@ -26,7 +26,7 @@ for row in rows:
 	pos = [18, 10, 1, 11, 19, 42, 27, 26, 7, 5, 40]
 	for x, y in zip(pos, target):
 		insert_list[x] = y
-	insert_list[0] = "Script"
+	insert_list[0] = mlbid
 	insert_tuple = tuple(insert_list)
 	lol.append(insert_tuple)
 
@@ -34,3 +34,16 @@ for row in lol:
 	print(row)
 
 bdb.insert_many("IDMap", lol)
+
+# UPDATE IDMAP
+# set IDFANGRAPHS = FGID
+# from (
+# SELECT S.MLBID as MLBID,F.player as FGNAME, F.playerid as FGID, I.IDFANGRAPHS, I.FANGRAPHSNAME from StatcastUniverse2022 S
+# LEFT OUTER JOIN IDMap I
+# ON S.mlbid = I.mlbid
+# left outer join FGCurrentUniverse F
+# ON name = player
+# WHERE
+# IDFANGRAPHS = "NULL" and FGID not NULL
+# ) as FG
+# where IDMAP.MLBID = FG.MLBID
