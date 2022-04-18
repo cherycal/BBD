@@ -153,6 +153,13 @@ class Fantasy(object):
 		for row in rows:
 			return_dict[row[0]] = row[1]
 		return return_dict
+	
+	def get_statid_dict_by_str(self, verbose=True):
+		return_dict = {}
+		rows = self.DB.select("SELECT statid, statabbr from ESPNStatIds", verbose)
+		for row in rows:
+			return_dict[str(row[0])]= row[1]
+		return return_dict
 
 	def get_start_scoring_period_dict(self, verbose=True):
 		return_dict = {}
