@@ -21,6 +21,7 @@ import os
 
 script_name = os.path.basename(__file__)
 
+
 def roster_list():
     global PLAYOFFS
     teams = dict()
@@ -29,8 +30,8 @@ def roster_list():
         for d in r['dicts']:
             mlbid = str(d["MLBID"])
             roster_spot = str(d["RosterSpot"])
-            #PLAYOFFS = True
-            if PLAYOFFS == False:
+            # PLAYOFFS = True
+            if PLAYOFFS is False:
                 if teams.get(mlbid):
                     teams[mlbid] += f'{roster_spot} '
                 else:
@@ -40,10 +41,9 @@ def roster_list():
     return teams
 
 
-def get_logger(logfilename = "./logs/" + script_name + '.log',
-               logformat = '%(asctime)s:%(levelname)s'
-                           ':%(funcName)s:%(lineno)d:%(message)s:%(pathname)s\n'):
-
+def get_logger(logfilename="./logs/" + script_name + '.log',
+               logformat='%(asctime)s:%(levelname)s'
+                         ':%(funcName)s:%(lineno)d:%(message)s:%(pathname)s\n'):
     bold_seq = '\033[1m'
     colorlog_format = (
         f'{bold_seq} '
@@ -52,7 +52,7 @@ def get_logger(logfilename = "./logs/" + script_name + '.log',
     )
     colorlog.basicConfig(format=colorlog_format)
 
-    logger_instance = logging.getLogger(__name__)
+    #logger_instance = logging.getLogger(__name__)
     logger_instance.setLevel(logging.DEBUG)
 
     formatter = logging.Formatter(logformat)
@@ -72,7 +72,7 @@ log_dir = p / 'logs'
 log_dir.mkdir(mode=0o755, exist_ok=True)
 log_file = log_dir / 'game_data.txt'
 log_filename = str(log_file)
-logger_instance = get_logger(logfilename = "./logs/" + script_name + f'_{out_date}.log')
+logger_instance = get_logger(logfilename="./logs/" + script_name + f'_{out_date}.log')
 
 # logging.basicConfig(filename=log_filename,
 #                     level=logging.INFO,
@@ -83,29 +83,27 @@ logger_instance = get_logger(logfilename = "./logs/" + script_name + f'_{out_dat
 
 inst = push.Push()
 bdb = sqldb.DB('Baseball.db')
-fantasy = fantasy.Fantasy(caller= script_name)
-
+fantasy = fantasy.Fantasy(caller=script_name)
 
 integer_today = int(out_date)
 string_today = out_date
 integer_yesterday = integer_today - 1
 string_yesterday = str(integer_yesterday)
 
-
 # logging.info(f'Game data for {out_date}')
 
 watch_ids = list()
 query = "select distinct MLBID, Name from ( select  round(MLBID,0) as MLBID, " \
-    "Name,R.Team, AuctionValueAverage from ESPNPlayerDataCurrent E, IDMap I," \
-    " ESPNRosters R  where E.espnid = R.ESPNID and  E.espnid = I.ESPNID " \
-    "and AuctionValueAverage >= 50 ) union select distinct round(MLBID,0) as MLBID," \
-    " Name from ESPNPlayerDataCurrent E, IDMap I, ESPNRosters R where" \
-    " E.espnid = R.ESPNID and  E.espnid = I.ESPNID and R.Team in" \
-    " (select TeamName as Team from ESPNTeamOwners where WatchLevel > 0)"
+        "Name,R.Team, AuctionValueAverage from ESPNPlayerDataCurrent E, IDMap I," \
+        " ESPNRosters R  where E.espnid = R.ESPNID and  E.espnid = I.ESPNID " \
+        "and AuctionValueAverage >= 50 ) union select distinct round(MLBID,0) as MLBID," \
+        " Name from ESPNPlayerDataCurrent E, IDMap I, ESPNRosters R where" \
+        " E.espnid = R.ESPNID and  E.espnid = I.ESPNID and R.Team in" \
+        " (select TeamName as Team from ESPNTeamOwners where WatchLevel > 0)"
 
 PLAYOFFS = False
 
-if PLAYOFFS == True:
+if PLAYOFFS is True:
     query = "select distinct MLBID, Name from ( select  round(MLBID,0) as MLBID, " \
             "Name, AuctionValueAverage from ESPNPlayerDataCurrent E, IDMap I where " \
             " E.espnid = I.ESPNID ) union select distinct round(MLBID,0) as MLBID, Name " \
@@ -126,7 +124,7 @@ for t in c:
 
 sc_first_run = 1
 
-if PLAYOFFS == True:
+if PLAYOFFS is True:
     sc_first_run = 0
 
 mlb_first_run = 1
@@ -137,6 +135,7 @@ statcast_count: Dict[Any, Any] = dict()
 has_statcast = dict()
 is_in_pitching_change = False
 
+
 def process_mlb(data, gamepk, player_teams):
     global watch_ids
     global reported_event_count
@@ -145,16 +144,16 @@ def process_mlb(data, gamepk, player_teams):
     global sc_first_run
     global is_in_pitching_change
     plays = data['liveData']['plays']['allPlays']
-    #print("Game: " + str(gamepk))
+    # print("Game: " + str(gamepk))
     home_team = str(data['gameData']['teams']['away']['name']).split()[-1]
     away_team = str(data['gameData']['teams']['home']['name']).split()[-1]
     print(f'{away_team} vs {home_team} at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
-    #print(away_team)
+    # print(away_team)
     # print(watch_ids)
     # print("MLB data: events " + str(len(plays)))
-    #print("Previously reported events: " +
+    # print("Previously reported events: " +
     #      str(reported_event_count[gamepk]))
-    #print("************ START PLAYS *****************")
+    # print("************ START PLAYS *****************")
     for play in plays:
         # event_count[gamepk] += 1
         at_bat = 0
@@ -163,7 +162,7 @@ def process_mlb(data, gamepk, player_teams):
         event_count[gamepk] = at_bat
         if at_bat == 1:
             player_teams = roster_list()
-        description = ""
+        # description = ""
         if at_bat == 0:
             continue
         if play['result'].get('eventType') and play['result']['eventType'] == "game_advisory":
@@ -200,10 +199,10 @@ def process_mlb(data, gamepk, player_teams):
             description = description.replace("grounds", "gds")
             description = description.replace("sharply", "")
             description = description.replace("sharp", "")
-            #print(f'At description {at_bat}, description: {description}')
+            # print(f'At description {at_bat}, description: {description}')
         else:
             description = "None"
-        #print(f'Event count: {event_count[gamepk]}, Reported event count {reported_event_count[gamepk]}, At bat {at_bat}')
+        # print(f'Event count: {event_count[gamepk]}, Reported event count {reported_event_count[gamepk]}, At bat {at_bat}')
         if event_count[gamepk] > reported_event_count[gamepk]:
             # logger_instance.info(f'Full play info: {play} ')
             logger_instance.info(f'Home team {home_team}, Away team {away_team} ')
@@ -213,8 +212,8 @@ def process_mlb(data, gamepk, player_teams):
             pitcher_id = str(play['matchup']['pitcher']['id'])
             pitcher_name = str(play['matchup']['pitcher']['fullName'])
 
-            batter_teams = player_teams.get(batter_id,"No teams") if PLAYOFFS == False else ""
-            pitcher_teams = player_teams.get(pitcher_id,"No teams") if PLAYOFFS == False else ""
+            batter_teams = player_teams.get(batter_id, "No teams") if PLAYOFFS is False else ""
+            pitcher_teams = player_teams.get(pitcher_id, "No teams") if PLAYOFFS is False else ""
 
             print("At bat: " + str(at_bat))
             logger_instance.info(f'At bat {at_bat}, Batter: {batter_name}, Pitcher: {pitcher_name}')
@@ -226,12 +225,12 @@ def process_mlb(data, gamepk, player_teams):
                 away_score = play['result']['homeScore']
                 inning = str(play['about']['halfInning']) + " " + str(play['about']['inning'])
                 outs = str(play['count']['outs'])
-                #logger_instance.info(f'On watch list: {play}')
-                #print("Batter ID: " + batter_id)
-                #print("Pitcher ID: " + pitcher_id)
+                # logger_instance.info(f'On watch list: {play}')
+                # print("Batter ID: " + batter_id)
+                # print("Pitcher ID: " + pitcher_id)
                 if description != "None":
-                    #print("----------")
-                    #print("event: " + str(event_count[gamepk]))
+                    # print("----------")
+                    # print("event: " + str(event_count[gamepk]))
                     msg = description[0:110]
                     logger_instance.info(f'Play description: {msg}')
                     msg += "\nP: " + pitcher_name + \
@@ -239,13 +238,13 @@ def process_mlb(data, gamepk, player_teams):
                            f'{away_team} {away_score}, {inning} {outs} O, AB {at_bat}\n' \
                            f'{batter_teams}\n'
                     msg = msg[0:220]
-                    #print("----------")
+                    # print("----------")
                     print(msg)
-                    #print("-----------------------------------------------")
+                    # print("-----------------------------------------------")
                     title = msg[0:40]
                     logger_instance.info(f'Pushing play info: {msg}')
                     print("Pushing: " + msg)
-                    if not sc_first_run and at_bat > 1:
+                    if not sc_first_run and at_bat >= 1:
                         inst.push(title, msg)
                         inst.tweet(msg)
                         time.sleep(.25)
@@ -261,7 +260,7 @@ def process_mlb(data, gamepk, player_teams):
                           str(event_count[gamepk]))
                     logger_instance.info(f'Players not on watch list: {description}')
                     print(play)
-                    #print("-----------------------------------------------")
+                    # print("-----------------------------------------------")
             if play.get('about') and play['about'].get('isComplete'):
                 isComplete = play['about']['isComplete']
                 print(f'Completed at bat {at_bat}? {isComplete}')
@@ -270,7 +269,7 @@ def process_mlb(data, gamepk, player_teams):
                 print(f'Decrementing at bat reported_event_count to {at_bat}')
             reported_event_count[gamepk] = at_bat
     sc_first_run = 0
-    #print("*********** END PLAYS ******************")
+    # print("*********** END PLAYS ******************")
 
 
 def process_statcast(data, gamepk):
@@ -279,15 +278,15 @@ def process_statcast(data, gamepk):
     global statcast_count
     global mlb_first_run
     global PLAYOFFS
-    msg2 = ""
+    # msg2 = ""
     events = data['exit_velocity']
-    #print("Game: " + str(gamepk))
-    #print(data['away_team_data']['name'])
-    #print(data['home_team_data']['name'])
+    # print("Game: " + str(gamepk))
+    # print(data['away_team_data']['name'])
+    # print(data['home_team_data']['name'])
     # print(watch_ids)
     # print("Statcast events: " + str(len(events)))
-    #print("Previously reported events: " +
-        #  str(reported_statcast_count[gamepk]))
+    # print("Previously reported events: " +
+    #  str(reported_statcast_count[gamepk]))
     for event in events:
         # statcast_count[gamepk] += 1
         at_bat = 0
@@ -299,9 +298,9 @@ def process_statcast(data, gamepk):
         batter_name = event['batter_name']
         pitcher_name = event['pitcher_name']
         if statcast_count[gamepk] > reported_statcast_count[gamepk]:
-            #print("At bat number: " + str(at_bat))
-            #print("Batter: " + batter_name)
-            #print("Pitcher: " + pitcher_name)
+            # print("At bat number: " + str(at_bat))
+            # print("Batter: " + batter_name)
+            # print("Pitcher: " + pitcher_name)
             if batter_id in watch_ids or pitcher_id in watch_ids:
                 time.sleep(1)
                 msg = "-----------------------------------------------"
@@ -332,7 +331,7 @@ def process_statcast(data, gamepk):
                 print("--------------------")
                 print(msg2)
                 print("--------------------")
-                #print("--------------------")
+                # print("--------------------")
                 title = msg2[0:20] + " " + event['team_batting'] + " vs " + event['team_fielding']
                 if not mlb_first_run:
                     inst.push(title, msg2)
@@ -361,20 +360,20 @@ def process_lineups(lineups):
     h = lineups['ht']
     datetimeobject = datetime.strptime(d, '%m/%d/%Y')
     d8 = datetimeobject.strftime('%Y%m%d')
-    for p in lineups['ap']:
+    for ap in lineups['ap']:
         for b in lineups['hb']:
-            ll = [d, g, p, b, a, h, d8]
+            ll = [d, g, ap, b, a, h, d8]
             # print(ll)
             lol.append(ll)
-    for p in lineups['hp']:
+    for hp in lineups['hp']:
         for b in lineups['ab']:
-            ll = [d, g, p, b, h, a, d8]
+            ll = [d, g, hp, b, h, a, d8]
             # print(ll)
             lol.append(ll)
 
     table_name = "DailyLineups"
     delcmd = "delete from " + table_name + " where Date = '" + d + "' and gamepk = " + g
-    #print(delcmd)
+    # print(delcmd)
     df = pd.DataFrame(lol, columns=cols)
 
     ## try
@@ -396,8 +395,8 @@ def main():
     lineups = dict()
     TIMEOUT = 10
     SLEEP_BASE = 25
-    sleep_min = 8
-    sleep_max = 10
+    # sleep_min = 8
+    # sleep_max = 10
 
     player_teams = roster_list()
     # for p in player_teams:
@@ -438,6 +437,12 @@ def main():
 
     while not_eod:
 
+        time6 = now.strftime("%H%M%S")
+        current_time = int(time6)
+        if current_time > 235800:
+            print(f'End of day exit')
+            exit(0)
+
         not_eod = 0
         games = len(gamepks)
 
@@ -448,12 +453,12 @@ def main():
             sleep_max = sleep_min + 5
 
             ts = datetime.now()  # current date and time
-            formatted_date_time = ts.strftime("%Y%m%d-%H%M%S")
+            # formatted_date_time = ts.strftime("%Y%m%d-%H%M%S")
             update_time = ts.strftime("%Y%m%d%H%M%S")
 
             try:
                 cmd = "update ProcessUpdateTimes set UpdateTime = {} where Process = 'GameData'".format(update_time)
-                #print(cmd)
+                # print(cmd)
                 bdb.update(cmd)
             except Exception as ex:
                 print(str(ex))
@@ -463,7 +468,7 @@ def main():
             ########### Statcast ######################
 
             url_name = "https://baseballsavant.mlb.com/gf?game_pk=" + gamepk
-            #print(url_name)
+            # print(url_name)
 
             try:
                 with urllib.request.urlopen(url_name, timeout=TIMEOUT) as url:
@@ -480,9 +485,9 @@ def main():
                                 logger_instance.info(f'Removing {gamepk} from list')
                             continue
                         else:
-                            #print("Sleep at " + formatted_date_time)
+                            # print("Sleep at " + formatted_date_time)
                             num1 = random.randint(sleep_min, sleep_max)
-                            #print("Sleep for " + str(num1) + " seconds")
+                            # print("Sleep for " + str(num1) + " seconds")
                             time.sleep(num1)
 
                     lineups['gamepk'] = gamepk
@@ -500,9 +505,9 @@ def main():
 
                     if data.get('exit_velocity'):
                         print("Skipping statcast data")
-                        #process_statcast(data, gamepk)
+                        # process_statcast(data, gamepk)
             except Exception as ex:
-                print("Exception in user code:")
+                print(f'Exception in user code: {ex}')
                 print("-" * 60)
                 traceback.print_exc(file=sys.stdout)
                 print("-" * 60)
@@ -510,7 +515,7 @@ def main():
             ############  MLB  ###################
 
             url_name = "http://statsapi.mlb.com/api/v1.1/game/" + gamepk + "/feed/live"
-            #print(url_name)
+            # print(url_name)
 
             try:
                 with urllib.request.urlopen(url_name, timeout=TIMEOUT) as url2:
@@ -522,7 +527,7 @@ def main():
                     else:
                         print("MLB data unavailable")
             except Exception as ex:
-                print("Exception in user code:")
+                print(f'Exception in user code: {ex}')
                 print("-" * 60)
                 traceback.print_exc(file=sys.stdout)
                 print("-" * 60)
