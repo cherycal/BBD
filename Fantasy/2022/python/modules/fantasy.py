@@ -1193,8 +1193,14 @@ class Fantasy(object):
 								trans_obj.set_update_date(update_date)
 								trans_obj.set_update_time(update_time, update_time_hhmmss)
 								trans_obj.set_fantasy_team_name(team_name)
-								trans_obj.set_status(transaction['status'])
-								trans_obj.set_leg_type(i['type'])
+								if transaction.get('status'):
+									trans_obj.set_status(transaction['status'])
+								else:
+									trans_obj.set_status('UnknownStatus')
+								if i.get('type'):
+									trans_obj.set_leg_type(i['type'])
+								else:
+									trans_obj.set_leg_type("Unknown leg type")
 
 								item_list = list()
 								item_count += 1
@@ -1248,7 +1254,7 @@ class Fantasy(object):
 								if (espn_transaction_id not in self.espn_trans_ids) or \
 										(int(trans_obj.get_update_time_hhmmss()) >=
 										 int(self.get_roster_lock_time())):
-									if transaction['status'] == 'EXECUTED':
+									if transaction.get('status') and transaction['status'] == 'EXECUTED':
 
 										if espn_transaction_id not in self.espn_trans_ids:
 											if i['type'] == "ADD" or i['type'] == "DROP":

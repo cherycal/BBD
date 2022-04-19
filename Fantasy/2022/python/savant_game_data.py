@@ -52,15 +52,15 @@ def get_logger(logfilename="./logs/" + script_name + '.log',
     )
     colorlog.basicConfig(format=colorlog_format)
 
-    #logger_instance = logging.getLogger(__name__)
-    logger_instance.setLevel(logging.DEBUG)
+    logger_inst = logging.getLogger(__name__)
+
 
     formatter = logging.Formatter(logformat)
     file_handler = logging.FileHandler(logfilename)
     file_handler.setFormatter(formatter)
-    logger_instance.addHandler(file_handler)
+    logger_inst.addHandler(file_handler)
 
-    return logger_instance
+    return logger_inst
 
 
 now = datetime.now()  # current date and time
@@ -73,6 +73,7 @@ log_dir.mkdir(mode=0o755, exist_ok=True)
 log_file = log_dir / 'game_data.txt'
 log_filename = str(log_file)
 logger_instance = get_logger(logfilename="./logs/" + script_name + f'_{out_date}.log')
+logger_instance.setLevel(logging.DEBUG)
 
 # logging.basicConfig(filename=log_filename,
 #                     level=logging.INFO,
@@ -394,7 +395,7 @@ def main():
     global reported_statcast_count
     lineups = dict()
     TIMEOUT = 10
-    SLEEP_BASE = 25
+    SLEEP_BASE = 15
     # sleep_min = 8
     # sleep_max = 10
 
@@ -446,6 +447,8 @@ def main():
         not_eod = 0
         games = len(gamepks)
 
+        print(f'Games left: {games}: {gamepks}')
+
         for gamepk in gamepks:
 
             not_eod = 1
@@ -487,7 +490,7 @@ def main():
                         else:
                             # print("Sleep at " + formatted_date_time)
                             num1 = random.randint(sleep_min, sleep_max)
-                            # print("Sleep for " + str(num1) + " seconds")
+                            print("Sleep for " + str(num1) + " seconds")
                             time.sleep(num1)
 
                     lineups['gamepk'] = gamepk

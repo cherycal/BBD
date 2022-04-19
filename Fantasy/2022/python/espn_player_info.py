@@ -302,7 +302,7 @@ def main():
             fantasy.logger_instance.debug(f'End eod_process at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
             run_end_day_process = False
 
-        if current_time >= 235500:
+        if current_time >= 230500:
             try:
                 bdb.update("update ProcessUpdateTimes set Active = 0 where Process = 'PlayerInfo'")
             except Exception as ex:
