@@ -24,7 +24,6 @@ data_dir.mkdir(mode=0o755, exist_ok=True)
 inst = push.Push()
 from urllib.parse import unquote
 
-sleep_interval = 25
 
 bdb = sqldb.DB('Baseball.db')
 
@@ -33,6 +32,7 @@ def do_split(bat_pitch, left_right, from_yr, to_yr):
 	# Selenium
 	driver = tools.get_driver("headless")
 	# driver = tools.get_driver()
+	sleep_interval = 25
 
 	#
 	# bat_pitch = "Batting"
@@ -98,11 +98,13 @@ def do_split(bat_pitch, left_right, from_yr, to_yr):
 			soup = bs(html, "html.parser")
 			time.sleep(sleep_interval)
 			results = soup.find_all('a', attrs={"class": "data-export"})
-			# print(results)
+			if not len(results):
+				print(results)
 			raw_data = results[0]['href']
 			not_loaded = False
 		except Exception as ex:
 			print("Retrieval failed: " + str(ex))
+			sleep_interval += 5  # sleep longer if page doesn't load
 
 	data_list = raw_data.split(",")
 	my_csv = unquote(data_list[1])
@@ -150,6 +152,10 @@ def do_split(bat_pitch, left_right, from_yr, to_yr):
 		bdb.delete(delete_cmd)
 
 		df = pd.read_csv(csv_filename)
+
+		for column in df[['AVG', 'BABIP', 'BBPct', 'BBPerK', 'wOBA','wRCPlus','wRC','wRAA','ISO','KPct','OBP','OPS','SLG']]:
+			df[column] = round(df[column],4)
+
 		df.to_sql(table_name, bdb.conn, if_exists='append', index=False)
 	except Exception as ex:
 		print(str(ex))

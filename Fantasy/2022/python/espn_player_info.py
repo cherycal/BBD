@@ -17,7 +17,7 @@ import pytz
 from datetime import date, timedelta
 import os, ssl
 if (not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None)):
-	ssl._create_default_https_context = ssl._create_unverified_context
+    ssl._create_default_https_context = ssl._create_unverified_context
 
 mode = "PROD"
 
@@ -68,38 +68,38 @@ def print_calling_function():
 
 def process_oddsline(text):
 
-    splittext = re.split('(SF)|(Giants)|'
-                         '(SD)|(Padres)|'
-                         '(HOU)|(Astros)|'
-                         '(BAL)|(Orioles)|'
-                         '(KC)|(Royals)|'
-                         '(NY)|(Yankees)|'
-                         '(Mets)|'
-                         '(BOS)|(Red Sox)|'
-                         '(TB)|(Rays)|'
-                         '(TOR)|(Blue Jays)|'
-                         '(ATL)|(Braves)|'
-                         '(OAK)|(Athletics)|'
-                         '(TEX)|(Rangers)|'
-                         '(LA)|(Angels)|'
-                         '(Dodgers)|'
-                         '(OAK)|(Athletics)|'
-                         '(SEA)|(Mariners)|'
-                         '(COL)|(Rockies)|'
-                         '(MIL)|(Brewers)|'
-                         '(ARI)|(Diamondbacks)|'
-                         '(MIN)|(Twins)|'
-                         '(CHI)|(White Sox)|(Cubs)|'
-                         '(PHI)|(Phillies)|'
-                         '(PIT)|(Pirates)|'
-                         '(WAS)|(Nationals)|'
-                         '(BOS)|(Red Sox)|'
-                         '(STL)|(Cardinals)|'
-                         '(MIA)|(Marlins)|'
-                         '(CLE)|(Indians)|'
-                         '(CIN)|(Reds)|'
-                         '(DET)|(Tigers)|'
-                         ' +|\xa0|(-\d+\.?\d+)|\+', text)
+    splittext = re.split("(SF)|(Giants)|"
+                         "(SD)|(Padres)|"
+                         "(HOU)|(Astros)|"
+                         "(BAL)|(Orioles)|"
+                         "(KC)|(Royals)|"
+                         "(NY)|(Yankees)|"
+                         "(Mets)|"
+                         "(BOS)|(Red Sox)|"
+                         "(TB)|(Rays)|"
+                         "(TOR)|(Blue Jays)|"
+                         "(ATL)|(Braves)|"
+                         "(OAK)|(Athletics)|"
+                         "(TEX)|(Rangers)|"
+                         "(LA)|(Angels)|"
+                         "(Dodgers)|"
+                         "(OAK)|(Athletics)|"
+                         "(SEA)|(Mariners)|"
+                         "(COL)|(Rockies)|"
+                         "(MIL)|(Brewers)|"
+                         "(ARI)|(Diamondbacks)|"
+                         "(MIN)|(Twins)|"
+                         "(CHI)|(White Sox)|(Cubs)|"
+                         "(PHI)|(Phillies)|"
+                         "(PIT)|(Pirates)|"
+                         "(WAS)|(Nationals)|"
+                         "(BOS)|(Red Sox)|"
+                         "(STL)|(Cardinals)|"
+                         "(MIA)|(Marlins)|"
+                         "(CLE)|(Indians)|"
+                         "(CIN)|(Reds)|"
+                         "(DET)|(Tigers)|"
+                         " +|\xa0|(-\d+\.?\d+)|\+", text)
     # print(text)
     # print(splittext)
     res = [i for i in splittext if i]
@@ -302,7 +302,7 @@ def main():
             fantasy.logger_instance.debug(f'End eod_process at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
             run_end_day_process = False
 
-        if current_time >= 230500:
+        if current_time >= 221500:
             try:
                 bdb.update("update ProcessUpdateTimes set Active = 0 where Process = 'PlayerInfo'")
             except Exception as ex:

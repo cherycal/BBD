@@ -50,8 +50,8 @@ def do_splits(split_name, yr):
 
 	print(url_text)
 
-	print("sleeping ....")
-	time.sleep(1)
+	print("sleeping 25 ....")
+	time.sleep(25)
 
 	# csvfile = "C:\\Users\\chery\\Documents\\BBD\\FG\\Batting\\" + \
 	#           "team_splits_" + split_name + "_" + str(yr) + ".csv"
@@ -59,6 +59,8 @@ def do_splits(split_name, yr):
 	csvfile = data_dir / str("team_splits_" + split_name + "_" + str(yr) + ".csv")
 
 	tbl_array = pd.read_html(url_text, attrs={'id': 'LeaderBoard1_dg1_ctl00'}, header=1)
+
+
 
 	df = tbl_array[0]
 	df.drop(df.tail(1).index, inplace=True)
@@ -98,7 +100,7 @@ def do_splits(split_name, yr):
 
 
 def main():
-	yr = 2021
+	yr = 2022
 	for lr in ["Left", "Right", "Home", "Away"]:
 		do_splits(lr, yr)
 

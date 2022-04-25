@@ -179,6 +179,7 @@ def process_mlb(data, gamepk, player_teams):
             is_in_pitching_change = False
         if play['result'].get('description'):
             description = str(play['result']['description'])
+            description = description.replace(" a ", " ")
             description = description.replace("first baseman", "1B")
             description = description.replace("second baseman", "2B")
             description = description.replace("third baseman", "3B")
@@ -194,12 +195,21 @@ def process_mlb(data, gamepk, player_teams):
             description = description.replace("singles", "sgls")
             description = description.replace("doubles", "dbls")
             description = description.replace("triples", "tpls")
+            description = description.replace("right field", "RF")
+            description = description.replace("left field", "LF")
+            description = description.replace("center field", "CF")
             description = description.replace("homers", "HRs")
             description = description.replace("swinging", "swg")
             description = description.replace("line drive", "liner")
             description = description.replace("grounds", "gds")
-            description = description.replace("sharply", "")
+            description = description.replace(" sharply", "")
             description = description.replace("sharp", "")
+            description = description.replace("double play", "DP")
+            description = description.replace("sacrifice", "sac")
+            description = description.replace(" softly", "")
+            description = description.replace("hit by pitch", "HBP")
+            description = description.replace("ild pitch", "P")
+            description = description.replace("  ", " ")
             # print(f'At description {at_bat}, description: {description}')
         else:
             description = "None"
@@ -439,8 +449,10 @@ def main():
     while not_eod:
 
         time6 = now.strftime("%H%M%S")
+        print(f'Current time: {time6}')
+
         current_time = int(time6)
-        if current_time > 235800:
+        if current_time > 225800:
             print(f'End of day exit')
             exit(0)
 

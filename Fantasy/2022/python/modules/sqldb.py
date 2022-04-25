@@ -197,7 +197,7 @@ class DB:
 				print(str(ex) + ": " + command)
 				tries += 1
 				self.push_instance.push("DB command failed", str(ex) + ": " + command)
-				time.sleep(.5)
+				time.sleep(2.5)
 		if tries == max_tries:
 			print("DB command failed: " + command)
 			print_calling_function(command)

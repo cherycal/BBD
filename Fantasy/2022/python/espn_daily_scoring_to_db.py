@@ -108,12 +108,21 @@ def one_day(scoring_period, league):
 								exit(-1)
 
 def main():
-	leagues = [6455, 37863846,1095816069]
+
+	# ESPN stat corrections:
+	# https://support.espn.com/hc/en-us/articles/360047294092-What-happens-if-a-professional-game-is-suspended-then-resumed-at-a-later-date-2021-Season-
+	# If the suspended game is resumed within seven (7) days of being suspended,
+	# all stats from the suspended game will count for the scoring period when the game began.
+	# If the suspended game is resumed after eight (8) or more days have passed,
+	# the stats from the resumed portion of the game will not count towards your
+	# fantasy output or totals. This is consistent with how other Stat Corrections are handled.
+
+	leagues = [1095816069, 6455, 37863846]
 	#leagues = [162788]
 	season_start = date(2022, 4, 7)
 	today = date.today()
 	#previous = today - timedelta(days=2)
-	previous = today - timedelta(days=1)
+	previous = today - timedelta(days=7)
 
 	#print(yesterday.strftime("%Y%m%d"))
 
@@ -128,7 +137,7 @@ def main():
 
 
 	## Override for ad hoc runs
-	override = True
+	override = False
 	if override:
 
 		start_date = date(2022, 4, 7)
