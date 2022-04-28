@@ -700,8 +700,11 @@ class Fantasy(object):
 							if player['player']['starterStatusByProGame'][game] == 'PROBABLE':
 								if self.game_dates.get(game):
 									if self.game_dates[game] >= self.date:
-										if next_start == "NA" or game < next_start:
+										if next_start == "NA":
 											next_start = game
+										if self.game_dates[next_start]:
+											if self.game_dates[game] < self.game_dates[next_start]:
+												next_start = game
 
 						if self.game_dates.get(next_start):
 							# print(player['player']['fullName'])
