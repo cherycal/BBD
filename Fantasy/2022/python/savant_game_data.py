@@ -123,7 +123,7 @@ c = bdb.select("select game from StatcastGameData where date = " + str(out_date)
 for t in c:
     gamepks.append(str(t[0]))
 
-sc_first_run = 1
+sc_first_run = dict()
 
 if PLAYOFFS is True:
     sc_first_run = 0
@@ -158,14 +158,17 @@ def process_mlb(data, gamepk, player_teams):
     for play in plays:
         # event_count[gamepk] += 1
         at_bat = 0
-        if play.get('about') and play['about'].get('atBatIndex'):
-            at_bat = play['about']['atBatIndex']
+        if play.get('about') and play['about'].get('atBatIndex') >= 0:
+            at_bat = play['about']['atBatIndex'] + 1
         event_count[gamepk] = at_bat
-        if at_bat == 1:
-            player_teams = roster_list()
+        #if at_bat == 1:
+        #    player_teams = roster_list()
         # description = ""
-        if at_bat == 0:
-            continue
+        if at_bat == 1:
+            if play['about'].get('isComplete') and play['about']['isComplete']:
+                player_teams = roster_list()
+            else:
+                continue
         if play['result'].get('eventType') and play['result']['eventType'] == "game_advisory":
             print(f'Game advisory {away_team} vs {home_team}')
             continue
@@ -174,7 +177,7 @@ def process_mlb(data, gamepk, player_teams):
                 continue
             else:
                 is_in_pitching_change = True
-            time.sleep(100)
+            time.sleep(10)
         else:
             is_in_pitching_change = False
         if play['result'].get('description'):
@@ -213,7 +216,7 @@ def process_mlb(data, gamepk, player_teams):
             # print(f'At description {at_bat}, description: {description}')
         else:
             description = "None"
-        # print(f'Event count: {event_count[gamepk]}, Reported event count {reported_event_count[gamepk]}, At bat {at_bat}')
+        #print(f'Event count: {event_count[gamepk]}, Reported event count {reported_event_count[gamepk]}, At bat {at_bat}')
         if event_count[gamepk] > reported_event_count[gamepk]:
             # logger_instance.info(f'Full play info: {play} ')
             logger_instance.info(f'Home team {home_team}, Away team {away_team} ')
@@ -253,16 +256,16 @@ def process_mlb(data, gamepk, player_teams):
                     print(msg)
                     # print("-----------------------------------------------")
                     title = msg[0:40]
-                    logger_instance.info(f'Pushing play info: {msg}')
-                    print("Pushing: " + msg)
-                    if not sc_first_run and at_bat >= 1:
+                    if not sc_first_run[gamepk] or at_bat <= 1:
+                        logger_instance.info(f'Pushing play info: {msg}')
+                        print("Pushing: " + msg)
                         inst.push(title, msg)
                         inst.tweet(msg)
-                        time.sleep(.25)
+                        time.sleep(1.25)
                     else:
                         print("Not pushing on SC first run")
                         logging.info(f'Not pushing on first run')
-                        time.sleep(.25)
+                        time.sleep(1.25)
                 else:
                     logger_instance.info(f'Not pushing new play with no description. At bat number {at_bat}')
             else:
@@ -277,9 +280,12 @@ def process_mlb(data, gamepk, player_teams):
                 print(f'Completed at bat {at_bat}? {isComplete}')
             else:
                 at_bat -= 1
-                print(f'Decrementing at bat reported_event_count to {at_bat}')
+                print(f'At bat not complete, decrementing at bat reported_event_count to {at_bat}')
             reported_event_count[gamepk] = at_bat
-    sc_first_run = 0
+        else:
+            pass
+            #print(f'Skipping reported event number {event_count[gamepk]}')
+    sc_first_run[gamepk] = False
     # print("*********** END PLAYS ******************")
 
 
@@ -442,6 +448,8 @@ def main():
             statcast_count[str(gamepk)] = 0
         if not reported_statcast_count.get(gamepk):
             reported_statcast_count[str(gamepk)] = 0
+
+        sc_first_run[gamepk] = True
 
     not_eod = 1
     # run_count = 0

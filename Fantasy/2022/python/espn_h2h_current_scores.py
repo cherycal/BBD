@@ -108,7 +108,7 @@ def main():
     loop_sleep = 240
     MIN_SLEEP = 15
     MAX_SLEEP = 25
-    matchupPeriodId = 3
+    matchupPeriodId = 4
     season = 2022
     cats_teamId = 7
     cats_leagueId = 3154
