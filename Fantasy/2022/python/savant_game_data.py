@@ -278,10 +278,10 @@ def process_mlb(data, gamepk, player_teams):
             if play.get('about') and play['about'].get('isComplete'):
                 isComplete = play['about']['isComplete']
                 print(f'Completed at bat {at_bat}? {isComplete}')
+                reported_event_count[gamepk] = at_bat
             else:
-                at_bat -= 1
-                print(f'At bat not complete, decrementing at bat reported_event_count to {at_bat}')
-            reported_event_count[gamepk] = at_bat
+                print(f'At bat not complete, decrementing at bat reported_event_count to {at_bat - 1}')
+                reported_event_count[gamepk] = at_bat - 1
         else:
             pass
             #print(f'Skipping reported event number {event_count[gamepk]}')
