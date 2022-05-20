@@ -34,11 +34,12 @@ class DB:
 		else:
 			print("Platform " + platform + " not recognized in sqldb::DB. Exiting.")
 			exit(-1)
-		self.conn = sqlite3.connect(self.db)
-		print("Opening " + self.db)
+		self.conn = sqlite3.connect(self.db, timeout=15)
+		#print("Opening " + self.db)
 		self.cursor = self.conn.cursor()
 		self.msg = ""
 		self.push_instance = push.Push()
+
 
 	def query(self, cmd, verbose=0):
 		if verbose:
@@ -227,7 +228,7 @@ class DB:
 			print_calling_function(command)
 
 	def close(self):
-		print("Closing " + self.db)
+		#print("Closing " + self.db)
 		self.conn.close()
 
 	def string_from_list(self, in_list):

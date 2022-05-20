@@ -10,6 +10,7 @@ import pandas as pd
 sys.path.append('./modules')
 import fantasy
 import os
+import sqldb
 
 # My python class: sqldb.py
 
@@ -17,11 +18,9 @@ import os
 
 mode = "PROD"
 fantasy = fantasy.Fantasy(mode, caller=os.path.basename(__file__))
-bdb = fantasy.get_db()
 statid_dict = fantasy.get_statid_dict(verbose=False)
 
 year = 2022
-
 
 def one_day(scoring_period, league):
 	addr = "http://fantasy.espn.com/apis/v3/games/flb/seasons/" + str(year) + \
@@ -30,6 +29,7 @@ def one_day(scoring_period, league):
 	print(addr)
 
 	date8 = fantasy.get_date_from_scoring_id(year, scoring_period)
+	bdb = sqldb.DB('Baseball.db')
 
 	with urllib.request.urlopen(addr) as url:
 		data = json.loads(url.read().decode())
@@ -46,7 +46,6 @@ def one_day(scoring_period, league):
 			         str(date8) + " and LeagueID = " + str(league) + \
 			         " and teamID = " + str(team_id)
 			#print(delcmd)
-
 			bdb.delete(delcmd)
 
 			for entry in entries:
@@ -63,30 +62,32 @@ def one_day(scoring_period, league):
 						player_stats = game['stats']
 						cols = ['Name', 'playerid', 'Date', 'leagueId',
 						        'teamId', 'lineupSlotId', 'points']
-						vals = ['', 0, 0, 0, 0, 0, None]
-						vals[0] = player_name
-						vals[1] = player_id
-						vals[2] = date8
-						vals[3] = league
-						vals[4] = team_id
-						vals[5] = fantasy.get_position(lineup_slot)
-						vals[6] = 0
+						#vals = ['', 0, 0, 0, 0, 0, None]
+						vals = [player_name, player_id,date8,league,team_id,fantasy.get_position(lineup_slot),0]
+						# vals[0] = player_name
+						# vals[1] = player_id
+						# vals[2] = date8
+						# vals[3] = league
+						# vals[4] = team_id
+						# vals[5] = fantasy.get_position(lineup_slot)
+						# vals[6] = 0
 						for stat in player_stats:
 							stat_int = int(stat)
 							if stat_int in statid_dict:
 								entryhasstats = 1
-								vals[0] = player_name
-								vals[1] = player_id
-								vals[2] = date8
-								vals[3] = league
-								vals[4] = team_id
-								vals[5] = fantasy.get_position(lineup_slot)
-								vals[6] = points
+								# vals[0] = player_name
+								# vals[1] = player_id
+								# vals[2] = date8
+								# vals[3] = league
+								# vals[4] = team_id
+								# vals[5] = fantasy.get_position(lineup_slot)
+								# vals[6] = points
+								vals[0:7] = [player_name, player_id, date8, league, team_id,
+								        fantasy.get_position(lineup_slot), points]
 								cols.append(str(statid_dict[stat_int]))
 								vals.append(player_stats[stat])
 
-						# print("Stat not found: " + str(stat) +
-						# " Value: " + str(player_stats[stat]))
+						# print("Stat not found: " + str(stat) + " Value: " + str(player_stats[stat]))
 						if entryhasstats or True:
 							lol.append(vals)
 							#print(vals)
@@ -106,6 +107,9 @@ def one_day(scoring_period, league):
 							if tries >= max_tries:
 								print("DB insert failed")
 								exit(-1)
+
+	bdb.close()
+
 
 def main():
 
@@ -146,13 +150,9 @@ def main():
 		start_scoring_pd = (start_date - season_start).days
 		#end_scoring_pd = (end_date - season_start).days
 
-
-
 	for lg in leagues:
 		for i in range(start_scoring_pd, end_scoring_pd, 1):
 			one_day(i, lg)
-
-	bdb.close()
 
 
 if __name__ == "__main__":
