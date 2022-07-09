@@ -50,59 +50,71 @@ def do_splits(split_name, yr):
 
 	print(url_text)
 
-	print("sleeping 25 ....")
-	time.sleep(25)
-
 	# csvfile = "C:\\Users\\chery\\Documents\\BBD\\FG\\Batting\\" + \
 	#           "team_splits_" + split_name + "_" + str(yr) + ".csv"
 
 	csvfile = data_dir / str("team_splits_" + split_name + "_" + str(yr) + ".csv")
 
-	tbl_array = pd.read_html(url_text, attrs={'id': 'LeaderBoard1_dg1_ctl00'}, header=1)
+	success = False
 
+	while not success:
 
+		try:
 
-	df = tbl_array[0]
-	df.drop(df.tail(1).index, inplace=True)
-	df['Vs'] = split_name.upper()
-	df['Year'] = yr
-	df['updatedate'] = date8
-	df = df.rename(columns={'#': 'Rank'})
-	print(df.columns)
-	df.to_csv(csvfile, index=False)
-	print(csvfile)
+			tbl_array = pd.read_html(url_text, attrs={'id': 'LeaderBoard1_dg1_ctl00'}, header=1)
 
-	table_name = "TeamSplits"
-	tbl_exists = False
+			print("sleeping 25 ....")
+			time.sleep(25)
 
-	tbltest = bdb.select("SELECT name FROM sqlite_master WHERE type='table' AND name='" +
-	                     table_name + "'")
-	if len(tbltest) > 0:
-		tbl_exists = True
+			df = tbl_array[0]
+			df.drop(df.tail(1).index, inplace=True)
+			df['Vs'] = split_name.upper()
+			df['Year'] = yr
+			df['updatedate'] = date8
+			df = df.rename(columns={'#': 'Rank'})
+			print(df.columns)
+			df.to_csv(csvfile, index=False)
+			print(csvfile)
 
-	if tbl_exists:
-		delete_cmd = "DELETE from " + table_name + " where Vs = '" + \
-		             split_name.upper() + "' and Year = " + str(yr)
-		print(delete_cmd)
-		bdb.delete(delete_cmd)
+			table_name = "TeamSplits"
+			tbl_exists = False
 
-	df.to_sql(table_name, bdb.conn, if_exists='append', index=False)
+			tbltest = bdb.select("SELECT name FROM sqlite_master WHERE type='table' AND name='" +
+			                     table_name + "'")
+			if len(tbltest) > 0:
+				tbl_exists = True
 
-	# Conform to MLB abbreviations
-	bdb.update("Update TeamSplits set Team = 'WSH' where Team = 'WSN'")
-	bdb.update("Update TeamSplits set Team = 'SF' where Team = 'SFG'")
-	bdb.update("Update TeamSplits set Team = 'SD' where Team = 'SDP'")
-	bdb.update("Update TeamSplits set Team = 'KC' where Team = 'KCR'")
+			if tbl_exists:
+				delete_cmd = "DELETE from " + table_name + " where Vs = '" + \
+				             split_name.upper() + "' and Year = " + str(yr)
+				print(delete_cmd)
+				bdb.delete(delete_cmd)
 
-	bdb.cmd("INSERT INTO TeamSplitsHistory SELECT * FROM TeamSplits", True)
+			df.to_sql(table_name, bdb.conn, if_exists='append', index=False)
 
-	print("done")
+			# Conform to MLB abbreviations
+			bdb.update("Update TeamSplits set Team = 'WSH' where Team = 'WSN'")
+			bdb.update("Update TeamSplits set Team = 'SF' where Team = 'SFG'")
+			bdb.update("Update TeamSplits set Team = 'SD' where Team = 'SDP'")
+			bdb.update("Update TeamSplits set Team = 'KC' where Team = 'KCR'")
+
+			bdb.cmd("INSERT INTO TeamSplitsHistory SELECT * FROM TeamSplits", True)
+
+			print("done")
+
+			success = True
+
+		except Exception as ex:
+			print(f'Team splits read_html call to FG failed: {ex}')
+			time.sleep(5)
 
 
 def main():
 	yr = 2022
 	for lr in ["Left", "Right", "Home", "Away"]:
 		do_splits(lr, yr)
+		print(f'{lr} succeeded')
+
 
 
 if __name__ == "__main__":
