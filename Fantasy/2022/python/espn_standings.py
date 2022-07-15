@@ -15,6 +15,7 @@ from datetime import timedelta
 import matplotlib.pyplot as plt
 from imgurpython import ImgurClient
 import push
+
 inst = push.Push()
 
 mode = "PROD"
@@ -24,8 +25,42 @@ ts = datetime.now()  # current date and time
 formatted_date_time = ts.strftime("%Y%m%d-%H%M%S")
 formatted_date8 = ts.strftime("%Y%m%d")
 
-def run_single_day(date8, date10, league, account_map):
-    table_data = bdb.select_plus(f'with Summary as ( \
+
+def get_account_map():
+    account_map = {
+        '37863846': {
+            'pts': f'AdjR + AdjH2B + AdjH3B + AdjHR + AdjRBI + AdjSB + AdjGIDP + AdjAVG +  AdjHRAGNST + AdjK + AdjW + AdjL + AdjSV + AdjHD + AdjERA + AdjWHIP',
+            'cats': f'AdjR, AdjH2B, AdjH3B, AdjHR, AdjRBI, AdjSB, AdjGIDP, AdjAVG, AdjHRAGNST, AdjK, AdjW, AdjL, AdjSV, AdjHD, AdjERA, AdjWHIP',
+            'table': "Standings_History_FRAN",
+            'detail_table': 'SD_FRAN',
+            'detail_table_current': 'SD_FRAN_CURRENT',
+            'chg_table': 'CATS_CHG_FRAN',
+            'view': "StandingsFRAN",
+            'image': "UpperMidwest"
+        },
+        '6455': {
+            'pts': f'AdjR + AdjHR + AdjRBI + AdjSB + AdjAVG + AdjK + AdjW +  AdjSV  + AdjERA + AdjWHIP',
+            'cats': f'AdjR, AdjHR, AdjRBI, AdjSB, AdjAVG, AdjK, AdjW, AdjSV, AdjERA, AdjWHIP',
+            'table': "Standings_History_wOBA",
+            'detail_table': 'SD_WOBA',
+            'detail_table_current': 'SD_WOBA_CURRENT',
+            'view': "StandingsWOBA",
+            'image': "RotoAuctionKeeper"
+        },
+        '1095816069': {
+            'pts': f'AdjR + AdjHR + AdjRBI + AdjSB + AdjAVG + AdjK + AdjW +  AdjSV  + AdjERA + AdjWHIP',
+            'cats': f'AdjR, AdjHR, AdjRBI, AdjSB, AdjAVG, AdjK, AdjW, AdjSV, AdjERA, AdjWHIP',
+            'table': "Standings_History_FOMO",
+            'view': "StandingsPitch",
+            'image': "TexasPro"
+        }
+    }
+
+    return account_map
+
+
+def build_query(date8, league, account_map):
+    query = f'with Summary as ( \
     with PitchStandings as \
     ( \
     with S as ( \
@@ -166,17 +201,40 @@ def run_single_day(date8, date10, league, account_map):
     select {account_map[str(league)]["pts"]} as PTS, \
     TeamName, \
     AdjR, AdjH2B, AdjH3B, AdjHR, AdjRBI, AdjSB, AdjGIDP, AdjAVG, AdjHRAGNST, AdjK, AdjW, AdjL, AdjSV, AdjHD, AdjERA, AdjWHIP, \
-    R,HR,RBI,SB,AVG,K,W,SV,ERA \
-    from Summary order by TeamName')
+    R,H2B,H3B,HR,RBI,SB,GIDP,AVG,HRAGNST,K,W,L,SV,HD,ERA,WHIP \
+    from Summary order by TeamName'
+    return query
 
-    # print(table_data)
-    row = list()
-    row.append(date8)
-    row.append(date10)
+
+def run_single_day(date8, date10, league, account_map):
+    query = build_query(date8, league, account_map)
+    table_data = bdb.select_plus(query)
+    print(f'Date: {date8} League: {league}')
+    daily_points = list()
+    daily_points.append(date8)
+    daily_points.append(date10)
+    daily_detail = list()
+    column_names = list()
+    column_names.append('Date8')
+    column_names.append('Date10')
+    column_names.append('leagueID')
+    for column_name in table_data['column_names']:
+        column_names.append(column_name)
+    for row in table_data['rows']:
+        team_detail = list()
+        team_detail.append(date8)
+        team_detail.append(date10)
+        team_detail.append(league)
+        for item in row:
+            team_detail.append(item)
+        daily_detail.append(team_detail)
     for d in table_data['dicts']:
-        row.append(d['PTS'])
-
-    return row
+        daily_points.append(d['PTS'])
+    table_name = "ESPNStandingsDetail"
+    df_daily_detail = pd.DataFrame(daily_detail, columns=column_names)
+    bdb.delete(f'delete FROM {table_name} where Date8 = {date8} and leagueID = {league}')
+    df_daily_detail.to_sql(table_name, bdb.conn, if_exists='append', index=False)
+    return daily_points
 
 
 def get_team_names(league):
@@ -185,6 +243,7 @@ def get_team_names(league):
     for row in table_data['rows']:
         return_list.append(row[0])
     return return_list
+
 
 def get_team_rank(view):
     table_data = bdb.select_plus(f'select TeamName from {view}')
@@ -195,31 +254,10 @@ def get_team_rank(view):
 
 
 def run_all():
-
     client = ImgurClient(os.environ['IMGURID'], os.environ['IMGURSECRET'])
     client.set_user_auth(os.environ['IMGURACCESS'], os.environ['IMGURREFRESH'])
 
-    account_map = {
-        '37863846': {
-            'pts': f'AdjR + AdjH2B + AdjH3B + AdjHR + AdjRBI + AdjSB + AdjGIDP + AdjAVG +  AdjHRAGNST + AdjK + AdjW + AdjL + AdjSV + AdjHD + AdjERA + AdjWHIP',
-            'table': "Standings_History_FRAN",
-            'view': "StandingsFRAN",
-            'image': "UpperMidwest"
-        },
-        '6455': {
-            'pts': f'AdjR + AdjHR + AdjRBI + AdjSB + AdjAVG + AdjK + AdjW +  AdjSV  + AdjERA + AdjWHIP',
-            'table': "Standings_History_wOBA",
-            'view': "StandingsWOBA",
-            'image': "RotoAuctionKeeper"
-        },
-        '1095816069': {
-            'pts': f'AdjR + AdjHR + AdjRBI + AdjSB + AdjAVG + AdjK + AdjW +  AdjSV  + AdjERA + AdjWHIP',
-            'table': "Standings_History_FOMO",
-            'view': "StandingsPitch",
-            'image': "TexasPro"
-        }
-    }
-
+    account_map = get_account_map()
 
     for league in account_map:
 
@@ -234,7 +272,7 @@ def run_all():
         team_rank = get_team_rank(account_map[str(league)]['view'])
 
         today = date.today()
-        yesterday = today - timedelta(days=1)
+        yesterday = today - timedelta(days=5)
         start_date = yesterday  # date(2022, 4, 7)  # start: date(2022, 4, 7)
         print(league)
         team_names = get_team_names(league)
@@ -255,10 +293,10 @@ def run_all():
             date8 = start_date.strftime("%Y%m%d")
             date10 = start_date.strftime("%Y-%m-%d")
             print(date8)
-            row = run_single_day(int(date8), date10, league, account_map)
-            day_lol.append(row)
+            daily_data = run_single_day(int(date8), date10, league, account_map)
+            day_lol.append(daily_data)
             start_date += step
-            time.sleep(2.1)
+            time.sleep(.4)
             df_day = pd.DataFrame(day_lol, columns=column_names)
             bdb.delete(f'delete FROM {table_name} where Date = {date8}')
             df_day.to_sql(table_name, bdb.conn, if_exists='append', index=False)
@@ -275,16 +313,56 @@ def run_all():
         pd_dates = pd.to_datetime(date10_list)
         df = pd.DataFrame(lol, columns=history['column_names'])
         df = df.set_index(pd_dates)
+
+        # csv file
         csv_file = f'./data/{table_name}.csv'
         df.to_csv(csv_file)
+
+        # detail file
+        detail_lol = []
+        detail_table_name = account_map[str(league)].get('detail_table',None)
+        if detail_table_name:
+            detail_history = bdb.select_plus(f'SELECT * FROM {detail_table_name}')
+            for row in detail_history['rows']:
+                detail_lol.append(row)
+            detail_df = pd.DataFrame(detail_lol, columns=detail_history['column_names'])
+            detail_csv_file = f'./data/{detail_table_name}.csv'
+            detail_df.to_csv(detail_csv_file)
+            print(f'Created: {detail_csv_file}')
+
+            # detail file current
+            detail_current_lol = []
+            detail_current_table_name = account_map[str(league)].get('detail_table_current', None)
+            if detail_current_table_name:
+                detail_current_history = bdb.select_plus(f'SELECT * FROM {detail_current_table_name}')
+                for row in detail_current_history['rows']:
+                    detail_current_lol.append(row)
+                detail_current_df = pd.DataFrame(detail_current_lol, columns=detail_current_history['column_names'])
+                detail_current_csv_file = f'./data/{detail_current_table_name}.csv'
+                detail_current_df.to_csv(detail_current_csv_file)
+                print(f'Created: {detail_current_csv_file}')
+
+        chg_table = account_map[str(league)].get('chg_table', None)
+        if chg_table:
+            chg_file = f'./data/{chg_table}.csv'
+            chg_lol = []
+            chg_data = bdb.select_plus(f'SELECT * FROM {chg_table}')
+            for row in chg_data['rows']:
+                chg_lol.append(row)
+            chg_df = pd.DataFrame(chg_lol, columns=chg_data['column_names'])
+            chg_df.to_csv(chg_file)
+            print(f'Created: {chg_file}')
+
+
         pd.set_option("display.max.columns", None)
         df.plot(y=column_names[2:])
         # plt.show()
         png_file = f'./data/{table_name}.png'
         handles, labels = plt.gca().get_legend_handles_labels()
-        #plt.legend(loc='upper left', prop={'size': 6})
-        plt.legend([handles[idx] for idx in legend_order], [labels[idx] for idx in legend_order], loc='upper left', prop={'size': 6})
-        #plt.show()
+        # plt.legend(loc='upper left', prop={'size': 6})
+        plt.legend([handles[idx] for idx in legend_order], [labels[idx] for idx in legend_order], loc='upper left',
+                   prop={'size': 6})
+        # plt.show()
         print(f'{png_file}')
         plt.savefig(png_file)
         image = client.upload_from_path(png_file, config=config, anon=False)
