@@ -256,8 +256,8 @@ def main():
     run_odds_bool = True
     begin_day_time = 10000
     end_day_time = 211500
-    MIN_SLEEP = 15
-    MAX_SLEEP = 25
+    MIN_SLEEP = 45
+    MAX_SLEEP = 65
 
     try:
         bdb.update("update ProcessUpdateTimes set Active = 1 where Process = 'PlayerInfo'")
