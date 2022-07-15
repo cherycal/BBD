@@ -89,7 +89,7 @@ def single_day(**kwargs):
 	                           "pitcher_throws=&batter_stands=&hfSA=&game_date_gt=" + dt + \
 	           "&game_date_lt=" + dt + \
 	           "&hfInfield=&team=&position=&hfOutfield=&hfRO=&home_road=&hfFlag=&hfBBT=&metric_1=&hfInn=&min_pitches=0&" \
-	           "min_results=0&group_by=name-event&sort_col=xwoba&player_event_sort=api_p_release_speed&" \
+	           "min_results=0&group_by=name-event&sort_col=xwoba&player_event_sort=lineup_cd&" \
 	           "sort_order=desc&min_pas=0"
 
 	url_checks = "&chk_event_estimated_slg_using_speedangle=on"
@@ -169,6 +169,10 @@ def single_day(**kwargs):
 		df_combined['isK'] = np.where(df_combined['Result'] == "strikeout", 1, 0)
 		df_combined['isK'] = np.where(df_combined['Result'] == "strikeout_double_play", 1, df_combined['isK'])
 		df_combined['isHR'] = np.where(df_combined['Result'] == "home_run", 1, 0)
+		df_combined['is1b'] = np.where(df_combined['Result'] == "single", 1, 0)
+		df_combined['is2b'] = np.where(df_combined['Result'] == "double", 1, 0)
+		df_combined['is3b'] = np.where(df_combined['Result'] == "triple", 1, 0)
+		df_combined['isgidp'] = np.where(df_combined['Result'] == "grounded_into_double_play", 1, 0)
 		df_combined['points'] = df_combined['iso_value'] + df_combined['babip_value'] + df_combined['isBB'] - \
 		                        df_combined['isK'] + df_combined['isHR']
 		df_combined['xPoints'] = df_combined['adj_xSLG']
@@ -443,7 +447,7 @@ def main():
 
 	for year in [2022]:
 		for bp in ["bat", "pitch"]:
-			#single_year(year, bp, (3, 18, 4, 7))
+			#single_year(year, bp, (6, 4, 6, 4))
 			single_year(year, bp, (past.month, past.day, yest.month, yest.day))
 
 
