@@ -77,7 +77,6 @@ def get_stats(yr=2022):
 def main():
     yr = 2022
     get_stats(yr)
-    exit(0)
 
 
 if __name__ == "__main__":
