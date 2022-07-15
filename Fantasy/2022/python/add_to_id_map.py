@@ -33,7 +33,8 @@ for row in rows:
 for row in lol:
 	print(row)
 
-bdb.insert_many("IDMap", lol)
+if len(lol):
+	bdb.insert_many("IDMap", lol)
 
 # UPDATE IDMAP
 # set IDFANGRAPHS = FGID
