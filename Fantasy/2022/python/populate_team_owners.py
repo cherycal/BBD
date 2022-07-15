@@ -2,7 +2,6 @@ import sys
 
 sys.path.append('./modules')
 import json
-import time
 import urllib.request
 import fantasy
 
@@ -25,6 +24,7 @@ def populate_team_owners(leagueID, year):
 			print(team)
 			for owner in team['owners']:
 				insert_list = [owner, str(leagueID), str(team['id']),
+				               str(team['location']) + " " + str(team['nickname']),
 				               str(team['location']) + " " + str(team['nickname']),'0']
 				bdb.insert_list("ESPNTeamOwners", insert_list)
 
