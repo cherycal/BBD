@@ -54,7 +54,7 @@ def get_listings(count):
     now = datetime.now()  # current date and time
     date_time = now.strftime("%Y%m%d_%H%M%S")
 
-    eventId = '105060685'
+    eventId = '105060644'
     priceMin = 10
     priceMax = 46
     FEE = 14
@@ -86,6 +86,10 @@ def get_listings(count):
     url_name = f'https://api.stubhub.com/sellers/find/listings/v3/?eventId=' \
                f'{eventId}&quantity=2&start=0&rows=200&priceMin={priceMin}&priceMax={priceMax}{zones}'
 
+    url_name = f'https://api.stubhub.net/catalog/events/{eventId}'
+
+    print(f'{url_name}')
+
     headers = [f'Authorization: Bearer {BEARER}',
                'Accept: application/json']
 
@@ -102,8 +106,9 @@ def get_listings(count):
 
     data_json = json.loads(data)
 
-    # if not data_json.get('listings'):
-    #     print(f'No listings for eventId: {eventId}')
+    if not data_json.get('listings'):
+        print(f'No listings for eventId: {eventId}: {data_json}')
+        exit(0)
 
     lol = list()
 
