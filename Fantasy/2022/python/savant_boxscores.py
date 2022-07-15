@@ -62,14 +62,14 @@ def process_statcast(data, gamepk, game_date):
             statlist[0] = points
             batlol.append(statlist)
             index.append("")
-            print(bid)
-            print(bname)
-            print(batcats)
-            print(statlist)
-            print("")
+            #print(bid)
+            #print(bname)
+            #print(batcats)
+            #print(statlist)
+            #print("")
 
         df = pd.DataFrame(batlol, columns=batcats, index=index)
-        print(df.columns)
+        #print(df.columns)
         df = df.sort_values(by=['points'], ascending=[False])
         df = df[column_names]
         df['pa'] = df['atBats'] + df['baseOnBalls'] + df['hitByPitch']
@@ -94,7 +94,7 @@ def process_statcast(data, gamepk, game_date):
         not_passed = True
         while not_passed:
             try:
-                print(del_cmd)
+                #print(del_cmd)
                 bdb.delete(del_cmd)
                 not_passed = False
             except Exception as ex:
@@ -123,10 +123,10 @@ def process_statcast(data, gamepk, game_date):
             statlist = list()
             pname = team['players'][pid]['person']['fullName']
             game_stats = team['players'][pid]['stats']['pitching']
-            print(pid)
-            print(pname)
-            print(game_stats)
-            print("")
+            #print(pid)
+            #print(pname)
+            #print(game_stats)
+            #print("")
             qs = 0
             for cat in pitchcats:
                 if game_stats.get(cat):
@@ -149,13 +149,13 @@ def process_statcast(data, gamepk, game_date):
             statlist[0] = points
             statlist[1] = qs
             pitchlol.append(statlist)
-            print(pname)
-            print(pitchcats)
-            print(statlist)
+            #print(pname)
+            #print(pitchcats)
+            #print(statlist)
             index.append("")
 
         df = pd.DataFrame(pitchlol, columns=pitchcats, index=index)
-        print(df.columns)
+        #print(df.columns)
         df = df.sort_values(by=['points'], ascending=[False])
         df = df[column_names]
         df['GameType'] = "R"
@@ -167,7 +167,7 @@ def process_statcast(data, gamepk, game_date):
 
         table_name = "StatcastBoxscoresPitching"
         del_cmd = f'delete from {table_name} where gamepk = {gamepk} and team = \'{teamname}\''
-        print(del_cmd)
+        #print(del_cmd)
         bdb.delete(del_cmd)
         df.to_sql(table_name, bdb.conn, if_exists='append', index=False)
 
@@ -199,30 +199,44 @@ def one_day(dt):
 
         print(url_name)
 
-        with urllib.request.urlopen(url_name) as url:
+        success = False
+        tries = 0
 
-            data = json.loads(url.read().decode())
+        while not success and tries < 5:
 
-            if data.get('exit_velocity'):
-                print("Reporting statcast data")
-                process_statcast(data, gamepk, gamepks[gamepk])
-            else:
-                print("Statcast data unavailable, checking for MLB Data")
-                url_name = "http://statsapi.mlb.com/api/v1.1/game/" + gamepk + "/feed/live"
-                print(url_name)
-                with urllib.request.urlopen(url_name) as url2:
-                    data = json.loads(url2.read().decode())
-                    if data.get('liveData'):
-                        print("Skipping MLB data")
-                        continue
-                    # process_mlb(data, gamepk)
+            try:
+
+                with urllib.request.urlopen(url_name) as url:
+
+                    data = json.loads(url.read().decode())
+
+                    if data.get('exit_velocity'):
+                        print("Reporting statcast data")
+                        process_statcast(data, gamepk, gamepks[gamepk])
                     else:
-                        print("MLB data unavailable")
+                        print("Statcast data unavailable, checking for MLB Data")
+                        url_name = "http://statsapi.mlb.com/api/v1.1/game/" + gamepk + "/feed/live"
+                        print(url_name)
+                        with urllib.request.urlopen(url_name) as url2:
+                            data = json.loads(url2.read().decode())
+                            if data.get('liveData'):
+                                print("Skipping MLB data")
+                                success = True
+                                continue
+                            # process_mlb(data, gamepk)
+                            else:
+                                print("MLB data unavailable")
 
-        print("Sleep at " + formatted_date_time)
-        num1 = random.randint(1, 1)
-        print("Sleep for " + str(num1) + " seconds")
-        time.sleep(num1)
+                print("Sleep at " + formatted_date_time)
+                num1 = random.randint(1, 1)
+                print("Sleep for " + str(num1) + " seconds")
+                time.sleep(num1)
+            except Exception as ex:
+                tries += 1
+                print(f'Error in fetch: {ex}. Tries: {tries}')
+                time.sleep(4)
+
+            success = True
 
 
 def main():
