@@ -109,36 +109,42 @@ def do_range(start_date, end_date, player_type, spring_training):
 
     print(url_text)
 
-    df = pd.read_html(url_text)[0]
+    success = False
 
-    print("sleeping ....")
-    time.sleep(1)
+    while not success:
 
-    df.drop(df.columns[[1, 7, -1]], axis=1, inplace=True)
-    df.columns.values[6] = "id"
-    df.columns.values[7] = "gamepk"
-    df['Date'] = pd.to_datetime(df['Date'])
-    df['Date'] = df['Date'].dt.strftime('%Y%m%d')
-    df['Season'] = pd.to_numeric(year)
-    df.insert(loc=2, column='playerid', value=df['id'])
-    df.drop(['id'], axis=1, inplace=True)
+        df = pd.read_html(url_text)[0]
 
-    df[['LastName', 'FirstName']] = df['Player'].str.split(',', expand=True)
-    df['Player'] = df[['FirstName', 'LastName']].agg(' '.join, axis=1)
-    df['Player'] = df['Player'].str.strip()
-    df.drop(['LastName'], axis=1, inplace=True)
-    df.drop(['FirstName'], axis=1, inplace=True)
-    df['GameType'] = st_flag
+        print("sleeping ....")
+        time.sleep(1)
 
-    df.to_csv(csvfile, index=False, encoding='utf-8-sig')
-    table_name = "Statcast" + bpdir + "Daily"
+        df.drop(df.columns[[1, 7, -1]], axis=1, inplace=True)
+        df.columns.values[6] = "id"
+        df.columns.values[7] = "gamepk"
+        df['Date'] = pd.to_datetime(df['Date'])
+        df['Date'] = df['Date'].dt.strftime('%Y%m%d')
+        df['Season'] = pd.to_numeric(year)
+        df.insert(loc=2, column='playerid', value=df['id'])
+        df.drop(['id'], axis=1, inplace=True)
 
-    # CONVERT Date to Date8
-    del_cmd = 'DELETE from ' + table_name + ' WHERE Date >= ' + start_date8 + " AND Date <= " + end_date8
-    bdb.delete(del_cmd)
-    df.to_sql(table_name, bdb.conn, if_exists='append', index=False)
+        df[['LastName', 'FirstName']] = df['Player'].str.split(',', expand=True)
+        df['Player'] = df[['FirstName', 'LastName']].agg(' '.join, axis=1)
+        df['Player'] = df['Player'].str.strip()
+        df.drop(['LastName'], axis=1, inplace=True)
+        df.drop(['FirstName'], axis=1, inplace=True)
+        df['GameType'] = st_flag
 
-    print("done")
+        df.to_csv(csvfile, index=False, encoding='utf-8-sig')
+        table_name = "Statcast" + bpdir + "Daily"
+
+        # CONVERT Date to Date8
+        del_cmd = 'DELETE from ' + table_name + ' WHERE Date >= ' + start_date8 + " AND Date <= " + end_date8
+        bdb.delete(del_cmd)
+        df.to_sql(table_name, bdb.conn, if_exists='append', index=False)
+
+        print("done")
+
+        success = True
 
 
 def main():
@@ -150,8 +156,8 @@ def main():
     start_date = date10
     end_date = date10
 
-    # start_date = "03-30-2021"
-    # end_date = "04-30-2021"
+    # start_date = "06-05-2022"
+    # end_date = "06-05-2022"
 
     # player_type = "pitcher"  # "batter or pitcher
     spring_training = False
