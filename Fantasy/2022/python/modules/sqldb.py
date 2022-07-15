@@ -4,6 +4,8 @@ import inspect
 import sqlite3
 import time
 
+import pandas as pd
+
 import push
 import tools
 
@@ -226,6 +228,24 @@ class DB:
 		if tries == max_tries:
 			print("DB command failed: " + command)
 			print_calling_function(command)
+
+	def table_or_view(self, name):
+		query = f'SELECT count(*) FROM sqlite_master where  type in ("view", "table" ) and name = "{name}"'
+		result = int(self.select(query)[0][0])
+		return result > 0
+
+	def table_to_csv(self, tblname):
+		lol = []
+		filename = f'./data/{tblname}.csv'
+		if self.table_or_view(tblname):
+			detail_history = self.select_plus(f'SELECT * FROM {tblname}')
+			for row in detail_history['rows']:
+				lol.append(row)
+			detail_df = pd.DataFrame(lol, columns=detail_history['column_names'])
+			detail_df.to_csv(filename)
+			print(f'Created: {filename}')
+		else:
+			print(f'Table/view {tblname} does not exist. File {filename} not created')
 
 	def close(self):
 		#print("Closing " + self.db)
