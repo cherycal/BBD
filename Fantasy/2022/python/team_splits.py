@@ -24,7 +24,11 @@ now = datetime.now()
 date8 = now.strftime("%Y%m%d")
 
 
-def do_splits(split_name, yr):
+def do_splits(split_name, yr, date10=None):
+
+	if date10 is None:
+		date10 = f'{yr}-12-31'
+
 	month = 0
 	if split_name == "Left":
 		month = 13
@@ -42,7 +46,7 @@ def do_splits(split_name, yr):
 	           "&stats=bat&lg=all&qual=0&type=1&season=" + str(yr) + \
 	           "&month=" + str(month) + "&season1=" + str(yr) + \
 	           "&ind=0&team=0,ts&rost=0&age=0&filter=&players=0&startdate=" + \
-	           str(yr) + "-01-01&enddate=" + str(yr) + "-12-31&sort=15,d"
+	           str(yr) + "-01-01&enddate=" + str(date10) + "&sort=15,d"
 
 	# "https://www.fangraphs.com/leaders.aspx?pos=all&stats=bat" \
 	# "&lg=all&qual=0&type=1&season=2021&month=14" \
