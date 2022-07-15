@@ -134,7 +134,7 @@ reported_statcast_count = dict()
 event_count: Dict[Any, Any] = dict()
 statcast_count: Dict[Any, Any] = dict()
 has_statcast = dict()
-is_in_pitching_change = False
+is_in_pitching_change = dict()
 
 
 def process_mlb(data, gamepk, player_teams):
@@ -147,7 +147,11 @@ def process_mlb(data, gamepk, player_teams):
     plays = data['liveData']['plays']['allPlays']
     # print("Game: " + str(gamepk))
     home_team = str(data['gameData']['teams']['away']['name']).split()[-1]
+    if home_team == "Sox":
+        home_team = ' '.join(data['gameData']['teams']['away']['name'].split()[-2:])
     away_team = str(data['gameData']['teams']['home']['name']).split()[-1]
+    if away_team == "Sox":
+        away_team = ' '.join(data['gameData']['teams']['home']['name'].split()[-2:])
     print(f'{away_team} vs {home_team} at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
     # print(away_team)
     # print(watch_ids)
@@ -172,14 +176,8 @@ def process_mlb(data, gamepk, player_teams):
         if play['result'].get('eventType') and play['result']['eventType'] == "game_advisory":
             print(f'Game advisory {away_team} vs {home_team}')
             continue
-        if play['result'].get('eventType') and play['result']['eventType'] == 'pitching_substitution':
-            if is_in_pitching_change:
-                continue
-            else:
-                is_in_pitching_change = True
-            time.sleep(10)
-        else:
-            is_in_pitching_change = False
+
+
         if play['result'].get('description'):
             description = str(play['result']['description'])
             description = description.replace(" a ", " ")
@@ -218,13 +216,38 @@ def process_mlb(data, gamepk, player_teams):
             description = "None"
         #print(f'Event count: {event_count[gamepk]}, Reported event count {reported_event_count[gamepk]}, At bat {at_bat}')
         if event_count[gamepk] > reported_event_count[gamepk]:
+
+            if play['result'].get('eventType') and play['result']['eventType'] == 'pitching_substitution':
+                #print(f'In pitching change: {is_in_pitching_change}')
+                # logger_instance.info(f'Full play info: {play} ')
+                if is_in_pitching_change.get(gamepk) is True:
+                    #print(f'Game is in pitching change. Do not report')
+                    continue
+                else:
+                    #print(f'Setting in pitching change to True ( in substitution ): {is_in_pitching_change}')
+                    is_in_pitching_change[gamepk] = True
+                    #print(f'Post set pitching change: {is_in_pitching_change}')
+            else:
+                #print(f'Setting in pitching change to False ( not in substitution ): {is_in_pitching_change}')
+                is_in_pitching_change[gamepk] = False
+                #print(f'Post set pitching change: {is_in_pitching_change}')
+
             # logger_instance.info(f'Full play info: {play} ')
+            on_base = list('---')
             logger_instance.info(f'Home team {home_team}, Away team {away_team} ')
             logger_instance.info(f'At bat {at_bat}, description: {description} ')
             batter_id = str(play['matchup']['batter']['id'])
             batter_name = str(play['matchup']['batter']['fullName'])
             pitcher_id = str(play['matchup']['pitcher']['id'])
             pitcher_name = str(play['matchup']['pitcher']['fullName'])
+            if play['matchup'].get('postOnFirst'):
+                on_base[2] = '1'
+            if play['matchup'].get('postOnSecond'):
+                on_base[1] = '2'
+            if play['matchup'].get('postOnThird'):
+                on_base[0] = '3'
+
+            on_base_str = f'{on_base[0]}{on_base[1]}{on_base[2]}'
 
             batter_teams = player_teams.get(batter_id, "No teams") if PLAYOFFS is False else ""
             pitcher_teams = player_teams.get(pitcher_id, "No teams") if PLAYOFFS is False else ""
@@ -234,22 +257,23 @@ def process_mlb(data, gamepk, player_teams):
             print("Batter: " + batter_name)
             print("Pitcher: " + pitcher_name)
             if batter_id in watch_ids or pitcher_id in watch_ids:
-                print(play)
+                #print(play)
                 home_score = play['result']['awayScore']
                 away_score = play['result']['homeScore']
-                inning = str(play['about']['halfInning']) + " " + str(play['about']['inning'])
+                inning = str(play['about']['halfInning'])[0].capitalize() + "" + str(play['about']['inning'])
                 outs = str(play['count']['outs'])
                 # logger_instance.info(f'On watch list: {play}')
                 # print("Batter ID: " + batter_id)
                 # print("Pitcher ID: " + pitcher_id)
                 if description != "None":
-                    # print("----------")
+                    # logger_instance.info(f'Play info: {play}')
+                    #print(f'\n\n{play}\n\n')
                     # print("event: " + str(event_count[gamepk]))
-                    msg = description[0:110]
-                    logger_instance.info(f'Play description: {msg}')
+                    msg = description[0:120]
+                    #logger_instance.info(f'Play description: {msg}')
                     msg += "\nP: " + pitcher_name + \
                            f' {pitcher_teams}\n{home_team} {home_score}, ' \
-                           f'{away_team} {away_score}, {inning} {outs} O, AB {at_bat}\n' \
+                           f'{away_team} {away_score}, {inning} {outs}o, {on_base_str}\n' \
                            f'{batter_teams}\n'
                     msg = msg[0:220]
                     # print("----------")
@@ -273,7 +297,7 @@ def process_mlb(data, gamepk, player_teams):
                     print("Skipped play, players not on watch list: " +
                           str(event_count[gamepk]))
                     logger_instance.info(f'Players not on watch list: {description}')
-                    print(play)
+                    #print(play)
                     # print("-----------------------------------------------")
             if play.get('about') and play['about'].get('isComplete'):
                 isComplete = play['about']['isComplete']
@@ -411,7 +435,7 @@ def main():
     global reported_statcast_count
     lineups = dict()
     TIMEOUT = 10
-    SLEEP_BASE = 15
+    SLEEP_BASE = 25
     # sleep_min = 8
     # sleep_max = 10
 
@@ -534,6 +558,7 @@ def main():
                 print("-" * 60)
                 traceback.print_exc(file=sys.stdout)
                 print("-" * 60)
+                time.sleep(4)
 
             ############  MLB  ###################
 
@@ -554,6 +579,7 @@ def main():
                 print("-" * 60)
                 traceback.print_exc(file=sys.stdout)
                 print("-" * 60)
+                time.sleep(4)
 
             # Record how many events have been reported to event_count.csv file
             with open('event_count.csv', 'w') as f:
