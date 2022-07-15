@@ -26,13 +26,13 @@ from urllib.parse import unquote
 
 
 bdb = sqldb.DB('Baseball.db')
-
+driver = tools.get_driver()
 
 def do_split(bat_pitch, left_right, from_yr, to_yr):
 	# Selenium
-	driver = tools.get_driver("headless")
-	# driver = tools.get_driver()
-	sleep_interval = 25
+	#driver = tools.get_driver("headless")
+
+	sleep_interval = 15
 
 	#
 	# bat_pitch = "Batting"
@@ -92,10 +92,14 @@ def do_split(bat_pitch, left_right, from_yr, to_yr):
 	while not_loaded:
 		print(url)
 		try:
+			print(f'Sleep for {sleep_interval}')
+			time.sleep(sleep_interval)
 			driver.get(url)
 			html = driver.page_source
+			print(f'Sleep for {sleep_interval}')
 			time.sleep(sleep_interval)
 			soup = bs(html, "html.parser")
+			print(f'Sleep for {sleep_interval}')
 			time.sleep(sleep_interval)
 			results = soup.find_all('a', attrs={"class": "data-export"})
 			if not len(results):
@@ -105,6 +109,8 @@ def do_split(bat_pitch, left_right, from_yr, to_yr):
 		except Exception as ex:
 			print("Retrieval failed: " + str(ex))
 			sleep_interval += 5  # sleep longer if page doesn't load
+			print(f'Sleep for {sleep_interval}')
+			time.sleep(sleep_interval)
 
 	data_list = raw_data.split(",")
 	my_csv = unquote(data_list[1])
@@ -160,7 +166,7 @@ def do_split(bat_pitch, left_right, from_yr, to_yr):
 	except Exception as ex:
 		print(str(ex))
 
-	driver.close()
+	#driver.close()
 
 
 def main():
