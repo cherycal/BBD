@@ -2,6 +2,7 @@ __author__ = 'chance'
 
 import json
 import sys
+import time
 import urllib.request
 from datetime import date, timedelta
 
@@ -31,82 +32,91 @@ def one_day(scoring_period, league):
 	date8 = fantasy.get_date_from_scoring_id(year, scoring_period)
 	bdb = sqldb.DB('Baseball.db')
 
-	with urllib.request.urlopen(addr) as url:
-		data = json.loads(url.read().decode())
-		scoring_items = data['settings']['scoringSettings']['scoringItems']
-		stat_categories = []
-		lol = list()
-		for scoring_item in scoring_items:
-			stat_categories.append(scoring_item['statId'])
-		for teams in data['schedule'][0]['teams']:
-			team_id = teams['teamId']
-			entries = teams['rosterForCurrentScoringPeriod']['entries']
-			table_name = "ESPNDailyScoring"
-			delcmd = "delete from " + table_name + " where Date = " + \
-			         str(date8) + " and LeagueID = " + str(league) + \
-			         " and teamID = " + str(team_id)
-			#print(delcmd)
-			bdb.delete(delcmd)
+	success = False
 
-			for entry in entries:
-				entryhasstats = 0
-				lineup_slot = entry['lineupSlotId']
-				player_id = entry['playerPoolEntry']['player']['id']
-				player_name = entry['playerPoolEntry']['player']['fullName']
-				points = None
-				if 'appliedStatTotal' in entry['playerPoolEntry']:
-					points = entry['playerPoolEntry']['appliedStatTotal']
-				if len(entry['playerPoolEntry']['player']['stats']) > 0:
-					for game in entry['playerPoolEntry']['player']['stats']:
-						lol.clear()
-						player_stats = game['stats']
-						cols = ['Name', 'playerid', 'Date', 'leagueId',
-						        'teamId', 'lineupSlotId', 'points']
-						#vals = ['', 0, 0, 0, 0, 0, None]
-						vals = [player_name, player_id,date8,league,team_id,fantasy.get_position(lineup_slot),0]
-						# vals[0] = player_name
-						# vals[1] = player_id
-						# vals[2] = date8
-						# vals[3] = league
-						# vals[4] = team_id
-						# vals[5] = fantasy.get_position(lineup_slot)
-						# vals[6] = 0
-						for stat in player_stats:
-							stat_int = int(stat)
-							if stat_int in statid_dict:
-								entryhasstats = 1
+	while not success:
+		try:
+			with urllib.request.urlopen(addr) as url:
+				data = json.loads(url.read().decode())
+				scoring_items = data['settings']['scoringSettings']['scoringItems']
+				stat_categories = []
+				lol = list()
+				for scoring_item in scoring_items:
+					stat_categories.append(scoring_item['statId'])
+				for teams in data['schedule'][0]['teams']:
+					team_id = teams['teamId']
+					entries = teams['rosterForCurrentScoringPeriod']['entries']
+					table_name = "ESPNDailyScoring"
+					delcmd = "delete from " + table_name + " where Date = " + \
+					         str(date8) + " and LeagueID = " + str(league) + \
+					         " and teamID = " + str(team_id)
+					#print(delcmd)
+					bdb.delete(delcmd)
+
+					for entry in entries:
+						entryhasstats = 0
+						lineup_slot = entry['lineupSlotId']
+						player_id = entry['playerPoolEntry']['player']['id']
+						player_name = entry['playerPoolEntry']['player']['fullName']
+						points = None
+						if 'appliedStatTotal' in entry['playerPoolEntry']:
+							points = entry['playerPoolEntry']['appliedStatTotal']
+						if len(entry['playerPoolEntry']['player']['stats']) > 0:
+							for game in entry['playerPoolEntry']['player']['stats']:
+								lol.clear()
+								player_stats = game['stats']
+								cols = ['Name', 'playerid', 'Date', 'leagueId',
+								        'teamId', 'lineupSlotId', 'points']
+								#vals = ['', 0, 0, 0, 0, 0, None]
+								vals = [player_name, player_id,date8,league,team_id,fantasy.get_position(lineup_slot),0]
 								# vals[0] = player_name
 								# vals[1] = player_id
 								# vals[2] = date8
 								# vals[3] = league
 								# vals[4] = team_id
 								# vals[5] = fantasy.get_position(lineup_slot)
-								# vals[6] = points
-								vals[0:7] = [player_name, player_id, date8, league, team_id,
-								        fantasy.get_position(lineup_slot), points]
-								cols.append(str(statid_dict[stat_int]))
-								vals.append(player_stats[stat])
+								# vals[6] = 0
+								for stat in player_stats:
+									stat_int = int(stat)
+									if stat_int in statid_dict:
+										entryhasstats = 1
+										# vals[0] = player_name
+										# vals[1] = player_id
+										# vals[2] = date8
+										# vals[3] = league
+										# vals[4] = team_id
+										# vals[5] = fantasy.get_position(lineup_slot)
+										# vals[6] = points
+										vals[0:7] = [player_name, player_id, date8, league, team_id,
+										        fantasy.get_position(lineup_slot), points]
+										cols.append(str(statid_dict[stat_int]))
+										vals.append(player_stats[stat])
 
-						# print("Stat not found: " + str(stat) + " Value: " + str(player_stats[stat]))
-						if entryhasstats or True:
-							lol.append(vals)
-							#print(vals)
-							df = pd.DataFrame(lol, columns=cols)
-							table_name = "ESPNDailyScoring"
-							tries = 0
-							max_tries = 4
-							incomplete = True
-							while incomplete and tries < max_tries:
-								try:
-									df.to_sql(table_name, bdb.conn, if_exists='append', index=False)
-									incomplete = False
-									#print("DB insert succeeded on try {}".format(tries + 1))
-								except Exception as ex:
-									print(str(ex))
-									tries += 1
-							if tries >= max_tries:
-								print("DB insert failed")
-								exit(-1)
+								# print("Stat not found: " + str(stat) + " Value: " + str(player_stats[stat]))
+								if entryhasstats or True:
+									lol.append(vals)
+									#print(vals)
+									df = pd.DataFrame(lol, columns=cols)
+									table_name = "ESPNDailyScoring"
+									tries = 0
+									max_tries = 4
+									incomplete = True
+									while incomplete and tries < max_tries:
+										try:
+											df.to_sql(table_name, bdb.conn, if_exists='append', index=False)
+											incomplete = False
+											#print("DB insert succeeded on try {}".format(tries + 1))
+										except Exception as ex:
+											print(str(ex))
+											tries += 1
+									if tries >= max_tries:
+										print("DB insert failed")
+										exit(-1)
+		except Exception as ex:
+			print(f' espn_daily_scoring urlopen failed: {ex}')
+			time.sleep(.5)
+
+		success = True
 
 	bdb.close()
 
