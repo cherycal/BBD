@@ -8,7 +8,6 @@ sys.path.append('../modules')
 import sqldb
 import push
 import fantasy
-import tools
 
 inst = push.Push()
 bdb = sqldb.DB('Baseball.db')
@@ -21,22 +20,24 @@ statcast_date = now.strftime("%Y-%m-%d")
 
 sleep_interval = 1
 # Selenium
-driver = tools.get_driver("headless")
+#driver = tools.get_driver("headless")
 
 msg = ""
 
 def get_page():
-	url_name = "http://statsapi.mlb.com/api/v1/schedule?sportId=1,&date=" + statcast_date
+	url_name = f"http://statsapi.mlb.com/api/v1/schedule?sportId=1,&date={statcast_date}"
+	url_name = f"https://baseballsavant.mlb.com/gf?game_pk=718666"
 
 	print("url is: " + url_name)
 
 	with urllib.request.urlopen(url_name) as url:
 		data = json.loads(url.read().decode())
+		print(data)
 
 
 def main():
 	get_page()
-	driver.close()
+	#driver.close()
 
 
 if __name__ == "__main__":

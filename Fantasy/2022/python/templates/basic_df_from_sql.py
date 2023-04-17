@@ -5,6 +5,10 @@ import pandas as pd
 import fantasy
 import dataframe_image as dfi
 from datetime import datetime
+import os
+
+cwd = os.getcwd()
+print(cwd)
 
 mode = "PROD"
 fantasy = fantasy.Fantasy(mode)
@@ -26,11 +30,11 @@ bdb.close()
 df = pd.DataFrame(lol, columns=col_headers, index=index)
 
 # df_styled = df.style.background_gradient()  # adding a gradient based on values in cell
-
-img = "mytable.png"
-dfi.export(df, img)
+print(df)
+img = "./mytable.png"
+dfi.export(df, img,table_conversion="matplotlib")
 
 mode = "PROD"
 
-#inst = push.Push()
-#inst.tweet_media(img, "Table created at " + str(formatted_date_time))
+inst = push.Push()
+inst.tweet_media(img, "Table created at " + str(formatted_date_time))

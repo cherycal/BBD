@@ -5,7 +5,7 @@ import sqldb
 
 # My python class: sqldb.py
 
-mode = "TEST"
+mode = "PROD"
 
 if mode == "TEST":
     bdb = sqldb.DB('BaseballTest.db')
@@ -14,12 +14,17 @@ else:
 
 # DB location: ('C:\\Ubuntu\\Shared\\data\\Baseball.db')
 
-#c = bdb.select("SELECT count(name) FROM sqlite_master WHERE type='table' AND name='ESPNPlayerDataCurrent'")
-names,c = bdb.select_w_cols("SELECT * FROM ESPNLeagues")
 
-#names = list(map(lambda x: x[0], c.description))
-print(names)
-for t in c:
-    print(t)
+# names,c = bdb.select_w_cols("SELECT * FROM ESPNLeagues")
+# print(names)
+# for t in c:
+#     print(t)
+
+
+data = bdb.select_table("ACheck_ID")
+
+print(data['column_names'])
+for row in data['rows']:
+    print(row)
 
 bdb.close()

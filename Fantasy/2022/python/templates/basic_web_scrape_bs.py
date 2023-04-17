@@ -3,14 +3,11 @@ __author__ = 'chance'
 import sys
 
 sys.path.append('../modules')
-
-from bs4 import BeautifulSoup as bs
-import tools
-import time
+import requests
+from bs4 import BeautifulSoup
 
 sleep_interval = 1
-# Selenium
-driver = tools.get_driver("headless")
+
 
 msg = ""
 
@@ -18,18 +15,19 @@ def get_page():
 	url = "https://fantasy.espn.com/baseball/watchlist?leagueId=2692"
 	print("url is: " + url)
 
-	driver.get(url)
-	time.sleep(sleep_interval)
-	html = driver.page_source
-	soup = bs(html, "html.parser")
-	print(soup)
 
+
+	r = requests.get(url)
+
+	soup = BeautifulSoup(r.content,
+	                     'html5lib')  # If this line causes an error, run 'pip install html5lib' or install html5lib
+	print(soup.prettify())
 
 
 
 def main():
 	get_page()
-	driver.close()
+	#driver.close()
 
 
 if __name__ == "__main__":
