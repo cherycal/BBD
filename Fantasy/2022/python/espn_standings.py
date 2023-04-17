@@ -24,7 +24,7 @@ bdb = fantasy.get_db()
 ts = datetime.now()  # current date and time
 formatted_date_time = ts.strftime("%Y%m%d-%H%M%S")
 formatted_date8 = ts.strftime("%Y%m%d")
-
+year = "2023"
 
 def get_account_map():
     account_map = {
@@ -46,20 +46,21 @@ def get_account_map():
             'detail_table_current': 'SD_WOBA_CURRENT',
             'view': "StandingsWOBA",
             'image': "RotoAuctionKeeper"
-        },
-        '1095816069': {
-            'pts': f'AdjR + AdjHR + AdjRBI + AdjSB + AdjAVG + AdjK + AdjW +  AdjSV  + AdjERA + AdjWHIP',
-            'cats': f'AdjR, AdjHR, AdjRBI, AdjSB, AdjAVG, AdjK, AdjW, AdjSV, AdjERA, AdjWHIP',
-            'table': "Standings_History_FOMO",
-            'view': "StandingsPitch",
-            'image': "TexasPro"
         }
+        # ,
+        # '1190388698': {
+        #     'pts': f'AdjR + AdjHR + AdjRBI + AdjSB + AdjAVG + AdjK + AdjW +  AdjSV + AdjHD + AdjERA + AdjWHIP',
+        #     'cats': f'AdjR, AdjHR, AdjRBI, AdjSB, AdjAVG, AdjK, AdjW, AdjSV, AdjHD, AdjERA, AdjWHIP',
+        #     'table': "Standings_History_FOMO",
+        #     'view': "StandingsFOMO",
+        #     'image': "KCPro"
+        # }
     }
 
     return account_map
 
 
-def build_query(date8, league, account_map):
+def build_query(season_start_date, date8, league, account_map):
     query = f'with Summary as ( \
     with PitchStandings as \
     ( \
@@ -70,7 +71,7 @@ def build_query(date8, league, account_map):
     sum(H2B) as H2B, sum(H3B) as H3B, sum(GIDP) as GIDP, sum(HRAGNST) as HRAGNST, sum(L) as L, sum(HD) as HD \
     from ESPNDailyScoring S, ESPNTeamOwners T \
     where S.leagueId = T.LeagueID and S.teamId = T.TeamID \
-    and S.LeagueID = {league} and Date >= 20220407 and Date <= {date8}\
+    and S.LeagueID = {league} and Date >= {season_start_date} and Date <= {date8}\
     and lineupSlotID not like "B%" \
     and lineupSlotID not like "IL%" \
     group by S.teamID \
@@ -207,7 +208,8 @@ def build_query(date8, league, account_map):
 
 
 def run_single_day(date8, date10, league, account_map):
-    query = build_query(date8, league, account_map)
+    season_start_date = 20230330
+    query = build_query(season_start_date, date8, league, account_map)
     table_data = bdb.select_plus(query)
     print(f'Date: {date8} League: {league}')
     daily_points = list()
@@ -254,6 +256,9 @@ def get_team_rank(view):
 
 
 def run_all():
+    season_start_date = 20230330
+    season_start_date10 = "2023-03-30"
+
     client = ImgurClient(os.environ['IMGURID'], os.environ['IMGURSECRET'])
     client.set_user_auth(os.environ['IMGURACCESS'], os.environ['IMGURREFRESH'])
 
@@ -272,8 +277,8 @@ def run_all():
         team_rank = get_team_rank(account_map[str(league)]['view'])
 
         today = date.today()
-        yesterday = today - timedelta(days=5)
-        start_date = yesterday  # date(2022, 4, 7)  # start: date(2022, 4, 7)
+        # start_date = date(2023, 3, 30)
+        start_date = today - timedelta(days=5) # date(2023, 3, 30)
         print(league)
         team_names = get_team_names(league)
 
@@ -303,7 +308,7 @@ def run_all():
 
         ######### PLOTTING ############
         lol = []
-        history = bdb.select_plus(f'SELECT * FROM {table_name}')
+        history = bdb.select_plus(f'SELECT * FROM {table_name} where Date >= {season_start_date}')
         date10_list = []
         for d in history['dicts']:
             date10_list.append(d['Date10'])
@@ -315,18 +320,20 @@ def run_all():
         df = df.set_index(pd_dates)
 
         # csv file
-        csv_file = f'./data/{table_name}.csv'
+        csv_file = f'../../{year}/python/data/{table_name}.csv'
         df.to_csv(csv_file)
 
         # detail file
         detail_lol = []
         detail_table_name = account_map[str(league)].get('detail_table',None)
         if detail_table_name:
-            detail_history = bdb.select_plus(f'SELECT * FROM {detail_table_name}')
+            query = f'SELECT * FROM {detail_table_name} where Date10 >= "{season_start_date10}"'
+            print(f'Query: {query}')
+            detail_history = bdb.select_plus(query)
             for row in detail_history['rows']:
                 detail_lol.append(row)
             detail_df = pd.DataFrame(detail_lol, columns=detail_history['column_names'])
-            detail_csv_file = f'./data/{detail_table_name}.csv'
+            detail_csv_file = f'../../{year}/python/data/{detail_table_name}.csv'
             detail_df.to_csv(detail_csv_file)
             print(f'Created: {detail_csv_file}')
 
@@ -334,17 +341,17 @@ def run_all():
             detail_current_lol = []
             detail_current_table_name = account_map[str(league)].get('detail_table_current', None)
             if detail_current_table_name:
-                detail_current_history = bdb.select_plus(f'SELECT * FROM {detail_current_table_name}')
+                detail_current_history = bdb.select_plus(f'SELECT * FROM {detail_current_table_name} where Date10 >= {season_start_date10}')
                 for row in detail_current_history['rows']:
                     detail_current_lol.append(row)
                 detail_current_df = pd.DataFrame(detail_current_lol, columns=detail_current_history['column_names'])
-                detail_current_csv_file = f'./data/{detail_current_table_name}.csv'
+                detail_current_csv_file = f'../../{year}/python/data/{detail_current_table_name}.csv'
                 detail_current_df.to_csv(detail_current_csv_file)
                 print(f'Created: {detail_current_csv_file}')
 
         chg_table = account_map[str(league)].get('chg_table', None)
         if chg_table:
-            chg_file = f'./data/{chg_table}.csv'
+            chg_file = f'../../{year}/python/data/{chg_table}.csv'
             chg_lol = []
             chg_data = bdb.select_plus(f'SELECT * FROM {chg_table}')
             for row in chg_data['rows']:
@@ -357,7 +364,7 @@ def run_all():
         pd.set_option("display.max.columns", None)
         df.plot(y=column_names[2:])
         # plt.show()
-        png_file = f'./data/{table_name}.png'
+        png_file = f'../../{year}/python/data/{table_name}.png'
         handles, labels = plt.gca().get_legend_handles_labels()
         # plt.legend(loc='upper left', prop={'size': 6})
         plt.legend([handles[idx] for idx in legend_order], [labels[idx] for idx in legend_order], loc='upper left',

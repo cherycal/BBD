@@ -83,11 +83,9 @@ def single_day(**kwargs):
 	           "force%5C.%5C.out%7Chit%5C.%5C.by%5C.%5C.pitch%7Cintent%5C.%5C.walk%7C" \
 	           "sac%5C.%5C.bunt%7Csac%5C.%5C.bunt%5C.%5C.double%5C.%5C.play%7C" \
 	           "sac%5C.%5C.fly%7Csac%5C.%5C.fly%5C.%5C.double%5C.%5C.play%" \
-	           "7Ctriple%5C.%5C.play%7C&hfGT=" + gt + "%7C&hfPR=&hfZ=&stadium=&hfBBL=&hfNewZones=&hfPull=" \
-	           "&hfC=&hfSea=" + str(year) + "%7C&hfSit=&player_type=" \
-	           + player_type + "&hfOuts=&opponent=&" \
-	                           "pitcher_throws=&batter_stands=&hfSA=&game_date_gt=" + dt + \
-	           "&game_date_lt=" + dt + \
+	           f"7Ctriple%5C.%5C.play%7C&hfGT={gt}%7C&hfPR=&hfZ=&stadium=&hfBBL=&hfNewZones=&hfPull=" \
+	           f"&hfC=&hfSea={year}%7C&hfSit=&player_type={player_type}&hfOuts=&opponent=&" \
+	            f"pitcher_throws=&batter_stands=&hfSA=&game_date_gt={dt}&game_date_lt={dt}" \
 	           "&hfInfield=&team=&position=&hfOutfield=&hfRO=&home_road=&hfFlag=&hfBBT=&metric_1=&hfInn=&min_pitches=0&" \
 	           "min_results=0&group_by=name-event&sort_col=xwoba&player_event_sort=lineup_cd&" \
 	           "sort_order=desc&min_pas=0"
@@ -99,13 +97,13 @@ def single_day(**kwargs):
 	url_details_text = url_base + url_csv_text + url_body + url_checks + url_details
 	url_text = url_base + url_basic_search_text + url_body + url_checks + url_footer
 
-	print(url_details_text)
-	print(url_text)
-
+	print(f"url_details_text: {url_details_text}")
+	#print(url_text)
+	headers = {"authority": "baseballsavant.mlb.com"}
 	print("sleeping ....")
 	time.sleep(.5)
 
-	r = requests.get(url_details_text, allow_redirects=True)
+	r = requests.get(url_details_text, headers=headers, allow_redirects=True)
 	filename = dirname + "_events_daily.csv"
 	csvfile = data_dir / filename
 	print(csvfile)
@@ -127,12 +125,12 @@ def single_day(**kwargs):
 	filename = dirname + "_events_daily.csv"
 	csvfile2 = data_dir / filename
 	# csvfile2 = "C:\\Users\\chery\\Documents\\BBD\\Statcast\\" + dirname + "\\" + "events_daily2.csv"
-
+	print(f"url_text: {url_text}")
 	try:
-		df2 = pd.read_html(url_text)[0]
+		df2 = pd.read_html(requests.get(url_text, headers=headers).text)[0]
 		df2.to_csv(csvfile2, index=False)
 	except Exception as ex:
-		print(str(ex))
+		print(f"Error: {str(ex)}")
 		return 0
 
 	if os.path.getsize(csvfile2) > 0:
@@ -159,22 +157,22 @@ def single_day(**kwargs):
 		df_combined['adj_xSLG'] = df_combined['xSLG']
 		df_combined['adj_xwOBA'] = df_combined['xwOBA']
 		df_combined['adj_xBA'] = df_combined['xBA']
-		df_combined['barrel'] = np.where(df_combined['Result'] == "strikeout", 0, df_combined['barrel'])
-		df_combined['barrel'] = np.where(df_combined['Result'] == "strikeout_double_play", 0, df_combined['barrel'])
-		df_combined['adj_xSLG'] = np.where(df_combined['Result'] == "strikeout", 0, df_combined['adj_xSLG'])
-		df_combined['adj_xSLG'] = np.where(df_combined['Result'] == "strikeout_double_play", 0, df_combined['adj_xSLG'])
-		df_combined['adj_xBA'] = np.where(df_combined['Result'] == "strikeout", 0, df_combined['adj_xBA'])
-		df_combined['adj_xBA'] = np.where(df_combined['Result'] == "strikeout_double_play", 0, df_combined['adj_xBA'])
-		df_combined['isBB'] = np.where(df_combined['Result'] == "walk", 1, 0)
-		df_combined['isK'] = np.where(df_combined['Result'] == "strikeout", 1, 0)
-		df_combined['isK'] = np.where(df_combined['Result'] == "strikeout_double_play", 1, df_combined['isK'])
-		df_combined['isHR'] = np.where(df_combined['Result'] == "home_run", 1, 0)
-		df_combined['is1b'] = np.where(df_combined['Result'] == "single", 1, 0)
-		df_combined['is2b'] = np.where(df_combined['Result'] == "double", 1, 0)
-		df_combined['is3b'] = np.where(df_combined['Result'] == "triple", 1, 0)
-		df_combined['isgidp'] = np.where(df_combined['Result'] == "grounded_into_double_play", 1, 0)
+		df_combined['barrel'] = np.where(df_combined['events'] == "strikeout", 0, df_combined['barrel'])
+		df_combined['barrel'] = np.where(df_combined['events'] == "strikeout_double_play", 0, df_combined['barrel'])
+		df_combined['adj_xSLG'] = np.where(df_combined['events'] == "strikeout", 0, df_combined['adj_xSLG'])
+		df_combined['adj_xSLG'] = np.where(df_combined['events'] == "strikeout_double_play", 0, df_combined['adj_xSLG'])
+		df_combined['adj_xBA'] = np.where(df_combined['events'] == "strikeout", 0, df_combined['adj_xBA'])
+		df_combined['adj_xBA'] = np.where(df_combined['events'] == "strikeout_double_play", 0, df_combined['adj_xBA'])
+		df_combined['isBB'] = np.where(df_combined['events'] == "walk", 1, 0)
+		df_combined['isK'] = np.where(df_combined['events'] == "strikeout", 1, 0)
+		df_combined['isK'] = np.where(df_combined['events'] == "strikeout_double_play", 1, df_combined['isK'])
+		df_combined['isHR'] = np.where(df_combined['events'] == "home_run", 1, 0)
+		df_combined['is1b'] = np.where(df_combined['events'] == "single", 1, 0)
+		df_combined['is2b'] = np.where(df_combined['events'] == "double", 1, 0)
+		df_combined['is3b'] = np.where(df_combined['events'] == "triple", 1, 0)
+		df_combined['isgidp'] = np.where(df_combined['events'] == "grounded_into_double_play", 1, 0)
 		df_combined['points'] = df_combined['iso_value'] + df_combined['babip_value'] + df_combined['isBB'] - \
-		                        df_combined['isK'] + df_combined['isHR']
+		                        df_combined['isK'] + 2 * df_combined['isHR']
 		df_combined['xPoints'] = df_combined['adj_xSLG']
 		df_combined['xPoints'] = np.where(df_combined['Result'] == "walk", 1, df_combined['xPoints'])
 		df_combined['xPoints'] = np.where(df_combined['Result'] == "strikeout", -1, df_combined['xPoints'])
@@ -259,129 +257,8 @@ def game_date_rows(tablename, dt8):
 	c = bdb.select(cmd)
 	return int(c[0][0])
 
-#
-# def get_one_day(f, dt_, year_, player_type, print_header=0):
-# 	# https://baseballsavant.mlb.com/statcast_search/csv?
-#
-# 	url_csv_text = "/csv?all=true&"
-#
-# 	url_base = "https://baseballsavant.mlb.com/statcast_search"
-#
-# 	url_basic_search_text = "?"
-#
-# 	url_body = "hfPT=&hfAB=single%7Cdouble%7Ctriple%7Chome%5C.%5C.run%7Cfield%5C.%5C.out%" \
-# 	           "7Cstrikeout%7Cstrikeout%5C.%5C.double%5C.%5C.play%7Cwalk%7Cdouble%5C.%5C.play%" \
-# 	           "7Cfield%5C.%5C.error%7Cgrounded%5C.%5C.into%5C.%5C.double%5C.%5C.play%7C" \
-# 	           "fielders%5C.%5C.choice%7Cfielders%5C.%5C.choice%5C.%5C.out%7C" \
-# 	           "force%5C.%5C.out%7Chit%5C.%5C.by%5C.%5C.pitch%7Cintent%5C.%5C.walk%7C" \
-# 	           "sac%5C.%5C.bunt%7Csac%5C.%5C.bunt%5C.%5C.double%5C.%5C.play%7C" \
-# 	           "sac%5C.%5C.fly%7Csac%5C.%5C.fly%5C.%5C.double%5C.%5C.play%" \
-# 	           "7Ctriple%5C.%5C.play%7C&hfGT=R%7C&hfPR=&hfZ=&stadium=&hfBBL=&hfNewZones=&hfPull=" \
-# 	           "&hfC=&hfSea=" + str(year_) + "%7C&hfSit=&player_type=" \
-# 	           + player_type + "&hfOuts=&opponent=&" \
-# 	                           "pitcher_throws=&batter_stands=&hfSA=&game_date_gt=" + dt_ + \
-# 	           "&game_date_lt=" + dt_ + \
-# 	           "&hfInfield=&team=&position=&hfOutfield=&hfRO=&home_road=&hfFlag=&hfBBT=&metric_1=&hfInn=&min_pitches=0&" \
-# 	           "min_results=0&group_by=name-event&sort_col=xwoba&player_event_sort=api_p_release_speed&" \
-# 	           "sort_order=desc&min_pas=0"
-#
-# 	url_checks = "&chk_event_launch_speed=on&" \
-# 	             "chk_event_launch_angle=on&" \
-# 	             "chk_event_release_spin_rate=on&" \
-# 	             "chk_event_release_speed=on&" \
-# 	             "chk_event_hit_distance_sc=on&" \
-# 	             "chk_event_estimated_ba_using_speedangle=on&" \
-# 	             "chk_event_estimated_slg_using_speedangle=on&" \
-# 	             "chk_event_estimated_woba_using_speedangle=on"
-#
-# 	url_details = "&type=details&"
-# 	url_footer = "#results"
-#
-# 	url_details_text = url_base + url_csv_text + url_body + url_checks + url_details
-# 	url_text = url_base + url_basic_search_text + url_body + url_checks + url_footer
-#
-# 	print(url_details_text)
-# 	print(url_text)
-#
-# 	print("sleeping ....")
-# 	time.sleep(1)
-#
-# 	page = requests.get(url_text)
-# 	soup = BeautifulSoup(page.content, 'html.parser')
-#
-# 	if print_header:
-# 		count = 0
-# 		line_str = ""
-# 		for item in soup.find_all('th'):
-# 			count += 1
-# 			line_str += (item.get_text() + ',')
-# 		line_str = line_str[:-1]
-# 		# line_str += "extra,"
-# 		if count > 0:
-# 			f.write(line_str.strip())
-# 			f.write("\n")
-#
-# 	count = 0
-# 	line_str = ""
-# 	for item in soup.find_all('td'):
-# 		if item.find('span'):
-# 			line_str = line_str[:-1]
-# 			data = line_str.strip()
-# 			if len(data):
-# 				f.write(data)
-# 				f.write("\n")
-# 				count = 0
-# 				line_str = ""
-# 		if item.get('class'):
-# 			count += 1
-# 			text = str(item.get_text().strip())
-# 			if text == dt_:
-# 				text = text.replace('-', '')
-# 			line_str += text + ','
-# 		if item.get('id'):
-# 			playerid = str(item['id'][3:])
-# 			count += 1
-# 			line_str += playerid + ','
-#
-# 	line_str = line_str[:-1]
-# 	print(line_str.strip())
-# 	if count > 0:
-# 		f.write(line_str.strip())
-# 		f.write("\n")
-#
-# 	return count
 
-
-# noinspection PyTypeChecker
-# def post_process_csv_file(infile, outfile):
-# 	df = pd.read_csv(infile, encoding='unicode_escape')
-#
-# 	# Drop unnamed column
-# 	# df = df.drop(df.columns[[1]], axis=1)
-#
-# 	# Set header names
-# 	print("df head")
-# 	colnames = list(df.columns)
-# 	colnames.insert(3, 'playerid')
-# 	del colnames[1]
-# 	colnames[6] = "LaunchAngle"
-# 	colnames[-1] = "Adj_xWOBA"
-#
-# 	# colnames.pop()
-# 	print(colnames)
-# 	print("---")
-#
-# 	df.columns = colnames
-#
-# 	df['Adj_xSLG'] = df['xSLG']
-# 	print("df columns:")
-# 	print(df.columns)
-# 	print("-----")
-#
-# 	df.to_csv(outfile, index=False)
-
-
-def single_year(year, bp, dates=(3, 18, 3, 28)):
+def single_year(year, bp, dates=(3, 30, 3, 30)):
 	###################
 	###################
 	# Hard coded:
@@ -425,6 +302,8 @@ def single_year(year, bp, dates=(3, 18, 3, 28)):
 
 	# Cleanup
 	bdb.update(
+		"update StatcastBattingEvents set woba_value = xwOBA where events like 'field_error'")
+	bdb.update(
 		"update StatcastBattingEvents set xBA = 0, adj_xBA = 0, hit_distance_sc = 0, xwOBA = 0, "
 		"xSLG = 0, adj_xwOBA = 0, adj_xSLG = 0 where xwOBA is NULL and events like 'strikeout%'")
 	bdb.update(
@@ -441,13 +320,14 @@ def single_year(year, bp, dates=(3, 18, 3, 28)):
 def main():
 	# single_year(2016, "bat", (5, 1, 5, 1))
 	# single_year(2016, "pitch")
+	yearlist  = [2023]
 	today = date.today()
 	yest = today - timedelta(days=1)
 	past = today - timedelta(days=2)
 
-	for year in [2022]:
+	for year in yearlist:
 		for bp in ["bat", "pitch"]:
-			#single_year(year, bp, (6, 4, 6, 4))
+			#single_year(year, bp, (3,31, 4, 12))
 			single_year(year, bp, (past.month, past.day, yest.month, yest.day))
 
 

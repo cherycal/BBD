@@ -4,6 +4,7 @@ import inspect
 import json
 import os
 import pickle
+import re
 import time
 import urllib.request
 from datetime import datetime, timedelta
@@ -14,6 +15,7 @@ import certifi
 import dataframe_image as dfi
 import pandas as pd
 import pycurl
+from slack_sdk import WebClient
 
 import push
 # sys.path.append('./modules')
@@ -82,8 +84,8 @@ class Fantasy(object):
 		else:
 			print("Platform " + self.platform + " not recognized in sqldb::DB. Exiting.")
 			exit(-1)
-		self.year = "2022"
-		self.roster_year = "2022"
+		self.year = "2023"
+		self.roster_year = "2023"
 		self.msg = "Msg: "
 		self.DB = sqldb.DB(db)
 		self.teamName = self.set_ID_team_map()
@@ -118,6 +120,11 @@ class Fantasy(object):
 		self.logger_instance = tools.get_logger(logfilename=f'{logname}_{self.date}')
 		self.logger_instance.debug(f'Initializing fantasy object: {caller}')
 		self.push_instance = push.Push(self.logger_instance)
+		self.slack_api_token = os.environ["SLACK_BOT_TOKEN"]
+		self.slack_channel = os.environ["SLACK_CHANNEL"]  # "C051T1FKZUN"
+		self.slack_client = WebClient(token=self.slack_api_token)
+		self.slack_most_recent = ""
+		self.slack_first_run = True
 
 	def post_log_msg(self,msg):
 		self.logger_instance.debug(msg)
@@ -507,6 +514,7 @@ class Fantasy(object):
 		return self.roster_lock_date
 
 	def set_roster_lock_time(self):
+		self.roster_lock_time = 235959
 		try:
 			url_name = "http://site.api.espn.com/apis/site/v2/sports/baseball/mlb/scoreboard"
 			with urllib.request.urlopen(url_name, timeout=self.TIMEOUT) as url:
@@ -761,7 +769,7 @@ class Fantasy(object):
 			       "/segments/0/leagues/" + str(league) + \
 			       "?view=mDraftDetail&view=mLiveScoring&view=mMatchupScore&view=mPendingTransactions&" + \
 			       "view=mPositionalRatings&view=mRoster&view=mSettings&view=mTeam&view=modular&view=mNav"
-			# print(addr)
+			print(addr)
 
 			try:
 				with urllib.request.urlopen(addr, timeout=self.TIMEOUT) as url:
@@ -781,6 +789,7 @@ class Fantasy(object):
 							insert_list.append(entry)
 			except Exception as ex:
 				print(str(ex))
+			time.sleep(.5)
 
 
 		count = len(insert_list)
@@ -934,7 +943,7 @@ class Fantasy(object):
 						if set_attr != "nextStartID":
 							self.push_msg_list.append(
 								tools.string_from_list([name, set_attr, 'old:', old, 'new:', new]))
-							run_injury_updates = True
+							# removed 20230406 run_injury_updates = True
 						self.DB.update_list("ESPNPlayerDataCurrent", set_attr, where_attr, (new, espnid))
 						self.DB.update_list("ESPNPlayerDataCurrent", "Date", where_attr, (out_date, espnid))
 						self.DB.update_list("ESPNPlayerDataCurrent", "UpdateTime", where_attr, (date_time, espnid))
@@ -962,7 +971,7 @@ class Fantasy(object):
 		lol = []
 		index = list()
 
-		# print("Query: " + query)
+		print("Query: " + query)
 		try:
 			col_headers, rows = self.DB.select_w_cols(query)
 			for row in rows:
@@ -970,9 +979,10 @@ class Fantasy(object):
 				index.append("")
 
 			df = pd.DataFrame(lol, columns=col_headers, index=index)
+			print(df)
 			img = "mytable.png"
-			dfi.export(df, img)
-			self.push_instance.tweet_media(img, msg)
+			dfi.export(df, img,table_conversion="matplotlib")
+			self.push_instance.tweet_media(img, msg, True)
 		except Exception as ex:
 			print(str(ex))
 
@@ -982,12 +992,13 @@ class Fantasy(object):
 
 	@tools.try_wrap
 	def tweet_add_drops(self, dt=""):
+
 		if dt == "":
 			dt = self.date
 		query = "select A.UpdateTime, PlayerName, A.TeamName,LegType," \
 		        " percentOwned, LeagueID from AddDrops A," \
 		        " ESPNPlayerDataCurrent E where A.ESPNID = E.ESPNID and" \
-		        " A.UpdateDate like '" + dt + "%' order by percentOwned desc"
+		        f" A.UpdateDate like '{dt}%' order by percentOwned desc"
 		#print(query)
 		self.run_query(query, "Adds / drops: ")
 		return
@@ -1453,8 +1464,8 @@ class Fantasy(object):
 			add_drop_count += self.build_transactions(team)
 			#print(f'Total add/drops: {add_drop_count}')
 			time.sleep(1.5)
-		if add_drop_count > 0:
-			self.tweet_add_drops()
+		#if add_drop_count > 0:
+		#	self.tweet_add_drops()
 		if int(self.get_hhmmss()) > int(self.get_roster_lock_time()):
 			#print("Process transactions:")
 			time.sleep(.05)
@@ -1471,3 +1482,55 @@ class Fantasy(object):
 		for row in rows:
 			leagueID = row['LeagueID']
 		return leagueID
+
+	def read_slack(self):
+		history = self.slack_client.conversations_history(channel=self.slack_channel,
+		                                                  tokem=self.slack_api_token, limit=1)
+		msgs = history['messages']
+		if len(msgs) > 0:
+			for msg in msgs:
+				text = msg['text']
+				if text != self.slack_most_recent:
+					try:
+						self.slack_most_recent = text
+						if not self.slack_first_run:
+							self.slack_process_text(text)
+						else:
+							print(F"Skipping first run")
+							self.slack_first_run = False
+					except Exception as ex:
+						self.push_instance.push(f"Error in push_instance, Error: {str(ex)}")
+				else:
+					pass
+					#print(f"Skipping most recent post: {text}")
+
+	def slack_process_text(self, text_):
+		if text_ == "Adds":
+			print("Tweet add drops")
+			self.tweet_add_drops()
+		elif text_ == "Injuries":
+			print("Tweet injuries")
+			self.run_injury_updates()
+		elif re.search("^S: ", text_):
+			name = text_.split(' ',1)[1]
+			print(f"Stats name: {name}")
+			query = f"SELECT player_name,substr(game_date,0,5)yr,stand,(p_throws)Vs,count(*)PA," \
+			        f"round(avg(points),4)Pts,round(avg(woba_value),4)wOBA,round(avg(xWOBA),4)xWOBA," \
+			        f"round(avg(isK),4)KPct,sum(isHR)HR,sum(is2b)DB,sum(isgidp)GDP " \
+			        f"FROM StatcastBattingEvents WHERE game_date >= '2022-04-07' and " \
+			        f"name like '%{name}%' group by batter, substr(game_date,0,5),p_throws " \
+			        f"order by substr(game_date,0,5),stand,vs,avg(points) desc LIMIT 20"
+			print(query)
+		elif re.search("^M: ", text_):
+			name = text_.split(' ', 1)[1]
+			print(f"MILB name: {name}")
+			query = f'SELECT Season,Name,Team,Level,Age,PA,adjops,adjwoba,' \
+			        f'"K%",ISO,wSB,OPS,wOBA,"wrc+",LGOPS FROM FGMILBBattingPlus ' \
+			        f'WHERE Name like "%{name}%" order by age, ISO_K desc , season desc LIMIT 20'
+			print(query)
+			self.run_query(query, f"MiLB Stats for {name}")
+		else:
+			query = f"Select * from ESPNRosters where Player like '%{text_}%' order by Player, LeagueId"
+			print(query)
+			self.run_query(query, text_)
+

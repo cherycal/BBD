@@ -30,6 +30,7 @@ def populate_team_owners(leagueID, year):
 
 
 
-populate_team_owners(1095816069, 2022)
+populate_team_owners(1190388698, 2023)
+populate_team_owners(941700542, 2023)
 
 

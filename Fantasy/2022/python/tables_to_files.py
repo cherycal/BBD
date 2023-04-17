@@ -13,8 +13,8 @@ if mode == "TEST":
 else:
     bdb = sqldb.DB('Baseball.db')
 
-tables = ['ACheck_ID','ACheck_Statcast','AllSplits',
-          'UpcomingStartsWithStats','SituationalEventsRosters','AddDrops']
+tables = ['UpcomingStartsWithStats','SD_FRAN','ACheck_ID','ACheck_Statcast','AllSplits','TeamSplits','RunningTotalsPitching_FRAN',
+          'SituationalEventsRosters','AddDrops']
 
 for tbl in tables:
     try:

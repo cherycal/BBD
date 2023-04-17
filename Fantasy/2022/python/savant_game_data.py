@@ -11,13 +11,16 @@ import push
 import fantasy
 import time
 import csv
-from os import path
 import random
 import pandas as pd
 import logging
 from pathlib import Path
 import colorlog
 import os
+from io import BytesIO
+from os import path
+import certifi
+import pycurl
 
 script_name = os.path.basename(__file__)
 
@@ -107,8 +110,8 @@ PLAYOFFS = False
 if PLAYOFFS is True:
     query = "select distinct MLBID, Name from ( select  round(MLBID,0) as MLBID, " \
             "Name, AuctionValueAverage from ESPNPlayerDataCurrent E, IDMap I where " \
-            " E.espnid = I.ESPNID ) union select distinct round(MLBID,0) as MLBID, Name " \
-            "from ESPNPlayerDataCurrent E, IDMap I where  E.espnid = I.ESPNID"
+            " E.espnid = I.ESPNID and MLBID is not NULL ) union select distinct round(MLBID,0) as MLBID, Name " \
+            "from ESPNPlayerDataCurrent E, IDMap I where  E.espnid = I.ESPNID and MLBID is not NULL"
 
 print(query)
 
@@ -125,8 +128,8 @@ for t in c:
 
 sc_first_run = dict()
 
-if PLAYOFFS is True:
-    sc_first_run = 0
+# if PLAYOFFS is True:
+#     sc_first_run = False
 
 mlb_first_run = 1
 reported_event_count = dict()
@@ -269,7 +272,7 @@ def process_mlb(data, gamepk, player_teams):
                     # logger_instance.info(f'Play info: {play}')
                     #print(f'\n\n{play}\n\n')
                     # print("event: " + str(event_count[gamepk]))
-                    msg = description[0:120]
+                    msg = description[0:150] #### TWEET DESCRIPTION LENGTH
                     #logger_instance.info(f'Play description: {msg}')
                     msg += "\nP: " + pitcher_name + \
                            f' {pitcher_teams}\n{home_team} {home_score}, ' \
@@ -279,12 +282,12 @@ def process_mlb(data, gamepk, player_teams):
                     # print("----------")
                     print(msg)
                     # print("-----------------------------------------------")
-                    title = msg[0:40]
+                    title = msg[0:140]
                     if not sc_first_run[gamepk] or at_bat <= 1:
                         logger_instance.info(f'Pushing play info: {msg}')
                         print("Pushing: " + msg)
                         inst.push(title, msg)
-                        inst.tweet(msg)
+                        #inst.tweet(msg)
                         time.sleep(1.25)
                     else:
                         print("Not pushing on SC first run")
@@ -353,7 +356,7 @@ def process_statcast(data, gamepk):
                 msg += "\n" + pitcher_name
                 msg += ", " + event['team_fielding']
                 if event.get('des'):
-                    msg2 = str(event['des'])
+                    msg2 = str(event['des'])[0:40]
                     msg2 += "\nPitcher: " + pitcher_name
                 else:
                     msg2 = f'Batter: {batter_name}\nPitcher: {pitcher_name}'
@@ -373,10 +376,10 @@ def process_statcast(data, gamepk):
                 print(msg2)
                 print("--------------------")
                 # print("--------------------")
-                title = msg2[0:20] + " " + event['team_batting'] + " vs " + event['team_fielding']
+                title = msg2[0:120] + " " + event['team_batting'] + " vs " + event['team_fielding']
                 if not mlb_first_run:
                     inst.push(title, msg2)
-                    inst.tweet(msg2)
+                    # inst.tweet(msg2)
                     time.sleep(.25)
                 else:
                     print("Not pushing on MLB first run")
@@ -429,13 +432,45 @@ def process_lineups(lineups):
     return
 
 
+def get_savant_gamefeed_page(url_name):
+    TIMEOUT = 10
+    headers = ["authority: baseballsavant.mlb.com"
+              , "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+              , "accept-language: en-US,en;q=0.9"
+              , "cache-control: max-age=0"
+              , "dnt: 1"
+              , "if-modified-since: Sat, 08 Apr 2023 19:59:59 GMT"
+              , "sec-ch-ua: \"Chromium\";v=\"112\", \"Google Chrome\";v=\"112\", \"Not:A-Brand\";v=\"99\""
+              , "sec-ch-ua-mobile: ?0"
+              , "sec-ch-ua-platform: \"Windows\""
+              , "sec-fetch-dest: document"
+              , "sec-fetch-mode: navigate"
+              , "sec-fetch-site: none"
+              , "sec-fetch-user: ?1"
+              , "upgrade-insecure-requests: 1"
+              , "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
+            ]
+
+    buffer = BytesIO()
+    c = pycurl.Curl()
+    c.setopt(c.URL, url_name)
+    c.setopt(c.CONNECTTIMEOUT, TIMEOUT)
+    c.setopt(c.HTTPHEADER, headers)
+    c.setopt(c.WRITEDATA, buffer)
+    c.setopt(c.CAINFO, certifi.where())
+    c.perform()
+    c.close()
+    data = buffer.getvalue()
+    return json.loads(data)
+
+
 def main():
     global has_statcast
     global reported_event_count
     global reported_statcast_count
     lineups = dict()
-    TIMEOUT = 10
-    SLEEP_BASE = 25
+    TIMEOUT = 15
+    SLEEP_BASE = 15
     # sleep_min = 8
     # sleep_max = 10
 
@@ -481,7 +516,7 @@ def main():
     while not_eod:
 
         time6 = now.strftime("%H%M%S")
-        print(f'Current time: {time6}')
+        print(f'Current time: {time6}, reported event count for game {gamepk}: {reported_event_count[gamepk]}')
 
         current_time = int(time6)
         if current_time > 225800:
@@ -497,7 +532,7 @@ def main():
 
             not_eod = 1
             sleep_min = int(SLEEP_BASE / games)
-            sleep_max = sleep_min + 5
+            sleep_max = sleep_min + 10
 
             ts = datetime.now()  # current date and time
             # formatted_date_time = ts.strftime("%Y%m%d-%H%M%S")
@@ -510,49 +545,52 @@ def main():
             except Exception as ex:
                 print(str(ex))
                 inst.push("DB error in savant_game_data", str(ex))
-                inst.tweet("DB error in game_data: " + str(ex))
+                # inst.tweet("DB error in game_data: " + str(ex))
 
             ########### Statcast ######################
 
             url_name = "https://baseballsavant.mlb.com/gf?game_pk=" + gamepk
-            # print(url_name)
+            print(url_name)
 
             try:
-                with urllib.request.urlopen(url_name, timeout=TIMEOUT) as url:
-                    statcast_count[gamepk] = 0
-                    data = json.loads(url.read().decode())
+                data = get_savant_gamefeed_page(url_name)
+                statcast_count[gamepk] = 0
 
-                    if data.get('game_status_code'):
-                        if data['game_status_code'] == "F":
-                            print(f'Skipping completed game: {gamepk}')
-                            print("Sleep for 2 seconds ")
-                            time.sleep(2)
-                            if gamepks.count(gamepk):
-                                gamepks.remove(gamepk)
-                                logger_instance.info(f'Removing {gamepk} from list')
-                            continue
-                        else:
-                            # print("Sleep at " + formatted_date_time)
-                            num1 = random.randint(sleep_min, sleep_max)
-                            print("Sleep for " + str(num1) + " seconds")
-                            time.sleep(num1)
-
-                    lineups['gamepk'] = gamepk
-                    if not data.get('home_team_data'):
+                if data.get('game_status_code'):
+                    if data['game_status_code'] == "F":
+                        print(f'Skipping completed game: {gamepk}')
+                        print("Sleep for 2 seconds ")
+                        time.sleep(1)
+                        if gamepks.count(gamepk):
+                            gamepks.remove(gamepk)
+                            logger_instance.info(f'Removing {gamepk} from list')
                         continue
-                    if data.get('gameDate'):
-                        lineups['date'] = data['gameDate']
-                    lineups['ht'] = data['home_team_data']['abbreviation']
-                    lineups['at'] = data['away_team_data']['abbreviation']
-                    lineups['ab'] = data['away_lineup']
-                    lineups['ap'] = data['away_pitcher_lineup']
-                    lineups['hb'] = data['home_lineup']
-                    lineups['hp'] = data['home_pitcher_lineup']
-                    process_lineups(lineups)
+                    else:
+                        # print("Sleep at " + formatted_date_time)
+                        sleep_seconds = random.randint(sleep_min, sleep_max)
 
-                    if data.get('exit_velocity'):
-                        print("Skipping statcast data")
-                        # process_statcast(data, gamepk)
+                        if reported_event_count[gamepk] == 0:
+                            sleep_seconds += 0
+
+                        print("Sleep for " + str(sleep_seconds) + " seconds")
+                        time.sleep(sleep_seconds)
+
+                lineups['gamepk'] = gamepk
+                if not data.get('home_team_data'):
+                    continue
+                if data.get('gameDate'):
+                    lineups['date'] = data['gameDate']
+                lineups['ht'] = data['home_team_data']['abbreviation']
+                lineups['at'] = data['away_team_data']['abbreviation']
+                lineups['ab'] = data['away_lineup']
+                lineups['ap'] = data['away_pitcher_lineup']
+                lineups['hb'] = data['home_lineup']
+                lineups['hp'] = data['home_pitcher_lineup']
+                process_lineups(lineups)
+
+                if data.get('exit_velocity'):
+                    print("Skipping statcast data")
+                    # process_statcast(data, gamepk)
             except Exception as ex:
                 print(f'Exception in user code: {ex}')
                 print("-" * 60)

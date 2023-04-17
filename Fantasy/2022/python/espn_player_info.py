@@ -230,9 +230,11 @@ def eod_process():
         time.sleep(SLEEP)
 
     try:
-        run_odds()
+        #run_odds()
+        exec(open('odds.py').read())
     except Exception as ex:
         print(ex)
+
     fantasy.refresh_starter_history()
 
     if not passed:
@@ -256,8 +258,9 @@ def main():
     run_odds_bool = True
     begin_day_time = 10000
     end_day_time = 211500
-    MIN_SLEEP = 45
-    MAX_SLEEP = 65
+    MIN_SLEEP = 10
+    MAX_SLEEP = 20
+    run_count = 0
 
     try:
         bdb.update("update ProcessUpdateTimes set Active = 1 where Process = 'PlayerInfo'")
@@ -280,7 +283,7 @@ def main():
         else:
             run_odds_bool = True
 
-        print(f'Start at {formatted_date_time}')
+        print(f'Start at {formatted_date_time}, run count: {run_count}')
 
         update_time = ts.strftime("%Y%m%d%H%M%S")
 
@@ -291,7 +294,7 @@ def main():
         except Exception as ex:
             print(str(ex))
             inst.push("DB error in player_info", str(ex))
-            inst.tweet("DB error in player_info\n" + cmd + ":\n" + str(ex))
+            #inst.tweet("DB error in player_info\n" + cmd + ":\n" + str(ex))
             # fantasy.post_log_msg(f'DB error in cmd {cmd}: Exception: {ex}')
             fantasy.logger_exception(f'DB error in cmd {cmd}: Exception: {ex}')
 
@@ -302,7 +305,7 @@ def main():
             fantasy.logger_instance.debug(f'End eod_process at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
             run_end_day_process = False
 
-        if current_time >= 221500:
+        if current_time >= 214500:
             try:
                 bdb.update("update ProcessUpdateTimes set Active = 0 where Process = 'PlayerInfo'")
             except Exception as ex:
@@ -315,8 +318,27 @@ def main():
             fantasy.logger_instance.debug(f'End begin_day_process at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
             run_begin_day_process = False
 
-        print(f'refresh_rosters at  {datetime.now().strftime("%Y%m%d-%H%M%S")}')
-        fantasy.refresh_rosters()
+        if run_count % 4 == 0:
+            print(f'refresh_rosters at  {datetime.now().strftime("%Y%m%d-%H%M%S")}')
+            fantasy.refresh_rosters()
+
+            # Retrieve baseline information from ESPNPlayerDataCurrent
+            print(f'get_db_player_info at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
+            fantasy.get_db_player_info()
+
+            # ESPNPlayerDataCurrent, ESPNPlayerDataHistory, StatusChanges
+            # Retrieve fron ESPN API
+            print(f'get_espn_player_info at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
+            fantasy.get_espn_player_info()
+
+            # Check against ESPNPlayerDataCurrent table and make changes
+            # Now done in get_espn_player_info: run_function(fantasy.get_player_info_changes())
+            print(f'send_push_msg_list at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
+            fantasy.send_push_msg_list()
+
+            # Rosters and RosterChanges
+            print(f'run_transactions at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
+            fantasy.run_transactions()
 
         if run_roster_suite:
             fantasy.tweet_daily_schedule()
@@ -334,24 +356,7 @@ def main():
             run_roster_suite = False
 
         fantasy.check_roster_lock_time()
-
-        # Retrieve baseline information from ESPNPlayerDataCurrent
-        print(f'get_db_player_info at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
-        fantasy.get_db_player_info()
-
-        # ESPNPlayerDataCurrent, ESPNPlayerDataHistory, StatusChanges
-        # Retrieve fron ESPN API
-        print(f'get_espn_player_info at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
-        fantasy.get_espn_player_info()
-
-        # Check against ESPNPlayerDataCurrent table and make changes
-        # Now done in get_espn_player_info: run_function(fantasy.get_player_info_changes())
-        print(f'send_push_msg_list at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
-        fantasy.send_push_msg_list()
-
-        # Rosters and RosterChanges
-        print(f'run_transactions at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
-        fantasy.run_transactions()
+        fantasy.read_slack()
 
         num1 = random.randint(MIN_SLEEP, MAX_SLEEP)
 
@@ -359,6 +364,7 @@ def main():
         print(f'Sleep at {datetime.now().strftime("%Y%m%d-%H%M%S")} for {num1} seconds')
         # fantasy.logger_instance.debug(f'Sleep at {datetime.now().strftime("%Y%m%d-%H%M%S")} for {num1} seconds')
         time.sleep(num1)
+        run_count += 1
 
     exit(0)
 

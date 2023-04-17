@@ -1,6 +1,8 @@
 import sys
 sys.path.append('./modules')
 import push
+import sqldb
+bdb = sqldb.DB('Baseball.db')
 
 inst = push.Push()
 
@@ -16,6 +18,7 @@ for script in scripts:
         print(f'Script {script} failed with error {ex}')
         inst.push("Morning suite process error:", f'Error: {ex}\nFunction: {script}')
 
+bdb.table_to_csv('UpcomingStartsWithStats')
 #
 #
 # exec(open('odds.py').read())

@@ -21,12 +21,15 @@ mode = "PROD"
 fantasy = fantasy.Fantasy(mode, caller=os.path.basename(__file__))
 statid_dict = fantasy.get_statid_dict(verbose=False)
 
-year = 2022
+year = 2023
 
 def one_day(scoring_period, league):
-	addr = "http://fantasy.espn.com/apis/v3/games/flb/seasons/" + str(year) + \
-	       "/segments/0/leagues/" + str(league) + "?" \
-	                                              "view=mScoreboard&scoringPeriodId=" + str(scoring_period)
+	# addr = "http://fantasy.espn.com/apis/v3/games/flb/seasons/" + str(year) + \
+	#        "/segments/0/leagues/" + str(league) + "?" \
+	#                                               "view=mScoreboard&scoringPeriodId=" + str(scoring_period)
+
+	addr = f'http://fantasy.espn.com/apis/v3/games/flb/seasons/{str(year)}/segments' \
+	       f'/0/leagues/{str(league)}?view=mScoreboard&scoringPeriodId={str(scoring_period)}'
 	print(addr)
 
 	date8 = fantasy.get_date_from_scoring_id(year, scoring_period)
@@ -47,9 +50,8 @@ def one_day(scoring_period, league):
 					team_id = teams['teamId']
 					entries = teams['rosterForCurrentScoringPeriod']['entries']
 					table_name = "ESPNDailyScoring"
-					delcmd = "delete from " + table_name + " where Date = " + \
-					         str(date8) + " and LeagueID = " + str(league) + \
-					         " and teamID = " + str(team_id)
+					delcmd = f"delete from {table_name} where Date = {str(date8)} and " \
+					         f"LeagueID = {str(league)} and teamID = {str(team_id)}"
 					#print(delcmd)
 					bdb.delete(delcmd)
 
@@ -107,10 +109,10 @@ def one_day(scoring_period, league):
 											incomplete = False
 											#print("DB insert succeeded on try {}".format(tries + 1))
 										except Exception as ex:
-											print(str(ex))
+											print(f"str(ex): {str(date8)}")
 											tries += 1
 									if tries >= max_tries:
-										print("DB insert failed")
+										print(f"DB insert failed")
 										exit(-1)
 		except Exception as ex:
 			print(f' espn_daily_scoring urlopen failed: {ex}')
@@ -131,9 +133,9 @@ def main():
 	# the stats from the resumed portion of the game will not count towards your
 	# fantasy output or totals. This is consistent with how other Stat Corrections are handled.
 
-	leagues = [1095816069, 6455, 37863846]
+	leagues = [6455, 37863846]
 	#leagues = [162788]
-	season_start = date(2022, 4, 7)
+	season_start = date(2023, 3, 30)
 	today = date.today()
 	#previous = today - timedelta(days=2)
 	previous = today - timedelta(days=7)
@@ -147,21 +149,21 @@ def main():
 	#five_ago_scoring_pd = (five_days_ago - season_start).days
 
 	start_scoring_pd = previous_scoring_pd
-	end_scoring_pd = today_scoring_pd + 2
+	end_scoring_pd = today_scoring_pd
 
 
 	## Override for ad hoc runs
 	override = False
 	if override:
 
-		start_date = date(2022, 4, 7)
-		#end_date = date(2022, 4, 14)
+		start_date = date(2023, 3, 30)
+		end_date = date(2023, 4, 10)
 
 		start_scoring_pd = (start_date - season_start).days
-		#end_scoring_pd = (end_date - season_start).days
+		end_scoring_pd = (end_date - season_start).days
 
 	for lg in leagues:
-		for i in range(start_scoring_pd, end_scoring_pd, 1):
+		for i in range(start_scoring_pd + 1, end_scoring_pd + 1, 1):
 			one_day(i, lg)
 
 

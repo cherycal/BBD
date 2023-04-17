@@ -8,7 +8,7 @@ import certifi
 from io import BytesIO
 import pandas as pd
 
-def get_stats(yr=2022):
+def get_stats(yr):
     bdb = sqldb.DB('Baseball.db')
 
     # Columns for table
@@ -75,7 +75,7 @@ def get_stats(yr=2022):
 
 
 def main():
-    yr = 2022
+    yr = 2023
     get_stats(yr)
 
 

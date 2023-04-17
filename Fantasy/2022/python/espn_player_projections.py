@@ -11,7 +11,7 @@ import pandas as pd
 
 def main():
 	bdb = sqldb.DB('Baseball.db')
-	yr = 2022
+	yr = 2023
 
 	dfheaders = ["Name", "id", "Year", "AuctionValue", "rank",
 	             "AuctionValueAvg", "AuctionChange", "AB", "H", "AVG", "2B", "3B", "HR", "BB", "K",

@@ -15,9 +15,10 @@ def one_lg(bdb, lg, yr="0", update_db=0):
 	if yr == "2020":
 		url_name = "https://fantasy.espn.com/apis/v3/games/flb/seasons/2020/segments/0/leagues/" + lg + "?" \
 		                                "view=mDraftDetail&view=mSettings&view=mTeam&view=modular&view=mNav"
-	if yr == "2021":
-		url_name = "https://fantasy.espn.com/apis/v3/games/flb/seasons/2021/segments/0/leagues/" + lg +\
-		           "?view=mDraftDetail&view=mSettings&view=mTeam&view=modular&view=mNav"
+	if yr == "2021" or yr == "2022":
+		# url_name = "https://fantasy.espn.com/apis/v3/games/flb/seasons/2021/segments/0/leagues/" + lg +\
+		#            "?view=mDraftDetail&view=mSettings&view=mTeam&view=modular&view=mNav"
+		url_name = f"https://fantasy.espn.com/apis/v3/games/flb/seasons/{yr}/segments/0/leagues/{lg}?view=mDraftDetail&view=mSettings&view=mTeam&view=modular&view=mNav"
 			# https://fantasy.espn.com/apis/v3/games/flb/seasons/2020/segments/0/leagues/162788?view=mDraftDetail&view=mSettings&view=mTeam&view=modular&view=mNav
 
 	print(url_name)
@@ -113,7 +114,7 @@ def main():
 	bdb = sqldb.DB('Baseball.db')
 	lg = "6455"
 	#one_lg(bdb, lg)
-	one_lg(bdb, lg, "2021", update_db=1)
+	one_lg(bdb, lg, "2022", update_db=1)
 	bdb.close()
 
 
