@@ -8,7 +8,6 @@ sys.path.append('./modules')
 import sqldb
 import push
 import fantasy
-import tools
 
 inst = push.Push()
 bdb = sqldb.DB('Baseball.db')
@@ -21,7 +20,7 @@ statcast_date = now.strftime("%Y-%m-%d")
 
 sleep_interval = 1
 # Selenium
-driver = tools.get_driver("headless")
+#driver = tools.get_driver("headless")
 
 msg = ""
 
@@ -36,15 +35,15 @@ def get_page():
 			for event in data['events']:
 				if event.get('competitions'):
 					for game in event['competitions']:
-						if game.get('competitors'):
-							print(game['competitors'])
+						#if game.get('competitors'):
+							#print(game['competitors'])
 						if game.get('odds'):
 							print(game['odds'])
 
 
 def main():
 	get_page()
-	driver.close()
+	#driver.close()
 
 
 if __name__ == "__main__":

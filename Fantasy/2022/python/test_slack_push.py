@@ -6,7 +6,7 @@ import requests
 sys.path.append('./modules')
 import sqldb
 import push
-
+import os
 #plat = tools.get_platform()
 #print(plat)
 push_instance = push.Push()
@@ -23,7 +23,8 @@ else:
 
 if __name__ == '__main__':
     # Webhooks URL
-    url_suffix = "T03RS49E5EY/B03SDHN3TDE/5mK3oLWcLlweIYY1JjiYo2i4"
+    SLACK_URL_SUFFIX = os.environ.get('slack_url_suffix')
+
     url = f"https://hooks.slack.com/services/{url_suffix}"
 
     # Message you wanna send
