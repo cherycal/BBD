@@ -17,9 +17,6 @@ if mode == "TEST":
 else:
     bdb = sqldb.DB('Baseball.db')
 
-# Import the following modules
-# slack webhook url: https://hooks.slack.com/services/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
-# slack curl: curl -X POST -H 'Content-type: application/json' --data '{"text":"Hello, World!"}' https://hooks.slack.com/services/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
 
 if __name__ == '__main__':
     # Webhooks URL
