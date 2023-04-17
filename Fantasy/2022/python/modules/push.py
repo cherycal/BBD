@@ -1,25 +1,49 @@
 __author__ = 'chance'
-
 import inspect
+import json
 import logging
 import os
+import sys
 import time
 from datetime import datetime
 
 import colorlog
 import dataframe_image as dfi
 import pandas as pd
+import requests
 import tweepy
+from pushbullet import PushBullet
 from pyfcm import FCMNotification
 
 # APP ID: 20456708
 
+# TWITTER KEYS
 APIKEY = os.environ.get('APIKEY')
 APISECRETKEY = os.environ.get('APISECRETKEY')
 ACCESSTOKEN = os.environ.get('ACCESSTOKEN')
 ACCESSTOKENSECRET = os.environ.get('ACCESSTOKENSECRET')
-API_KEY = os.environ.get('api_key')
+
+# PUSHBUCKET
+PBTOKEN = os.environ.get('PBTOKEN')
+
+#SLACK
+SLACK_URL_SUFFIX = os.environ.get('slack_url_suffix')
+
+
+########################################################################################################################
+# For PyFCM ( currently inoperative )
+# "AIzaSyD3UIP2OELIMDZ3GKA38P3WFRFERBdke2M" or
+# "edKBEntORP-8dyC_ArSj2W:APA91bFKGKG2yvsS4CXUdyh_DqpNImOVY5HhjyY5Obf6Ho8bKhnMG2L-2atjK4Uirxir3Z3r4-1QCRInasA8CQns97GXi55KPb4aL9RPzNlwmIya29UbvdorK15XM_lADPKiv9vfK91v"
+# FCM API KEY
+# "AIzaSyD3UIP2OELIMDZ3GKA38P3WFRFERBdke2M" or
+# "82090c9d8dd7f666b20a3df8e3333cb816a69048"
+# "BFnUyTzXK3QftUDSpA2SB9tvEiqzbeL3QSrYCB716govx26TkcjhW11bAL38LIa3k05jfUkksbpvQWAaWLflqNo"
+NEW_API_KEY = "AIzaSyDzuTPpZRq2dKud1ATG6a9OUN74zWBJfbc"
+#FCM REG ID
+NEW_REG_ID = "eMO9-nX9iiZquenuV0ngBo:APA91bEyejj-JLrHFxcli7_ZAXWoBb52pnxsi_RHOlEkcSQhg8ozVRE1HP_sHGWcssLc_XBg9s9ufDp21Qv2C1jjjhSlU09lHOjaQe-Lv_3rlg06Icdtd47pi-W3ihmuIxbaHk8vm8Ws"
 REG_ID = os.environ.get('reg_id')
+API_KEY = os.environ.get('api_key')
+########################################################################################################################
 
 def get_logger(logfilename = 'push_default.log',
                logformat = '%(asctime)s:%(levelname)s'
@@ -72,7 +96,16 @@ class Push(object):
 
         # Create API object
         self.api = set_tweepy(self, *args, **kwargs)
+        self.tweet_count = 0
+        self.pb = PushBullet(PBTOKEN)
+        self.slack_url = f"https://hooks.slack.com/services/{SLACK_URL_SUFFIX}"
 
+    def incr_tweet_count(self):
+        self.tweet_count += 1
+        return self.tweet_count
+
+    def get_tweet_count(self):
+        return self.tweet_count
 
     def print_calling_function(self):
         print('\n')
@@ -88,10 +121,50 @@ class Push(object):
         return
 
     def push(self, title="None", body="None"):
-        res = self.push_service.notify_single_device(registration_id=self.registration_id,
-                                                     message_title=title,
-                                                     message_body=body, sound="whisper.mp3",
-                                                     badge="Test2")
+
+        res = 0
+        SUPPRESS_FLAG = False
+        if not SUPPRESS_FLAG:
+            # Message you wanna send
+            message = body
+
+            # All slack data
+            slack_data = {
+                "channel": "alerts",
+                "username": "AlertsBaseball",
+                "attachments": [
+                    {
+                        "color": "#FF0000",
+                        "title": body,
+                        "fields": [
+                            {
+                                "title": title,
+                                "value": message,
+                                "short": True,
+                            }
+                        ]
+                    }
+                ]
+            }
+            byte_length = str(sys.getsizeof(slack_data))
+            headers = {'Content-Type': "application/json",
+                       'Content-Length': byte_length}
+
+            # Posting requests after dumping the slack data
+            response = requests.post(self.slack_url, data=json.dumps(slack_data), headers=headers)
+
+            # Post request is valid or not!
+            if response.status_code != 200:
+                raise Exception(response.status_code, response.text)
+
+            # push to android device
+            ANDROID = False
+            if ANDROID:
+                res = self.push_service.notify_single_device(registration_id=self.registration_id,
+                                                             message_title=title,
+                                                             message_body=body, sound="whisper.mp3",
+                                                             badge="Test2")
+            #self.pb.push_note(title, body)
         return res
 
     def get_twitter_api(self):
@@ -100,45 +173,49 @@ class Push(object):
     def get_twitter_auth(self):
         return self.auth
 
-
-    def tweet(self, msg):
-        ts = datetime.now()  # current date and time
-        formatted_date_time = ts.strftime("%I%M")
-        # print(f'Msg:{msg},\nMsg length{len(msg)}\nMax length: {self.MAX_MSG_LENGTH}')
-        if msg != "" and len(msg) < self.MAX_MSG_LENGTH:
-            try:
-                self.api.update_status(msg + " " + str(len(msg)) + "-" + str(formatted_date_time))
-            except Exception as ex:
-                print("try failed" + ": " + str(ex))
-                self.print_calling_function()
-        else:
-            while len(msg) < self.MAX_MSG_LENGTH:
-                trunc_msg = msg[0:self.MAX_MSG_LENGTH]
+    def tweet(self, msg,  PROCESS_FLAG = False):
+        if PROCESS_FLAG:
+            ts = datetime.now()  # current date and time
+            formatted_date_time = ts.strftime("%I%M")
+            # print(f'Msg:{msg},\nMsg length{len(msg)}\nMax length: {self.MAX_MSG_LENGTH}')
+            if msg != "" and len(msg) < self.MAX_MSG_LENGTH:
                 try:
-                    self.api.update_status("Invalid msg" + " (" + str(formatted_date_time) + ")")
-                    self.api.update_status(trunc_msg + " (" + str(formatted_date_time) + ")")
+                    self.api.update_status(msg + " " + str(len(msg)) + "-" + str(formatted_date_time))
                 except Exception as ex:
                     print("try failed" + ": " + str(ex))
                     self.print_calling_function()
-                msg = msg[self.MAX_MSG_LENGTH:]
+            else:
+                while len(msg) < self.MAX_MSG_LENGTH:
+                    trunc_msg = msg[0:self.MAX_MSG_LENGTH]
+                    try:
+                        self.api.update_status("Invalid msg" + " (" + str(formatted_date_time) + ")")
+                        self.api.update_status(trunc_msg + " (" + str(formatted_date_time) + ")")
+                    except Exception as ex:
+                        print("try failed" + ": " + str(ex))
+                        self.print_calling_function()
+                    msg = msg[self.MAX_MSG_LENGTH:]
         return
 
-    def tweet_media(self, img, msg):
-        ts = datetime.now()  # current date and time
-        formatted_date_time = ts.strftime("%I%M%S.%f")[0:9]
-        if len(msg) < self.MAX_MSG_LENGTH:
-            # self.api.update_status(msg)
-            try:
-                self.api.update_with_media(img, status=msg + " (" + str(formatted_date_time) + ")")
-            except Exception as ex:
-                print("try failed" + ": " + str(ex))
-                self.print_calling_function()
-        else:
-            try:
-                self.api.update_status("Invalid msg" + " (" + str(formatted_date_time) + ")")
-            except Exception as ex:
-                print("try failed" + ": " + str(ex))
-                self.print_calling_function()
+    def tweet_media(self, img, msg, PROCESS_FLAG = False):
+        self.incr_tweet_count()
+        print(f"Current tweet count is {self.tweet_count}")
+        if PROCESS_FLAG and self.tweet_count:
+            ts = datetime.now()  # current date and time
+            formatted_date_time = ts.strftime("%I%M%S.%f")[0:9]
+            if len(msg) < self.MAX_MSG_LENGTH:
+                # self.api.update_status(msg)
+                try:
+                    self.api.update_with_media(img, status=f"{msg} ({str(self.tweet_count)})")
+                except Exception as ex:
+                    print("try failed" + ": " + str(ex))
+                    push(f"Error in tweet_media, Error: {str(ex)}")
+                    self.print_calling_function()
+            else:
+                try:
+                    self.api.update_status("Invalid msg" + " (" + str(formatted_date_time) + ")")
+                except Exception as ex:
+                    print("try failed" + ": " + str(ex))
+                    self.print_calling_function()
 
         return
 
