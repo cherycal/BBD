@@ -12,7 +12,6 @@ import tools
 
 # import logging
 
-
 def print_calling_function(command='command left blank'):
 	print(command)
 	print(str(inspect.stack()))
@@ -23,7 +22,6 @@ def print_calling_function(command='command left blank'):
 	# print(str(inspect.stack()[-1].filename) + ", " + str(inspect.stack()[-1].function) +
 	#       ", " + str(inspect.stack()[-1].lineno))
 	return
-
 
 class DB:
 
@@ -55,6 +53,12 @@ class DB:
 		for row in self.cursor.fetchall():
 			rows.append(dict(zip(columns, row)))
 		return rows
+
+	def execute(self, cmd, params, verbose=0):
+		if verbose:
+			print_calling_function(cmd)
+		self.cursor.execute(cmd, params)
+		self.conn.commit()
 
 	def select(self, query, verbose=0):
 		if verbose:
@@ -91,6 +95,8 @@ class DB:
 		ret_dict['dicts'] = dicts
 		return ret_dict
 
+	def select_table(self, table):
+		return self.select_plus(f'SELECT * from {table}')
 
 	def select_w_cols(self, query, verbose=0):
 		if verbose:
