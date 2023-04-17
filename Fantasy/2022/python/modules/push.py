@@ -31,16 +31,6 @@ SLACK_URL_SUFFIX = os.environ.get('slack_url_suffix')
 
 
 ########################################################################################################################
-# For PyFCM ( currently inoperative )
-# "AIzaSyD3UIP2OELIMDZ3GKA38P3WFRFERBdke2M" or
-# "edKBEntORP-8dyC_ArSj2W:APA91bFKGKG2yvsS4CXUdyh_DqpNImOVY5HhjyY5Obf6Ho8bKhnMG2L-2atjK4Uirxir3Z3r4-1QCRInasA8CQns97GXi55KPb4aL9RPzNlwmIya29UbvdorK15XM_lADPKiv9vfK91v"
-# FCM API KEY
-# "AIzaSyD3UIP2OELIMDZ3GKA38P3WFRFERBdke2M" or
-# "82090c9d8dd7f666b20a3df8e3333cb816a69048"
-# "BFnUyTzXK3QftUDSpA2SB9tvEiqzbeL3QSrYCB716govx26TkcjhW11bAL38LIa3k05jfUkksbpvQWAaWLflqNo"
-NEW_API_KEY = "AIzaSyDzuTPpZRq2dKud1ATG6a9OUN74zWBJfbc"
-#FCM REG ID
-NEW_REG_ID = "eMO9-nX9iiZquenuV0ngBo:APA91bEyejj-JLrHFxcli7_ZAXWoBb52pnxsi_RHOlEkcSQhg8ozVRE1HP_sHGWcssLc_XBg9s9ufDp21Qv2C1jjjhSlU09lHOjaQe-Lv_3rlg06Icdtd47pi-W3ihmuIxbaHk8vm8Ws"
 REG_ID = os.environ.get('reg_id')
 API_KEY = os.environ.get('api_key')
 ########################################################################################################################
