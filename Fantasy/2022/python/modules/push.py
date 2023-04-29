@@ -1,21 +1,22 @@
 __author__ = 'chance'
 import inspect
-import json
 import logging
 import os
-import sys
 import time
 from datetime import datetime
 
 import colorlog
 import dataframe_image as dfi
 import pandas as pd
-import requests
 import tweepy
 from pushbullet import PushBullet
 from pyfcm import FCMNotification
+from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 
-# APP ID: 20456708
+slack_api_token = os.environ["SLACK_BOT_TOKEN"]
+slack_channel = os.environ["SLACK_ALERTS_CHANNEL"]
+slack_client = WebClient(token=slack_api_token)
 
 # TWITTER KEYS
 APIKEY = os.environ.get('APIKEY')
@@ -26,7 +27,7 @@ ACCESSTOKENSECRET = os.environ.get('ACCESSTOKENSECRET')
 # PUSHBUCKET
 PBTOKEN = os.environ.get('PBTOKEN')
 
-#SLACK
+#SLACK ( DECOMMISSIONED 20230416 )
 SLACK_URL_SUFFIX = os.environ.get('slack_url_suffix')
 
 
@@ -118,34 +119,43 @@ class Push(object):
             # Message you wanna send
             message = body
 
+            try:
+                response = slack_client.chat_postMessage(
+                    channel=slack_channel,
+                    text=message
+                )
+            except SlackApiError as e:
+                # You will get a SlackApiError if "ok" is False
+                assert e.response["error"]  # st
+
             # All slack data
-            slack_data = {
-                "channel": "alerts",
-                "username": "AlertsBaseball",
-                "attachments": [
-                    {
-                        "color": "#FF0000",
-                        "title": body,
-                        "fields": [
-                            {
-                                "title": title,
-                                "value": message,
-                                "short": True,
-                            }
-                        ]
-                    }
-                ]
-            }
-            byte_length = str(sys.getsizeof(slack_data))
-            headers = {'Content-Type': "application/json",
-                       'Content-Length': byte_length}
-
-            # Posting requests after dumping the slack data
-            response = requests.post(self.slack_url, data=json.dumps(slack_data), headers=headers)
-
-            # Post request is valid or not!
-            if response.status_code != 200:
-                raise Exception(response.status_code, response.text)
+            # slack_data = {
+            #     "channel": "alerts",
+            #     "username": "AlertsBaseball",
+            #     "attachments": [
+            #         {
+            #             "color": "#FF0000",
+            #             "title": body,
+            #             "fields": [
+            #                 {
+            #                     "title": title,
+            #                     "value": message,
+            #                     "short": True,
+            #                 }
+            #             ]
+            #         }
+            #     ]
+            # }
+            # byte_length = str(sys.getsizeof(slack_data))
+            # headers = {'Content-Type': "application/json",
+            #            'Content-Length': byte_length}
+            #
+            # # Posting requests after dumping the slack data
+            # response = requests.post(self.slack_url, data=json.dumps(slack_data), headers=headers)
+            #
+            # # Post request is valid or not!
+            # if response.status_code != 200:
+            #     raise Exception(response.status_code, response.text)
 
             # push to android device
             ANDROID = False
