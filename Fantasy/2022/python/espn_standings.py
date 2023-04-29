@@ -210,6 +210,7 @@ def build_query(season_start_date, date8, league, account_map):
 def run_single_day(date8, date10, league, account_map):
     season_start_date = 20230330
     query = build_query(season_start_date, date8, league, account_map)
+    # print(query)
     table_data = bdb.select_plus(query)
     print(f'Date: {date8} League: {league}')
     daily_points = list()

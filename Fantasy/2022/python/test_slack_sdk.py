@@ -10,10 +10,21 @@ mode = "PROD"
 fantasy = fantasy.Fantasy(mode)
 
 from slack_sdk import WebClient
+from slack_sdk.errors import SlackApiError
 
 slack_api_token = os.environ["SLACK_BOT_TOKEN"]
-slack_channel = os.environ["SLACK_CHANNEL"]  # "C051T1FKZUN"
+slack_channel = os.environ["SLACK_CHANNEL"]
 slack_client = WebClient(token=slack_api_token)
+
+def write_slack():
+    try:
+        response = slack_client.chat_postMessage(
+            channel=slack_channel,
+            text="Hello from your app! :tada:"
+        )
+    except SlackApiError as e:
+        # You will get a SlackApiError if "ok" is False
+        assert e.response["error"]  # st
 
 
 def slack_process_text(text_):
@@ -65,7 +76,8 @@ def read_slack():
 
 
 def main():
-    read_slack()
+    #read_slack()
+    write_slack()
 
 
 if __name__ == "__main__":

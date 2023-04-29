@@ -272,13 +272,13 @@ def process_mlb(data, gamepk, player_teams):
                     # logger_instance.info(f'Play info: {play}')
                     #print(f'\n\n{play}\n\n')
                     # print("event: " + str(event_count[gamepk]))
-                    msg = description[0:150] #### TWEET DESCRIPTION LENGTH
+                    msg = description[0:120] #### TWEET DESCRIPTION LENGTH
                     #logger_instance.info(f'Play description: {msg}')
                     msg += "\nP: " + pitcher_name + \
                            f' {pitcher_teams}\n{home_team} {home_score}, ' \
                            f'{away_team} {away_score}, {inning} {outs}o, {on_base_str}\n' \
                            f'{batter_teams}\n'
-                    msg = msg[0:220]
+                    msg = msg[0:240]
                     # print("----------")
                     print(msg)
                     # print("-----------------------------------------------")

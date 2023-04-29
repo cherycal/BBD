@@ -6,12 +6,13 @@ import push
 
 inst = push.Push()
 
-scripts = ['espn_season_stats.py',
-           'espn_daily_scoring_to_db.py', 'espn_standings.py', 'odds.py', 'statcast_event_level.py',
-           'statcast_daily_level.py', 'savant_boxscores.py', 'team_splits.py', 'tables_to_files.py']
+# scripts = ['espn_season_stats.py',
+#            'espn_daily_scoring_to_db.py', 'espn_standings.py', 'odds.py', 'statcast_event_level.py',
+#            'statcast_daily_level.py', 'savant_boxscores.py', 'team_splits.py', 'tables_to_files.py']
 
 scripts = ['espn_daily_scoring_to_db.py', 'espn_standings.py', 'odds.py', 'statcast_event_level.py',
-           'espn_season_stats.py']
+           'statcast_season_level.py',
+           'espn_season_stats.py', 'savant_boxscores.py', 'team_splits.py']
 
 
 for script in scripts:

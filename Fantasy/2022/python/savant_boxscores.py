@@ -1,6 +1,6 @@
 import json
 import sys
-import urllib.request
+from urllib.request import Request
 
 sys.path.append('./modules')
 import sqldb
@@ -12,6 +12,9 @@ import fantasy
 from datetime import date, datetime
 from datetime import timedelta
 import os
+from io import BytesIO
+import certifi
+import pycurl
 
 inst = push.Push()
 bdb = sqldb.DB('Baseball.db')
@@ -196,7 +199,8 @@ def one_day(dt):
     for gamepk in gamepks:
 
         url_name = "https://baseballsavant.mlb.com/gf?game_pk=" + gamepk
-
+        req = Request(url_name)
+        req.add_header('authority', '"baseballsavant.mlb.com"')
         print(url_name)
 
         success = False
@@ -206,26 +210,23 @@ def one_day(dt):
 
             try:
 
-                with urllib.request.urlopen(url_name) as url:
+                data = get_savant_gamefeed_page(url_name)
 
-                    data = json.loads(url.read().decode())
-
-                    if data.get('exit_velocity'):
-                        print("Reporting statcast data")
-                        process_statcast(data, gamepk, gamepks[gamepk])
+                if data.get('exit_velocity'):
+                    print("Reporting statcast data")
+                    process_statcast(data, gamepk, gamepks[gamepk])
+                else:
+                    print("Statcast data unavailable, checking for MLB Data")
+                    url_name = "http://statsapi.mlb.com/api/v1.1/game/" + gamepk + "/feed/live"
+                    print(url_name)
+                    data = get_savant_gamefeed_page(url_name)
+                    if data.get('liveData'):
+                        print("Skipping MLB data")
+                        success = True
+                        continue
+                    # process_mlb(data, gamepk)
                     else:
-                        print("Statcast data unavailable, checking for MLB Data")
-                        url_name = "http://statsapi.mlb.com/api/v1.1/game/" + gamepk + "/feed/live"
-                        print(url_name)
-                        with urllib.request.urlopen(url_name) as url2:
-                            data = json.loads(url2.read().decode())
-                            if data.get('liveData'):
-                                print("Skipping MLB data")
-                                success = True
-                                continue
-                            # process_mlb(data, gamepk)
-                            else:
-                                print("MLB data unavailable")
+                        print("MLB data unavailable")
 
                 print("Sleep at " + formatted_date_time)
                 num1 = random.randint(1, 1)
@@ -238,6 +239,24 @@ def one_day(dt):
 
             success = True
 
+def get_savant_gamefeed_page(url_name):
+    TIMEOUT = 10
+    headers = ["authority: baseballsavant.mlb.com",
+               "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
+            ]
+
+    buffer = BytesIO()
+    c = pycurl.Curl()
+    c.setopt(c.URL, url_name)
+    c.setopt(c.CONNECTTIMEOUT, TIMEOUT)
+    c.setopt(c.HTTPHEADER, headers)
+    c.setopt(c.WRITEDATA, buffer)
+    c.setopt(c.CAINFO, certifi.where())
+    c.perform()
+    c.close()
+    data = buffer.getvalue()
+    return json.loads(data)
+
 
 def main():
     DAYS_AGO = 2
@@ -245,8 +264,8 @@ def main():
     start_date = end_date - timedelta(days=DAYS_AGO)
     step = timedelta(days=1)
 
-    # date1 = '2022-03-18'
-    # date2 = '2022-03-27'
+    # date1 = '2023-03-31'
+    # date2 = '2023-04-22'
     # start_date = datetime.strptime(date1, '%Y-%m-%d')
     # end_date = datetime.strptime(date2, '%Y-%m-%d')
 

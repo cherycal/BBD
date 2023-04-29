@@ -16,6 +16,7 @@ import pandas as pd
 import pytz
 from datetime import date, timedelta
 import os, ssl
+
 if (not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None)):
     ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -33,6 +34,7 @@ integer_today = int(out_date)
 string_today = out_date
 integer_yesterday = integer_today - 1
 string_yesterday = str(integer_yesterday)
+
 
 def trywrap(func):
     tries = 0
@@ -67,7 +69,6 @@ def print_calling_function():
 
 
 def process_oddsline(text):
-
     splittext = re.split("(SF)|(Giants)|"
                          "(SD)|(Padres)|"
                          "(HOU)|(Astros)|"
@@ -148,7 +149,7 @@ def run_odds():
                     odds[3] = "CHC"
                 if odds[4] == "White Sox":
                     odds[3] = "CHW"
-                #print(f'{odds}')
+                # print(f'{odds}')
                 bdb.insert_list(table_name, odds, verbose=False)
                 time.sleep(.5)
                 entries.append(odds)
@@ -230,8 +231,8 @@ def eod_process():
         time.sleep(SLEEP)
 
     try:
-        #run_odds()
-        exec(open('odds.py').read())
+        # run_odds()
+        fantasy.run_espn_odds()
     except Exception as ex:
         print(ex)
 
@@ -273,10 +274,10 @@ def main():
         time6 = ts.strftime("%H%M%S")
         current_time = int(time6)
         minute = int(ts.strftime("%M"))
-        if ( minute == 20 or minute == 0 ) and run_odds_bool:
+        if (20 <= minute < 25 or 0 <= minute < 5) and run_odds_bool:
             print("Running odds")
             try:
-                run_odds()
+                fantasy.run_espn_odds()
             except Exception as ex:
                 print(ex)
             run_odds_bool = False
@@ -294,7 +295,7 @@ def main():
         except Exception as ex:
             print(str(ex))
             inst.push("DB error in player_info", str(ex))
-            #inst.tweet("DB error in player_info\n" + cmd + ":\n" + str(ex))
+            # inst.tweet("DB error in player_info\n" + cmd + ":\n" + str(ex))
             # fantasy.post_log_msg(f'DB error in cmd {cmd}: Exception: {ex}')
             fantasy.logger_exception(f'DB error in cmd {cmd}: Exception: {ex}')
 
@@ -349,10 +350,23 @@ def main():
             fantasy.refresh_espn_schedule()
             fantasy.tweet_add_drops()
             fantasy.refresh_starter_history()
-            try:
-                run_odds()
-            except Exception as ex:
-                print(str(ex))
+
+            scripts = ['espn_daily_scoring_to_db.py', 'espn_standings.py', 'statcast_event_level.py',
+                       'statcast_season_level.py',
+                       'espn_season_stats.py', 'savant_boxscores.py', 'team_splits.py']
+
+            for script in scripts:
+                try:
+                    exec(open(script).read())
+                    print(f'Script {script} succeeded')
+                except Exception as ex:
+                    print(f'Script {script} failed with error {ex}')
+                    inst.push("Morning suite process error:", f'Error: {ex}\nFunction: {script}')
+                time.sleep(1)
+
+            inst.push("Morning suite completed",
+                      "Morning suite completed")
+
             run_roster_suite = False
 
         fantasy.check_roster_lock_time()

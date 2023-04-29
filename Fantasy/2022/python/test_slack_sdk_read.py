@@ -11,7 +11,7 @@ fantasy = fantasy.Fantasy(mode)
 from slack_sdk import WebClient
 
 slack_api_token = os.environ["SLACK_BOT_TOKEN"]
-slack_channel = os.environ["SLACK_CHANNEL"]  # "C051T1FKZUN"
+slack_channel = os.environ["SLACK_CHANNEL"]
 slack_client = WebClient(token=slack_api_token)
 
 

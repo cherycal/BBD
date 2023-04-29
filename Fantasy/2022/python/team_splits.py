@@ -114,7 +114,7 @@ def do_splits(split_name, yr, date10=None):
 
 
 def main():
-	yr = 2022
+	yr = 2023
 	for lr in ["Left", "Right", "Home", "Away"]:
 		do_splits(lr, yr)
 		print(f'{lr} succeeded')
