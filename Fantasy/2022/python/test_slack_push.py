@@ -6,6 +6,7 @@ import requests
 sys.path.append('./modules')
 import sqldb
 import push
+import os
 
 #plat = tools.get_platform()
 #print(plat)
@@ -17,13 +18,10 @@ if mode == "TEST":
 else:
     bdb = sqldb.DB('Baseball.db')
 
-# Import the following modules
-# slack webhook url: https://hooks.slack.com/services/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
-# slack curl: curl -X POST -H 'Content-type: application/json' --data '{"text":"Hello, World!"}' https://hooks.slack.com/services/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
 
 if __name__ == '__main__':
     # Webhooks URL
-    url_suffix = "T03RS49E5EY/B03SDHN3TDE/5mK3oLWcLlweIYY1JjiYo2i4"
+    url_suffix = os.environ.get('slack_url_suffix')
     url = f"https://hooks.slack.com/services/{url_suffix}"
 
     # Message you wanna send
