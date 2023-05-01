@@ -17,6 +17,14 @@ import pytz
 from datetime import date, timedelta
 import os, ssl
 
+import espn_standings
+import espn_daily_scoring_to_db
+import statcast_event_level
+import statcast_season_level
+import espn_season_stats
+import savant_boxscores
+import team_splits
+
 if (not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None)):
     ssl._create_default_https_context = ssl._create_unverified_context
 
@@ -351,19 +359,13 @@ def main():
             fantasy.tweet_add_drops()
             fantasy.refresh_starter_history()
 
-            scripts = ['espn_daily_scoring_to_db.py', 'espn_standings.py', 'statcast_event_level.py',
-                       'statcast_season_level.py',
-                       'espn_season_stats.py', 'savant_boxscores.py', 'team_splits.py']
-
-            for script in scripts:
-                try:
-                    exec(open(script).read())
-                    print(f'Script {script} succeeded')
-                except Exception as ex:
-                    print(f'Script {script} failed with error {ex}')
-                    inst.push("Morning suite process error:", f'Error: {ex}\nFunction: {script}')
-                time.sleep(1)
-
+            espn_daily_scoring_to_db.main()
+            espn_standings.main()
+            statcast_event_level.main()
+            statcast_season_level.main()
+            espn_season_stats.main()
+            savant_boxscores.main()
+            team_splits.main()
             inst.push("Morning suite completed",
                       "Morning suite completed")
 
