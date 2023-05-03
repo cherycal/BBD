@@ -9,11 +9,44 @@ inst = push.Push()
 bdb = sqldb.DB('Baseball.db')
 fantasy = fantasy.Fantasy()
 
-idmapcols, idmaprows = bdb.select_w_cols("select * from IDMap")
-print(idmapcols)
+idmapids = list()
+idmap_obj = bdb.select_plus("select * from IDMap")
+for d in idmap_obj['dicts']:
+    idmapids.append(d['IDPLAYER'])
+
+#print(f"id map cols: {idmap_obj['column_names']}")
 # numcols = len(idmapcols)
 # nulls = ['NULL'] * numcols
 
-result = bdb.select_plus("select * from ACheck_ID")
-print(result['dicts'])
-lol = list()
+missing_obj = bdb.select_plus("select * from ACheck_IDMap_Found")
+#print(missing_obj['dicts'])
+for d in missing_obj['dicts']:
+    #print(d['mlbid'])
+    cmd = ""
+    if d['mlbid'] in idmapids:
+        #print(f"id {d['mlbid']} found")
+        if d['otheridtype'] == "FG":
+            idmapidtype = "IDFANGRAPHS"
+            idnametype = "FANGRAPHSNAME"
+        elif d['otheridtype'] == "ESPN":
+            idmapidtype = "ESPNID"
+            idnametype = 'ESPNNAME'
+        else:
+            pass
+        cmd = f"UPDATE IDMap set TEAM = '{d['mlbTeam']}', POS = '{d['position']}', {idmapidtype} = {d['id']}, {idnametype} = '{d['name']}', " \
+              f"BATS = '{d['bats']}', THROWS = '{d['throws']}' WHERE IDPLAYER = {d['mlbid']}"
+        print(f"{cmd}")
+    else:
+        #print(f"id {d['mlbid']} not found")
+        insertcols = "(IDPLAYER, PLAYERNAME, TEAM, POS, IDFANGRAPHS, FANGRAPHSNAME, ESPNID, ESPNNAME, BATS, THROWS)"
+        idfangraphs = d.get('idfangraphs', 'NULL')
+        fangraphsname = d.get('name', "")
+        espnid = d.get('espnid', "NULL")
+        espnname = d.get('name', "")
+        insertvals = f"({d['mlbid']}, '{d['name']}', '{d['mlbTeam']}', '{d['position']}'," \
+                     f" {idfangraphs}, '{fangraphsname}', {espnid}, '{espnname}', '{d['bats']}', '{d['throws']}')"
+        cmd = f"INSERT INTO IDMAP {insertcols} VALUES {insertvals}"
+        print(f"{cmd}")
+
+    bdb.cmd(cmd)
+
