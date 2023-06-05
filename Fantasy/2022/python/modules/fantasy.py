@@ -754,7 +754,7 @@ class Fantasy(object):
 
 	@tools.try_wrap
 	def refresh_starter_history(self):
-		starter_history_columns = f"Date,name,tm,HA,Opp,TH,woba,xWOBA,OwLR,OwHA,OOPS,OWRC," \
+		starter_history_columns = f"Date,name,tm,HA,Opp,TH,woba,kpct,OwLR,OwHA,OOPS,OWRC," \
 		                          f"PwB,OLR,OHA,pa,HR,OU,ML,FRAN,FLIP,PRAC,wB,BOHM,FOMO," \
 		                          f"percentOwned,OppKPct,woba2021,xwoba2021,MLBID,ESPNID, espn_gameid"
 		command = f"INSERT INTO StarterHistory ({starter_history_columns}) SELECT {starter_history_columns} FROM UpcomingStartsWithStats"
@@ -933,6 +933,7 @@ class Fantasy(object):
 		date_time = now.strftime("%Y%m%d-%H%M%S")
 		out_date = now.strftime("%Y%m%d")
 		run_injury_updates = False
+		skip_ids = ['41134','4722949','41257','33089','36138'] # ESPN has some players who change injury status back & forth like 10 times a day
 		for i in self.get_current_player_status():
 			if i in self.get_db_player_status():
 				for j in self.get_current_player_status()[i]:
@@ -941,13 +942,17 @@ class Fantasy(object):
 						db =  self.get_db_player_status()[i][j]
 						espnid = i
 						name = str(self.get_player_object(i).name)
+						if espnid in skip_ids:
+							print(f"Skipping {name} from status changes")
+							# self.push_instance.push(f"Skipping {name} from status changes",f"Skipping {name} from status changes")
+							continue
 						set_attr = j
 						old = self.get_db_player_status()[i][j]
 						new = self.get_current_player_status()[i][j]
 						where_attr = 'espnid'
 						if set_attr != "nextStartID":
 							self.push_msg_list.append(
-								tools.string_from_list([name, set_attr, 'old:', old, 'new:', new]))
+								tools.string_from_list([name, espnid, set_attr, 'old:', old, 'new:', new]))
 							# removed 20230406 run_injury_updates = True
 						self.DB.update_list("ESPNPlayerDataCurrent", set_attr, where_attr, (new, espnid))
 						self.DB.update_list("ESPNPlayerDataCurrent", "Date", where_attr, (out_date, espnid))
@@ -1000,7 +1005,7 @@ class Fantasy(object):
 
 		if dt == "":
 			dt = self.date
-		query = "select A.UpdateTime, PlayerName, A.TeamName,LegType," \
+		query = "select A.UpdateTime, PlayerName, A.TeamName, A.'',LegType," \
 		        " percentOwned, LeagueID from AddDrops A," \
 		        " ESPNPlayerDataCurrent E where A.ESPNID = E.ESPNID and" \
 		        f" A.UpdateDate like '{dt}%' order by percentOwned desc"
@@ -1414,6 +1419,32 @@ class Fantasy(object):
 			#print(entry)
 			self.DB.insert_list("ESPNRosters", entry)
 
+	def roster_list(self, name):
+		teams = dict()
+		try:
+			r = self.DB.select_plus(f'SELECT * FROM ESPNRostersWithMLBID where Player like "%{name}%" order by MLBID')
+			for d in r['dicts']:
+				mlbid = f'{str(d["Player"])}({str(d["MLBID"])})'
+				roster_spot = str(d["RosterSpotFull"])
+				roster_spot = roster_spot.replace(' ','_')
+				if teams.get(mlbid):
+					teams[mlbid].append(roster_spot)
+				else:
+					teams[mlbid] = list()
+					teams[mlbid].append(roster_spot)
+		except Exception as ex:
+			print(f'Exception: {str(ex)}')
+		return_string = ""
+		for player in teams:
+			return_string += f'{player}: '
+			for roster_spot_name in teams[player]:
+				return_string += f'{roster_spot_name}, '
+			return_string = return_string[:-2]
+			return_string += f'\n'
+		self.push_instance.push(name,return_string)
+		return teams
+
+
 	def process_drops(self, drops):
 		#print("Number of process_drops:")
 		#print(len(drops))
@@ -1488,6 +1519,7 @@ class Fantasy(object):
 			leagueID = row['LeagueID']
 		return leagueID
 
+	@tools.try_wrap
 	def read_slack(self):
 		history = self.slack_client.conversations_history(channel=self.slack_channel,
 		                                                  tokem=self.slack_api_token, limit=1)
@@ -1509,13 +1541,39 @@ class Fantasy(object):
 					pass
 					#print(f"Skipping most recent post: {text}")
 
+	def get_roster_run_date(self):
+		return self.DB.select(f"select max(Date) from RosterSuiteRunDates")[0][0]
+
+	def set_roster_run_date(self, date8):
+		self.DB.cmd(f"insert INTO RosterSuiteRunDates VALUES ({date8})")
+		print(f"Set RosterSuiteRunDates: {date8}")
+
 	def slack_process_text(self, text_):
+		date8 = self.get_date8()
 		if text_ == "Adds":
 			print("Tweet add drops")
 			self.tweet_add_drops()
 		elif text_ == "Injuries":
 			print("Tweet injuries")
 			self.run_injury_updates()
+		elif text_ == "SGF" or text_ == "EGF":
+			pass
+		elif text_ == "USWS":
+			print("Tweet USWS")
+			query = f"SELECT Date,name,tm,HA,Opp,TH,woba,OWRC,PwB,OLR,OHA,pa,HR,OU,ML " \
+			        f"from UpcomingStartsWithStats where Date >= {date8} limit 80"
+			print(query)
+			self.run_query(query, f"USWS")
+			query = f"SELECT Date,name,tm,HA,Opp,TH,FRAN,FLIP,PRAC,wB,BOHM,FOMO " \
+			        f"from UpcomingStartsWithStats where Date >= {date8} limit 80"
+			print(query)
+			self.run_query(query, f"USWS")
+		elif text_ == "ODDS":
+			print("Tweet ODDS")
+			query = f"SELECT gamedate, Team, HomeAway, Starter, temperature, overUnder as OU, " \
+			        f"details from ESPNOddsView WHERE gamedate >= {date8} order by gamedate, overUnder limit 80"
+			print(query)
+			self.run_query(query, f"ODDS")
 		elif re.search("^S: ", text_):
 			name = text_.split(' ',1)[1]
 			print(f"Stats name: {name}")
@@ -1526,6 +1584,7 @@ class Fantasy(object):
 			        f"name like '%{name}%' group by batter, substr(game_date,0,5),p_throws " \
 			        f"order by player_name, substr(game_date,0,5),stand,vs,avg(points) desc LIMIT 20"
 			print(query)
+			self.push_instance.push("query", query)
 			self.run_query(query, f"Stats for {name}")
 		elif re.search("^M: ", text_):
 			name = text_.split(' ', 1)[1]
@@ -1536,9 +1595,7 @@ class Fantasy(object):
 			print(query)
 			self.run_query(query, f"MiLB Stats for {name}")
 		else:
-			query = f"Select * from ESPNRosters where Player like '%{text_}%' order by Player, LeagueId"
-			print(query)
-			self.run_query(query, text_)
+			self.roster_list(text_)
 
 	def get_odds_dates(self):
 		# Optional way to create list of dates
@@ -1654,6 +1711,7 @@ class Fantasy(object):
 			if len(gamestuple):
 				df.to_sql(table_name, self.DB.conn, if_exists='append', index=False)
 
+
 	def run_espn_odds(self):
 		now = datetime.now()  # current date and time
 		date_time = now.strftime("%Y%m%d%H%M%S")
@@ -1664,3 +1722,49 @@ class Fantasy(object):
 
 		for date8 in dates:
 			self.get_espn_odds_page(date8, date_time)
+
+
+	def refresh_batting_splits(self):
+		cmd = f"insert into StBatSplits select * from StatcastBattingSplits where Season = {self.year}"
+		self.DB.cmd(cmd)
+
+
+	def run_id_map_fixes(self):
+		idmapids = list()
+		idmap_obj = self.DB.select_plus("select * from IDMap")
+		for d in idmap_obj['dicts']:
+			idmapids.append(d['IDPLAYER'])
+
+		missing_obj = self.DB.select_plus("select * from ACheck_IDMap_Found")
+		for d in missing_obj['dicts']:
+			idmapidtype = ""
+			idnametype = ""
+			if d['mlbid'] in idmapids:
+				# print(f"id {d['mlbid']} found")
+				if d['otheridtype'] == "FG":
+					idmapidtype = "IDFANGRAPHS"
+					idnametype = "FANGRAPHSNAME"
+				elif d['otheridtype'] == "ESPN":
+					idmapidtype = "ESPNID"
+					idnametype = 'ESPNNAME'
+				else:
+					pass
+				cmd = f"UPDATE IDMap set TEAM = '{d['mlbTeam']}', POS = '{d['position']}', " \
+				      f"{idmapidtype} = '{d['id']}', {idnametype} = '{d['name']}', " \
+				      f"BATS = '{d['bats']}', THROWS = '{d['throws']}' WHERE IDPLAYER = {d['mlbid']}"
+				print(f"{cmd}")
+			else:
+				# print(f"id {d['mlbid']} not found")
+				insertcols = "(IDPLAYER, PLAYERNAME, TEAM, POS, IDFANGRAPHS, FANGRAPHSNAME, ESPNID, ESPNNAME, " \
+				             "MLBID", "MLBNAME", "BATS, THROWS)"
+				idfangraphs = d.get('idfangraphs', 'NULL')
+				fangraphsname = d.get('name', "")
+				espnid = d.get('espnid', "NULL")
+				espnname = d.get('name', "")
+				insertvals = f"({d['mlbid']}, '{d['name']}', '{d['mlbTeam']}', '{d['position']}'," \
+				             f" {idfangraphs}, '{fangraphsname}', {espnid}, '{espnname}', {d['mlbid']}, '{d['name']}', " \
+				             f"'{d['bats']}', '{d['throws']}')"
+				cmd = f"INSERT INTO IDMAP {insertcols} VALUES {insertvals}"
+				print(f"{cmd}")
+
+			self.DB.cmd(cmd)
