@@ -1305,7 +1305,7 @@ class Fantasy(object):
 											if ( i['type'] == "ADD" or i['type'] == "DROP" ) and \
 													( team_name in team_list):
 												espnid_list.append(espnid)
-												rr_msg += f'{player_name} {i["type"]}\n'
+												rr_msg += f'{player_name} {from_team} {to_team} {i["type"]}\n'
 
 											if i['type'] == "LINEUP" and team_name \
 													not in team_list or i['type'] == "DRAFT":
