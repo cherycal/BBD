@@ -9,7 +9,7 @@ import colorlog
 import dataframe_image as dfi
 import pandas as pd
 import tweepy
-from pushbullet import PushBullet
+# from pushbullet import PushBullet
 from pyfcm import FCMNotification
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
@@ -88,7 +88,7 @@ class Push(object):
         # Create API object
         self.api = set_tweepy(self, *args, **kwargs)
         self.tweet_count = 0
-        self.pb = PushBullet(PBTOKEN)
+        # self.pb = PushBullet(PBTOKEN)
         self.slack_url = f"https://hooks.slack.com/services/{SLACK_URL_SUFFIX}"
 
     def incr_tweet_count(self):
@@ -116,8 +116,7 @@ class Push(object):
         res = 0
         SUPPRESS_FLAG = False
         if not SUPPRESS_FLAG:
-            # Message you wanna send
-            message = body
+            message = f"{body}\r\n\r\n"
 
             try:
                 response = slack_client.chat_postMessage(
