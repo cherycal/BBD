@@ -30,20 +30,7 @@ TIMEOUT = 10
 def get_savant_gamefeed_page(url_name):
 
 	headers = ["authority: baseballsavant.mlb.com"
-			  , "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
-			  , "accept-language: en-US,en;q=0.9"
-			  , "cache-control: max-age=0"
-			  , "dnt: 1"
-			  , "if-modified-since: Sat, 08 Apr 2023 19:59:59 GMT"
-			  , "sec-ch-ua: \"Chromium\";v=\"112\", \"Google Chrome\";v=\"112\", \"Not:A-Brand\";v=\"99\""
-			  , "sec-ch-ua-mobile: ?0"
-			  , "sec-ch-ua-platform: \"Windows\""
-			  , "sec-fetch-dest: document"
-			  , "sec-fetch-mode: navigate"
-			  , "sec-fetch-site: none"
-			  , "sec-fetch-user: ?1"
-			  , "upgrade-insecure-requests: 1"
-			  , "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
+			  ,  "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
 	        ]
 
 	buffer = BytesIO()
@@ -61,7 +48,7 @@ def get_savant_gamefeed_page(url_name):
 
 def main():
 	url = "https://baseballsavant.mlb.com/gf?game_pk=718666"
-	data = get_page(url)
+	data = get_savant_gamefeed_page(url)
 	print(data)
 	#driver.close()
 
