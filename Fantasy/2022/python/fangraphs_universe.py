@@ -10,18 +10,18 @@ import pandas as pd
 sys.path.append('./modules')
 import sqldb
 import random
+import tools
 from datetime import datetime
 
 # My python class: sqldb.py
 bdb = sqldb.DB('Baseball.db')
 
 
-def get_team(teamid, unixtime, records, TeamName, date8):
+def get_fg_team_members(teamid, unixtime, records, TeamName, date8):
     MIN_SLEEP = 1
     MAX_SLEEP = 2
     SLEEP_INTERVAL = random.randint(MIN_SLEEP, MAX_SLEEP)
     addr = "https://cdn.fangraphs.com/api/depth-charts/roster?teamid=" + str(teamid) + "&loaddate=" + str(unixtime)
-    # addr = "https://www.fangraphs.com/api/menu/menu-standings"
     print(addr)
     fields = ['teamid', 'player', 'playerid','oPlayerId',
               'position', 'mlbamid', 'age', 'bats', 'throws',
@@ -52,18 +52,14 @@ def get_team(teamid, unixtime, records, TeamName, date8):
 def get_team_map():
     names, c = bdb.select_w_cols("SELECT * FROM FGTeamMap")
     TeamName = {}
-    # names = list(map(lambda x: x[0], c.description))
-    # print(names)
     for t in c:
-        # print(t)
         TeamName[t[0]] = t[1]
     return TeamName
 
 
-def main():
+def process_fangraphs_universe():
     ts = datetime.now()  # current date and time
     formatted_date8 = ts.strftime("%Y%m%d")
-
     TeamName = get_team_map()
     table_name = "FGCurrentUniverse"
     unixtime = str(int(time.time()))
@@ -71,15 +67,17 @@ def main():
 
     records = []
     for teamid in range(1, TEAMS + 1, 1):
-        records = get_team(teamid, unixtime, records, TeamName, formatted_date8)
+        records = get_fg_team_members(teamid, unixtime, records, TeamName, formatted_date8)
 
-    # print(records)
     df = pd.DataFrame.from_records(records)
-    # print(df)
 
     if len(df):
-        bdb.cmd("DELETE from " + table_name)
-        df.to_sql(table_name, bdb.conn, if_exists='append', index=True)
+        #bdb.cmd("DELETE from " + table_name)
+        df.to_sql(table_name, bdb.conn, if_exists='replace', index=True)
+
+@tools.try_wrap
+def main():
+    process_fangraphs_universe()
 
 
 if __name__ == "__main__":
