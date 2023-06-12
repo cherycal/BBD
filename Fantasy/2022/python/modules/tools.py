@@ -109,7 +109,7 @@ def tryfunc(func):
                 print("-" * 60)
                 traceback.print_exc(file=sys.stdout)
                 print("-" * 60)
-                push_instance.push("Attempt failed:", f'Error: {ex}\nFunction: {func}')
+                push_instance.push("Process failed:", f'Error: {ex}\nFunction: {func}')
 
 def try_wrap(func):
     def tryfunction(*args, **kwargs):
