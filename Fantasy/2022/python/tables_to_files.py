@@ -2,6 +2,7 @@ import sys
 
 sys.path.append('./modules')
 import sqldb
+import tools
 
 #plat = tools.get_platform()
 #print(plat)
@@ -13,11 +14,19 @@ if mode == "TEST":
 else:
     bdb = sqldb.DB('Baseball.db')
 
-tables = ['UpcomingStartsWithStats','SD_FRAN','ACheck_ID','ACheck_Statcast','AllSplits','TeamSplits','RunningTotalsPitching_FRAN',
-          'SituationalEventsRosters','AddDrops']
+# tables = ['UpcomingStartsWithStats','SD_FRAN','AllSplits','TeamSplits','RunningTotalsPitching_FRAN',
+#           'SituationalEventsRosters','AddDrops']
 
-for tbl in tables:
-    try:
+def run_tables():
+
+    tables = ['ESPNRosters','UpcomingStartsWithStats','TeamSplits','SituationalEventsRosters']
+    for tbl in tables:
         bdb.table_to_csv(tbl)
-    except Exception as ex:
-        print(f'Error in table_to_csv {tbl}: {ex}')
+
+@tools.try_wrap
+def main():
+    run_tables()
+
+
+if __name__ == "__main__":
+    main()
