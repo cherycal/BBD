@@ -7,11 +7,10 @@ import tools
 import os
 import fantasy
 
-
 plat = tools.get_platform()
 print(plat)
 push_instance = push.Push()
-mode = "TEST"
+mode = "PROD"
 
 fantasy = fantasy.Fantasy(mode, caller=os.path.basename(__file__))
 
@@ -27,3 +26,4 @@ ACCESSTOKENSECRET = os.environ.get('ACCESSTOKENSECRET')
 API_KEY = os.environ.get('api_key')
 REG_ID = os.environ.get('reg_id')
 
+print(fantasy.roster_list('Wheel'))
