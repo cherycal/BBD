@@ -23,11 +23,28 @@ fantasy = fantasy.Fantasy(mode, caller=os.path.basename(__file__))
 
 
 def process_statcast(data, gamepk, game_date):
+
+    team_dict = dict()
+    team_dict['away'] = dict()
+    team_dict['away']['abbr'] = data['away_team_data']['abbreviation']
+    team_dict['away']['data'] = data['boxscore']['teams']['away']
+    team_dict['home'] = dict()
+    team_dict['home']['abbr'] = data['home_team_data']['abbreviation']
+    team_dict['home']['data'] = data['boxscore']['teams']['home']
     away_team = data['boxscore']['teams']['away']
     home_team = data['boxscore']['teams']['home']
     print("Game: " + str(gamepk))
 
-    for team in [home_team, away_team]:
+    # for team in [home_team, away_team]:
+    for team_key in team_dict.keys():
+        home_away = str(team_key)
+        team_abbr = team_dict[team_key]['abbr']
+        team = team_dict[team_key]['data']
+        opp_abbr = ""
+        if home_away == 'away':
+            opp_abbr = team_dict['home']['abbr']
+        else:
+            opp_abbr = team_dict['away']['abbr']
         batlol = list()
         pitchlol = list()
         batters = team['batters']
@@ -42,6 +59,10 @@ def process_statcast(data, gamepk, game_date):
                    'groundIntoDoublePlay', 'intentionalWalks', 'gamepk', 'mlbid', 'name', 'team', 'date']
         index = list()
         teamname = team['team']['name'].split(" ")[-1]
+        if team['team']['name'] == "Chicago White Sox":
+            teamname = "White Sox"
+        if team['team']['name'] == "Boston Red Sox":
+            teamname = "Red Sox"
 
         for batter in batters:
             statlist = list()
@@ -65,11 +86,6 @@ def process_statcast(data, gamepk, game_date):
             statlist[0] = points
             batlol.append(statlist)
             index.append("")
-            #print(bid)
-            #print(bname)
-            #print(batcats)
-            #print(statlist)
-            #print("")
 
         df = pd.DataFrame(batlol, columns=batcats, index=index)
         #print(df.columns)
@@ -97,14 +113,14 @@ def process_statcast(data, gamepk, game_date):
         not_passed = True
         while not_passed:
             try:
-                #print(del_cmd)
+                print(del_cmd)
                 bdb.delete(del_cmd)
                 not_passed = False
             except Exception as ex:
                 print("DB Error")
                 inst.push("DATABASE ERROR at " + str(game_date),
                           del_cmd + ": " + str(ex))
-                time.sleep(2)
+                time.sleep(1)
 
         try:
             df.to_sql(table_name, bdb.conn, if_exists='append', index=False)
@@ -113,23 +129,20 @@ def process_statcast(data, gamepk, game_date):
 
         column_names = ['name', 'team', 'date', 'points', 'qs', 'outs', 'strikeOuts', 'wins', 'saves', 'holds',
                         'earnedRuns', 'baseOnBalls', 'losses', 'hits', 'gamesStarted', 'intentionalWalks', 'mlbid',
-                        'gamepk']
+                        'gamepk','numberOfPitches']
 
-        pitchcats = ['points', 'qs', 'outs', 'strikeOuts', 'wins', 'saves', 'holds',
-                     'earnedRuns', 'baseOnBalls', 'losses', 'hits', 'gamesStarted', 'intentionalWalks', 'gamepk',
-                     'mlbid',
-                     'name', 'team', 'date']
 
+        pitchcats = list()
         index.clear()
         for pitcher in pitchers:
+            pitchcats = ['points', 'qs', 'outs', 'strikeOuts', 'wins', 'saves', 'holds',
+                         'earnedRuns', 'baseOnBalls', 'losses', 'hits', 'gamesStarted', 'intentionalWalks', 'gamepk',
+                         'mlbid',
+                         'name', 'team', 'date']
             pid = "ID" + str(pitcher)
             statlist = list()
             pname = team['players'][pid]['person']['fullName']
             game_stats = team['players'][pid]['stats']['pitching']
-            #print(pid)
-            #print(pname)
-            #print(game_stats)
-            #print("")
             qs = 0
             for cat in pitchcats:
                 if game_stats.get(cat):
@@ -151,16 +164,21 @@ def process_statcast(data, gamepk, game_date):
             statlist[-5] = gamepk
             statlist[0] = points
             statlist[1] = qs
+            statlist.append(game_stats['numberOfPitches'])
+            pitchcats.append('numberOfPitches')
+            statlist.append(team_abbr)
+            pitchcats.append('team_abbr')
+            statlist.append(opp_abbr)
+            pitchcats.append('opp_abbr')
+            statlist.append(home_away)
+            pitchcats.append('home_away')
             pitchlol.append(statlist)
-            #print(pname)
-            #print(pitchcats)
-            #print(statlist)
             index.append("")
 
         df = pd.DataFrame(pitchlol, columns=pitchcats, index=index)
         #print(df.columns)
         df = df.sort_values(by=['points'], ascending=[False])
-        df = df[column_names]
+        #df = df[column_names]
         df['GameType'] = "R"
         df['Season'] = season
         # df_styled = df.style.background_gradient()  # adding a gradient based on values in cell
@@ -170,8 +188,9 @@ def process_statcast(data, gamepk, game_date):
 
         table_name = "StatcastBoxscoresPitching"
         del_cmd = f'delete from {table_name} where gamepk = {gamepk} and team = \'{teamname}\''
-        #print(del_cmd)
+        print(del_cmd)
         bdb.delete(del_cmd)
+        print(df)
         df.to_sql(table_name, bdb.conn, if_exists='append', index=False)
 
 
