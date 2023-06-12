@@ -16,7 +16,7 @@ cur_dir = Path.cwd()
 data_dir = cur_dir / 'data'
 data_dir.mkdir(mode=0o755, exist_ok=True)
 bdb = sqldb.DB('Baseball.db')
-
+import tools
 
 def get_savant_page(year, player_type):
     #year = "2023"
@@ -47,6 +47,7 @@ def get_savant_page(year, player_type):
 
     filename = f"statcast_{player_type}_events_season.csv"
     csvfile = data_dir / filename
+    print(f"{csvfile}")
     df.to_csv(csvfile)
 
     columns = f"year,player_id,pitch_count,season_id,player_name,pid,player_age,p_k_percent,p_bb_percent," \
@@ -68,6 +69,8 @@ def get_savant_page(year, player_type):
               f"ch_avg_spin,ch_avg_break,fs_avg_speed,fs_avg_spin,fs_avg_break,fastball_avg_speed," \
               f"fastball_avg_spin,fastball_avg_break,breaking_avg_speed,breaking_avg_spin,breaking_avg_break," \
               f"offspeed_avg_speed,offspeed_avg_spin,offspeed_avg_break,p_era,batting_avg"
+
+    columns = ','.join(df.columns)
 
     if table_type == "Batting":
         columns = "*"
@@ -91,7 +94,7 @@ def get_savant_page(year, player_type):
     except Exception as ex:
         print(f"DB Error: {str(ex)}")
 
-
+@tools.try_wrap
 def main():
     year = "2023"
     get_savant_page(year, "batter")
