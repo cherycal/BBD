@@ -24,6 +24,7 @@ import statcast_season_level
 import espn_season_stats
 import savant_boxscores
 import team_splits
+import tables_to_files
 
 if (not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None)):
     ssl._create_default_https_context = ssl._create_unverified_context
@@ -46,7 +47,7 @@ string_yesterday = str(integer_yesterday)
 
 def trywrap(func):
     tries = 0
-    max_tries = 4
+    max_tries = 2
     incomplete = True
     while incomplete and tries < max_tries:
         try:
@@ -176,7 +177,7 @@ def begin_day_process():
 
     # command = ""
     # tries = 0
-    TRIES_BEFORE_QUITTING = 3
+    TRIES_BEFORE_QUITTING = 2
     SLEEP = 1
 
     insert_many_list = fantasy.get_espn_player_info()
@@ -224,7 +225,7 @@ def eod_process():
 
     tries = 0
     passed = 0
-    TRIES_BEFORE_QUITTING = 3
+    TRIES_BEFORE_QUITTING = 2
     SLEEP = 2.5
     while tries < TRIES_BEFORE_QUITTING:
         tries += 1
@@ -271,6 +272,13 @@ def main():
     MAX_SLEEP = 20
     run_count = 0
 
+    run_roster_suite = True
+    date8 = int(fantasy.get_date8())
+    roster_run_date = fantasy.get_roster_run_date()
+    if date8 == roster_run_date:
+        print("Roster suite already run. Skipping")
+        run_roster_suite = False
+
     try:
         bdb.update("update ProcessUpdateTimes set Active = 1 where Process = 'PlayerInfo'")
     except Exception as ex:
@@ -283,9 +291,10 @@ def main():
         current_time = int(time6)
         minute = int(ts.strftime("%M"))
         if (20 <= minute < 25 or 0 <= minute < 5) and run_odds_bool:
-            print("Running odds")
+            print("Running odds & refresh starter history")
             try:
                 fantasy.run_espn_odds()
+                fantasy.refresh_starter_history()
             except Exception as ex:
                 print(ex)
             run_odds_bool = False
@@ -314,7 +323,7 @@ def main():
             fantasy.logger_instance.debug(f'End eod_process at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
             run_end_day_process = False
 
-        if current_time >= 214500:
+        if current_time >= end_day_time:
             try:
                 bdb.update("update ProcessUpdateTimes set Active = 0 where Process = 'PlayerInfo'")
             except Exception as ex:
@@ -349,15 +358,18 @@ def main():
             print(f'run_transactions at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
             fantasy.run_transactions()
 
+            tables_to_files.main()
+
         if run_roster_suite:
             fantasy.tweet_daily_schedule()
-            fantasy.tweet_fran_on_opponents()
-            fantasy.tweet_oppo_rosters()
+            #fantasy.tweet_fran_on_opponents()
+            #fantasy.tweet_oppo_rosters()
             ##
             fantasy.refresh_statcast_schedule()
             fantasy.refresh_espn_schedule()
             fantasy.tweet_add_drops()
             fantasy.refresh_starter_history()
+            fantasy.run_id_map_fixes()
 
             espn_daily_scoring_to_db.main()
             espn_standings.main()
@@ -366,9 +378,13 @@ def main():
             espn_season_stats.main()
             savant_boxscores.main()
             team_splits.main()
+            fantasy.refresh_batting_splits()
+            tables_to_files.main()
+
             inst.push("Morning suite completed",
                       "Morning suite completed")
 
+            fantasy.set_roster_run_date(date8)
             run_roster_suite = False
 
         fantasy.check_roster_lock_time()
