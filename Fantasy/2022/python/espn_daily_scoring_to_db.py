@@ -29,7 +29,7 @@ def one_day(scoring_period, league):
     #        "/segments/0/leagues/" + str(league) + "?" \
     #                                               "view=mScoreboard&scoringPeriodId=" + str(scoring_period)
 
-    addr = f'http://fantasy.espn.com/apis/v3/games/flb/seasons/{str(year)}/segments' \
+    addr = f'https://fantasy.espn.com/apis/v3/games/flb/seasons/{str(year)}/segments' \
            f'/0/leagues/{str(league)}?view=mScoreboard&scoringPeriodId={str(scoring_period)}'
     print(addr)
 
@@ -139,7 +139,7 @@ def main():
     # fantasy output or totals. This is consistent with how other Stat Corrections are handled.
 
     leagues = [6455, 37863846]
-    # leagues = [37863846]
+    # leagues = [3154]
     season_start = date(2023, 3, 30)
     today = date.today()
     previous = today - timedelta(days=7)  # days=7 is the ESPN default
