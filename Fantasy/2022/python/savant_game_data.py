@@ -22,6 +22,14 @@ from os import path
 import certifi
 import pycurl
 
+from slack_sdk import WebClient
+
+slack_api_token = os.environ["SLACK_BOT_TOKEN"]
+slack_channel = os.environ["SLACK_CHANNEL"]
+slack_client = WebClient(token=slack_api_token)
+slack_most_recent = ""
+slack_first_run = True
+
 script_name = os.path.basename(__file__)
 
 
@@ -36,9 +44,9 @@ def roster_list():
             # PLAYOFFS = True
             if PLAYOFFS is False:
                 if teams.get(mlbid):
-                    teams[mlbid] += f'{roster_spot} '
+                    teams[mlbid] += f'{roster_spot}  '
                 else:
-                    teams[mlbid] = f'{roster_spot} '
+                    teams[mlbid] = f'{roster_spot}  '
     except Exception as ex:
         print(f'Exception: {str(ex)}')
     return teams
@@ -56,7 +64,6 @@ def get_logger(logfilename="./logs/" + script_name + '.log',
     colorlog.basicConfig(format=colorlog_format)
 
     logger_inst = logging.getLogger(__name__)
-
 
     formatter = logging.Formatter(logformat)
     file_handler = logging.FileHandler(logfilename)
@@ -140,6 +147,31 @@ has_statcast = dict()
 is_in_pitching_change = dict()
 
 
+def read_slack():
+    global slack_most_recent
+    global slack_first_run
+    history = slack_client.conversations_history(channel=slack_channel,
+                                                 tokem=slack_api_token, limit=1)
+    msgs = history['messages']
+    text = ""
+    if len(msgs) > 0:
+        for msg in msgs:
+            text = msg['text']
+            if text != slack_most_recent:
+                try:
+                    slack_most_recent = text
+                    if not slack_first_run:
+                        break
+                    else:
+                        print(F"Skipping slack first run")
+                        slack_first_run = False
+                except Exception as ex:
+                    inst.push(f"Error in push_instance, Error: {str(ex)}")
+            else:
+                pass
+    return text
+
+
 def process_mlb(data, gamepk, player_teams):
     global watch_ids
     global reported_event_count
@@ -156,21 +188,12 @@ def process_mlb(data, gamepk, player_teams):
     if away_team == "Sox":
         away_team = ' '.join(data['gameData']['teams']['home']['name'].split()[-2:])
     print(f'{away_team} vs {home_team} at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
-    # print(away_team)
-    # print(watch_ids)
-    # print("MLB data: events " + str(len(plays)))
-    # print("Previously reported events: " +
-    #      str(reported_event_count[gamepk]))
     # print("************ START PLAYS *****************")
     for play in plays:
-        # event_count[gamepk] += 1
         at_bat = 0
         if play.get('about') and play['about'].get('atBatIndex') >= 0:
             at_bat = play['about']['atBatIndex'] + 1
         event_count[gamepk] = at_bat
-        #if at_bat == 1:
-        #    player_teams = roster_list()
-        # description = ""
         if at_bat == 1:
             if play['about'].get('isComplete') and play['about']['isComplete']:
                 player_teams = roster_list()
@@ -179,7 +202,6 @@ def process_mlb(data, gamepk, player_teams):
         if play['result'].get('eventType') and play['result']['eventType'] == "game_advisory":
             print(f'Game advisory {away_team} vs {home_team}')
             continue
-
 
         if play['result'].get('description'):
             description = str(play['result']['description'])
@@ -217,23 +239,23 @@ def process_mlb(data, gamepk, player_teams):
             # print(f'At description {at_bat}, description: {description}')
         else:
             description = "None"
-        #print(f'Event count: {event_count[gamepk]}, Reported event count {reported_event_count[gamepk]}, At bat {at_bat}')
+        # print(f'Event count: {event_count[gamepk]}, Reported event count {reported_event_count[gamepk]}, At bat {at_bat}')
         if event_count[gamepk] > reported_event_count[gamepk]:
 
             if play['result'].get('eventType') and play['result']['eventType'] == 'pitching_substitution':
-                #print(f'In pitching change: {is_in_pitching_change}')
+                # print(f'In pitching change: {is_in_pitching_change}')
                 # logger_instance.info(f'Full play info: {play} ')
                 if is_in_pitching_change.get(gamepk) is True:
-                    #print(f'Game is in pitching change. Do not report')
+                    # print(f'Game is in pitching change. Do not report')
                     continue
                 else:
-                    #print(f'Setting in pitching change to True ( in substitution ): {is_in_pitching_change}')
+                    # print(f'Setting in pitching change to True ( in substitution ): {is_in_pitching_change}')
                     is_in_pitching_change[gamepk] = True
-                    #print(f'Post set pitching change: {is_in_pitching_change}')
+                    # print(f'Post set pitching change: {is_in_pitching_change}')
             else:
-                #print(f'Setting in pitching change to False ( not in substitution ): {is_in_pitching_change}')
+                # print(f'Setting in pitching change to False ( not in substitution ): {is_in_pitching_change}')
                 is_in_pitching_change[gamepk] = False
-                #print(f'Post set pitching change: {is_in_pitching_change}')
+                # print(f'Post set pitching change: {is_in_pitching_change}')
 
             # logger_instance.info(f'Full play info: {play} ')
             on_base = list('---')
@@ -260,7 +282,7 @@ def process_mlb(data, gamepk, player_teams):
             print("Batter: " + batter_name)
             print("Pitcher: " + pitcher_name)
             if batter_id in watch_ids or pitcher_id in watch_ids:
-                #print(play)
+                # print(play)
                 home_score = play['result']['awayScore']
                 away_score = play['result']['homeScore']
                 inning = str(play['about']['halfInning'])[0].capitalize() + "" + str(play['about']['inning'])
@@ -270,15 +292,15 @@ def process_mlb(data, gamepk, player_teams):
                 # print("Pitcher ID: " + pitcher_id)
                 if description != "None":
                     # logger_instance.info(f'Play info: {play}')
-                    #print(f'\n\n{play}\n\n')
+                    # print(f'\n\n{play}\n\n')
                     # print("event: " + str(event_count[gamepk]))
-                    msg = description[0:120] #### TWEET DESCRIPTION LENGTH
-                    #logger_instance.info(f'Play description: {msg}')
-                    msg += "\nP: " + pitcher_name + \
-                           f' {pitcher_teams}\n{home_team} {home_score}, ' \
+                    msg = f"\r\n*\r\n"
+                    msg += f"{description[0:160]}"  # TWEET DESCRIPTION LENGTH
+                    # logger_instance.info(f'Play description: {msg}')
+                    msg += f'\nP: {pitcher_name} {pitcher_teams}\n{home_team} {home_score}, ' \
                            f'{away_team} {away_score}, {inning} {outs}o, {on_base_str}\n' \
-                           f'{batter_teams}\n'
-                    msg = msg[0:240]
+                           f'{batter_teams}'
+                    msg = msg[0:280]
                     # print("----------")
                     print(msg)
                     # print("-----------------------------------------------")
@@ -287,7 +309,7 @@ def process_mlb(data, gamepk, player_teams):
                         logger_instance.info(f'Pushing play info: {msg}')
                         print("Pushing: " + msg)
                         inst.push(title, msg)
-                        #inst.tweet(msg)
+                        # inst.tweet(msg)
                         time.sleep(1.25)
                     else:
                         print("Not pushing on SC first run")
@@ -300,7 +322,7 @@ def process_mlb(data, gamepk, player_teams):
                     print("Skipped play, players not on watch list: " +
                           str(event_count[gamepk]))
                     logger_instance.info(f'Players not on watch list: {description}')
-                    #print(play)
+                    # print(play)
                     # print("-----------------------------------------------")
             if play.get('about') and play['about'].get('isComplete'):
                 isComplete = play['about']['isComplete']
@@ -311,28 +333,20 @@ def process_mlb(data, gamepk, player_teams):
                 reported_event_count[gamepk] = at_bat - 1
         else:
             pass
-            #print(f'Skipping reported event number {event_count[gamepk]}')
+            # print(f'Skipping reported event number {event_count[gamepk]}')
     sc_first_run[gamepk] = False
     # print("*********** END PLAYS ******************")
 
 
+# NOT USED AS OF 20230506 #################
 def process_statcast(data, gamepk):
     global watch_ids
     global reported_statcast_count
     global statcast_count
     global mlb_first_run
     global PLAYOFFS
-    # msg2 = ""
     events = data['exit_velocity']
-    # print("Game: " + str(gamepk))
-    # print(data['away_team_data']['name'])
-    # print(data['home_team_data']['name'])
-    # print(watch_ids)
-    # print("Statcast events: " + str(len(events)))
-    # print("Previously reported events: " +
-    #  str(reported_statcast_count[gamepk]))
     for event in events:
-        # statcast_count[gamepk] += 1
         at_bat = 0
         if event.get('ab_number'):
             at_bat = event['ab_number']
@@ -342,9 +356,6 @@ def process_statcast(data, gamepk):
         batter_name = event['batter_name']
         pitcher_name = event['pitcher_name']
         if statcast_count[gamepk] > reported_statcast_count[gamepk]:
-            # print("At bat number: " + str(at_bat))
-            # print("Batter: " + batter_name)
-            # print("Pitcher: " + pitcher_name)
             if batter_id in watch_ids or pitcher_id in watch_ids:
                 time.sleep(1)
                 msg = "-----------------------------------------------"
@@ -376,7 +387,7 @@ def process_statcast(data, gamepk):
                 print(msg2)
                 print("--------------------")
                 # print("--------------------")
-                title = msg2[0:120] + " " + event['team_batting'] + " vs " + event['team_fielding']
+                title = msg2[0:160] + " " + event['team_batting'] + " vs " + event['team_fielding']
                 if not mlb_first_run:
                     inst.push(title, msg2)
                     # inst.tweet(msg2)
@@ -393,7 +404,7 @@ def process_statcast(data, gamepk):
                 reported_statcast_count[gamepk] = at_bat
 
     mlb_first_run = 0
-
+##################################################
 
 def process_lineups(lineups):
     cols = ['date', 'gamepk', 'pitcher', 'batter', 'pitcher_team', 'batter_team', 'date8']
@@ -435,21 +446,23 @@ def process_lineups(lineups):
 def get_savant_gamefeed_page(url_name):
     TIMEOUT = 10
     headers = ["authority: baseballsavant.mlb.com"
-              , "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
-              , "accept-language: en-US,en;q=0.9"
-              , "cache-control: max-age=0"
-              , "dnt: 1"
-              , "if-modified-since: Sat, 08 Apr 2023 19:59:59 GMT"
-              , "sec-ch-ua: \"Chromium\";v=\"112\", \"Google Chrome\";v=\"112\", \"Not:A-Brand\";v=\"99\""
-              , "sec-ch-ua-mobile: ?0"
-              , "sec-ch-ua-platform: \"Windows\""
-              , "sec-fetch-dest: document"
-              , "sec-fetch-mode: navigate"
-              , "sec-fetch-site: none"
-              , "sec-fetch-user: ?1"
-              , "upgrade-insecure-requests: 1"
-              , "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
-            ]
+        ,
+               "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+        , "accept-language: en-US,en;q=0.9"
+        , "cache-control: max-age=0"
+        , "dnt: 1"
+        , "if-modified-since: Sat, 08 Apr 2023 19:59:59 GMT"
+        , "sec-ch-ua: \"Chromium\";v=\"112\", \"Google Chrome\";v=\"112\", \"Not:A-Brand\";v=\"99\""
+        , "sec-ch-ua-mobile: ?0"
+        , "sec-ch-ua-platform: \"Windows\""
+        , "sec-fetch-dest: document"
+        , "sec-fetch-mode: navigate"
+        , "sec-fetch-site: none"
+        , "sec-fetch-user: ?1"
+        , "upgrade-insecure-requests: 1"
+        ,
+               "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
+               ]
 
     buffer = BytesIO()
     c = pycurl.Curl()
@@ -464,15 +477,13 @@ def get_savant_gamefeed_page(url_name):
     return json.loads(data)
 
 
-def main():
+def start_gamefeed(gamepks):
     global has_statcast
     global reported_event_count
     global reported_statcast_count
     lineups = dict()
     TIMEOUT = 15
-    SLEEP_BASE = 15
-    # sleep_min = 8
-    # sleep_max = 10
+    SLEEP_BASE = 60
 
     player_teams = roster_list()
     # for p in player_teams:
@@ -510,138 +521,169 @@ def main():
 
         sc_first_run[gamepk] = True
 
-    not_eod = 1
+    not_eod = True
     # run_count = 0
+    slack_on = True
 
     while not_eod:
 
+        now = datetime.now()
         time6 = now.strftime("%H%M%S")
-        print(f'Current time: {time6}, reported event count for game {gamepk}: {reported_event_count[gamepk]}')
+        print(f'Current time: {time6}')
 
         current_time = int(time6)
         if current_time > 225800:
             print(f'End of day exit')
             exit(0)
 
-        not_eod = 0
+        not_eod = False
         games = len(gamepks)
 
         print(f'Games left: {games}: {gamepks}')
 
-        for gamepk in gamepks:
+        if slack_on and read_slack() == "EGF":
+            slack_on = False
+            print(f"Slack flag is now set to OFF")
 
-            not_eod = 1
-            sleep_min = int(SLEEP_BASE / games)
-            sleep_max = sleep_min + 10
+        if not slack_on:
+            if read_slack() == "SGF":
+                slack_on = True
+                print(f"Slack flag is now set to ON")
 
-            ts = datetime.now()  # current date and time
-            # formatted_date_time = ts.strftime("%Y%m%d-%H%M%S")
-            update_time = ts.strftime("%Y%m%d%H%M%S")
+        if slack_on:
+            in_progress_games = 0
+            for gamepk in gamepks:
 
-            try:
-                cmd = "update ProcessUpdateTimes set UpdateTime = {} where Process = 'GameData'".format(update_time)
-                # print(cmd)
-                bdb.update(cmd)
-            except Exception as ex:
-                print(str(ex))
-                inst.push("DB error in savant_game_data", str(ex))
-                # inst.tweet("DB error in game_data: " + str(ex))
+                not_eod = True
 
-            ########### Statcast ######################
+                sleep_min = int(max(8,SLEEP_BASE / games))
+                sleep_max = sleep_min + 14
 
-            url_name = "https://baseballsavant.mlb.com/gf?game_pk=" + gamepk
-            print(url_name)
+                ts = datetime.now()  # current date and time
+                # formatted_date_time = ts.strftime("%Y%m%d-%H%M%S")
+                update_time = ts.strftime("%Y%m%d%H%M%S")
 
-            try:
-                data = get_savant_gamefeed_page(url_name)
-                statcast_count[gamepk] = 0
+                try:
+                    cmd = "update ProcessUpdateTimes set UpdateTime = {} where Process = 'GameData'".format(update_time)
+                    # print(cmd)
+                    bdb.update(cmd)
+                except Exception as ex:
+                    print(str(ex))
+                    inst.push("DB error in savant_game_data", str(ex))
+                    # inst.tweet("DB error in game_data: " + str(ex))
 
-                if data.get('game_status_code'):
-                    if data['game_status_code'] == "F":
-                        print(f'Skipping completed game: {gamepk}')
-                        print("Sleep for 2 seconds ")
-                        time.sleep(1)
-                        if gamepks.count(gamepk):
-                            gamepks.remove(gamepk)
-                            logger_instance.info(f'Removing {gamepk} from list')
+                ########### Statcast ######################
+
+                url_name = "https://baseballsavant.mlb.com/gf?game_pk=" + gamepk
+                print(url_name)
+
+                try:
+                    data = get_savant_gamefeed_page(url_name)
+                    statcast_count[gamepk] = 0
+
+                    if data.get('game_status_code'):
+                        print(f"Game code for {gamepk}: {data['game_status_code']}")
+                        if data['game_status_code'] == 'I':
+                            in_progress_games += 1
+                        if data['game_status_code'] == "F":
+                            print(f'Skipping completed game: {gamepk}')
+                            print("Sleep for 2 seconds ")
+                            time.sleep(1)
+                            if gamepks.count(gamepk):
+                                gamepks.remove(gamepk)
+                                logger_instance.info(f'Removing {gamepk} from list')
+                            continue
+                        else:
+                            # print("Sleep at " + formatted_date_time)
+                            sleep_seconds = random.randint(sleep_min, sleep_max)
+
+                            if reported_event_count[gamepk] == 0:
+                                sleep_seconds += 0
+
+                            print(f"Sleep for {str(sleep_seconds)} seconds ( SLEEP_BASE is {SLEEP_BASE} )")
+                            time.sleep(sleep_seconds)
+
+                    lineups['gamepk'] = gamepk
+                    if not data.get('home_team_data'):
                         continue
-                    else:
-                        # print("Sleep at " + formatted_date_time)
-                        sleep_seconds = random.randint(sleep_min, sleep_max)
+                    if data.get('gameDate'):
+                        lineups['date'] = data['gameDate']
+                    lineups['ht'] = data['home_team_data']['abbreviation']
+                    lineups['at'] = data['away_team_data']['abbreviation']
+                    lineups['ab'] = data['away_lineup']
+                    lineups['ap'] = data['away_pitcher_lineup']
+                    lineups['hb'] = data['home_lineup']
+                    lineups['hp'] = data['home_pitcher_lineup']
+                    process_lineups(lineups)
 
-                        if reported_event_count[gamepk] == 0:
-                            sleep_seconds += 0
+                    if data.get('exit_velocity'):
+                        print("Skipping statcast data")
+                        # process_statcast(data, gamepk)
+                except Exception as ex:
+                    print(f'Exception in user code: {ex}')
+                    print("-" * 60)
+                    traceback.print_exc(file=sys.stdout)
+                    print("-" * 60)
+                    time.sleep(4)
 
-                        print("Sleep for " + str(sleep_seconds) + " seconds")
-                        time.sleep(sleep_seconds)
+                ############  MLB  ###################
 
-                lineups['gamepk'] = gamepk
-                if not data.get('home_team_data'):
-                    continue
-                if data.get('gameDate'):
-                    lineups['date'] = data['gameDate']
-                lineups['ht'] = data['home_team_data']['abbreviation']
-                lineups['at'] = data['away_team_data']['abbreviation']
-                lineups['ab'] = data['away_lineup']
-                lineups['ap'] = data['away_pitcher_lineup']
-                lineups['hb'] = data['home_lineup']
-                lineups['hp'] = data['home_pitcher_lineup']
-                process_lineups(lineups)
+                url_name = "http://statsapi.mlb.com/api/v1.1/game/" + gamepk + "/feed/live"
+                # print(url_name)
 
-                if data.get('exit_velocity'):
-                    print("Skipping statcast data")
-                    # process_statcast(data, gamepk)
-            except Exception as ex:
-                print(f'Exception in user code: {ex}')
-                print("-" * 60)
-                traceback.print_exc(file=sys.stdout)
-                print("-" * 60)
-                time.sleep(4)
+                try:
+                    with urllib.request.urlopen(url_name, timeout=TIMEOUT) as url2:
+                        event_count[gamepk] = 0
+                        data = json.loads(url2.read().decode())
+                        if data.get('liveData'):
+                            #SLEEP_BASE = 15
+                            print(f'\nReporting MLB data for {gamepk}')
+                            process_mlb(data, gamepk, player_teams)
+                        else:
+                            print("MLB data unavailable")
+                except Exception as ex:
+                    print(f'Exception in user code: {ex}')
+                    print("-" * 60)
+                    traceback.print_exc(file=sys.stdout)
+                    print("-" * 60)
+                    time.sleep(4)
 
-            ############  MLB  ###################
+                # Record how many events have been reported to event_count.csv file
+                with open('event_count.csv', 'w') as f:
+                    for key in reported_event_count.keys():
+                        f.write("%s,%s\n" % (key, reported_event_count[key]))
+                # f.close()
 
-            url_name = "http://statsapi.mlb.com/api/v1.1/game/" + gamepk + "/feed/live"
-            # print(url_name)
+                with open('statcast_count.csv', 'w') as f:
+                    for key in reported_statcast_count.keys():
+                        f.write("%s,%s\n" % (key, reported_statcast_count[key]))
+                # f.close()
 
-            try:
-                with urllib.request.urlopen(url_name, timeout=TIMEOUT) as url2:
-                    event_count[gamepk] = 0
-                    data = json.loads(url2.read().decode())
-                    if data.get('liveData'):
-                        print(f'\nReporting MLB data for {gamepk}')
-                        process_mlb(data, gamepk, player_teams)
-                    else:
-                        print("MLB data unavailable")
-            except Exception as ex:
-                print(f'Exception in user code: {ex}')
-                print("-" * 60)
-                traceback.print_exc(file=sys.stdout)
-                print("-" * 60)
-                time.sleep(4)
+                # Records to the has_statcast.csv file from has_statcast dict
+                with open('has_statcast.csv', 'w') as f:
+                    for key in has_statcast.keys():
+                        f.write("%s,%s\n" % (key, 1 * has_statcast[key]))
+            print(f"In progress games = {in_progress_games}")
+            if in_progress_games == 0:
+                SLEEP_BASE = 400
+            else:
+                SLEEP_BASE = 15
 
-            # Record how many events have been reported to event_count.csv file
-            with open('event_count.csv', 'w') as f:
-                for key in reported_event_count.keys():
-                    f.write("%s,%s\n" % (key, reported_event_count[key]))
-            # f.close()
-
-            with open('statcast_count.csv', 'w') as f:
-                for key in reported_statcast_count.keys():
-                    f.write("%s,%s\n" % (key, reported_statcast_count[key]))
-            # f.close()
-
-            # Records to the has_statcast.csv file from has_statcast dict
-            with open('has_statcast.csv', 'w') as f:
-                for key in has_statcast.keys():
-                    f.write("%s,%s\n" % (key, 1 * has_statcast[key]))
-
-        # f.close()
+        else:
+            loop_sleep = 15
+            print(f"Slack flag set to OFF - sleeping for {loop_sleep} seconds")
+            time.sleep(15)
+            not_eod = True
 
     print("Games are done for today")
     try:
         bdb.update("update ProcessUpdateTimes set Active = 0 where Process = 'GameData'")
     except Exception as ex:
         print(str(ex))
+
+
+def main():
+    start_gamefeed(gamepks)
 
 
 if __name__ == "__main__":
