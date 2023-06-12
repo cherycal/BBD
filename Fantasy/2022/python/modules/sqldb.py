@@ -193,7 +193,7 @@ class DB:
 		if verbose:
 			print_calling_function(command)
 		tries = 0
-		max_tries = 5
+		max_tries = 2
 		incomplete = 1
 		while incomplete and tries < max_tries:
 			try:
