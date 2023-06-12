@@ -14,9 +14,5 @@ if mode == "TEST":
 else:
     bdb = sqldb.DB('Baseball.db')
 
-print(f'Hello world')
-
-push_instance.push("Title 101", f'MSG 101')
+push_instance.push("Title 101", f'MSG 101\n--------\n')
 # push_instance.tweet_media("image2.png", f'Table', True)
-
-print(f'Bye bye')
