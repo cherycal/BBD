@@ -10,14 +10,18 @@ bdb = sqldb.DB('Baseball.db')
 fantasy = fantasy.Fantasy()
 
 
-def run_id_map_fixes():
+def create_id_map():
     idmapids = list()
     idmap_obj = bdb.select_plus("select * from IDMap")
     for d in idmap_obj['dicts']:
         idmapids.append(d['IDPLAYER'])
+    return idmapids
 
+
+def run_id_map_fixes():
     missing_obj = bdb.select_plus("select * from ACheck_IDMap_Found")
     for d in missing_obj['dicts']:
+        idmapids = create_id_map()
         idmapidtype = ""
         idnametype = ""
         if d['mlbid'] in idmapids:
