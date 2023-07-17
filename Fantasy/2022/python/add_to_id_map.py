@@ -40,7 +40,8 @@ def run_id_map_fixes():
             print(f"{cmd}")
         else:
             # print(f"id {d['mlbid']} not found")
-            insertcols = f"(IDPLAYER, PLAYERNAME, TEAM, POS, IDFANGRAPHS, FANGRAPHSNAME, ESPNID, ESPNNAME, MLBID, MLBNAME, BATS, THROWS)"
+            insertcols = f"(IDPLAYER, PLAYERNAME, TEAM, POS, IDFANGRAPHS, FANGRAPHSNAME," \
+                         f" ESPNID, ESPNNAME, MLBID, MLBNAME, BATS, THROWS)"
             idfangraphs = d.get('idfangraphs', 'NULL')
             fangraphsname = d.get('name', "")
             espnid = d.get('espnid', "NULL")

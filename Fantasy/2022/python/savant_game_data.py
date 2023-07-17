@@ -5,6 +5,8 @@ import urllib.request
 from datetime import datetime
 from typing import Dict, Any
 
+import pytz
+
 sys.path.append('./modules')
 import sqldb
 import push
@@ -188,6 +190,9 @@ def process_mlb(data, gamepk, player_teams):
     if away_team == "Sox":
         away_team = ' '.join(data['gameData']['teams']['home']['name'].split()[-2:])
     print(f'{away_team} vs {home_team} at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
+    print(f'{away_team} vs {home_team} game start time: {datetime.now(tz=pytz.UTC).strftime("%Y%m%d-%H%M%S")}')
+    # dt = datetime.datetime.now(timezone.utc)
+    #
     # print("************ START PLAYS *****************")
     for play in plays:
         at_bat = 0
@@ -483,7 +488,7 @@ def start_gamefeed(gamepks):
     global reported_statcast_count
     lineups = dict()
     TIMEOUT = 15
-    SLEEP_BASE = 60
+    sleep_min = 8
 
     player_teams = roster_list()
     # for p in player_teams:
@@ -556,8 +561,8 @@ def start_gamefeed(gamepks):
 
                 not_eod = True
 
-                sleep_min = int(max(8,SLEEP_BASE / games))
-                sleep_max = sleep_min + 14
+
+                sleep_max = sleep_min + 8
 
                 ts = datetime.now()  # current date and time
                 # formatted_date_time = ts.strftime("%Y%m%d-%H%M%S")
@@ -581,6 +586,11 @@ def start_gamefeed(gamepks):
                     data = get_savant_gamefeed_page(url_name)
                     statcast_count[gamepk] = 0
 
+                    if data.get('scoreboard'):
+                        if data['scoreboard'].get('datetime'):
+                            if data['scoreboard']['datetime'].get('dateTime'):
+                                print(f"Game Time: {data['scoreboard']['datetime']['dateTime']}")
+
                     if data.get('game_status_code'):
                         print(f"Game code for {gamepk}: {data['game_status_code']}")
                         if data['game_status_code'] == 'I':
@@ -600,7 +610,7 @@ def start_gamefeed(gamepks):
                             if reported_event_count[gamepk] == 0:
                                 sleep_seconds += 0
 
-                            print(f"Sleep for {str(sleep_seconds)} seconds ( SLEEP_BASE is {SLEEP_BASE} )")
+                            print(f"Sleep for {str(sleep_seconds)} seconds")
                             time.sleep(sleep_seconds)
 
                     lineups['gamepk'] = gamepk
@@ -624,7 +634,7 @@ def start_gamefeed(gamepks):
                     print("-" * 60)
                     traceback.print_exc(file=sys.stdout)
                     print("-" * 60)
-                    time.sleep(4)
+                    time.sleep(2)
 
                 ############  MLB  ###################
 
@@ -646,7 +656,7 @@ def start_gamefeed(gamepks):
                     print("-" * 60)
                     traceback.print_exc(file=sys.stdout)
                     print("-" * 60)
-                    time.sleep(4)
+                    time.sleep(2)
 
                 # Record how many events have been reported to event_count.csv file
                 with open('event_count.csv', 'w') as f:
@@ -665,9 +675,7 @@ def start_gamefeed(gamepks):
                         f.write("%s,%s\n" % (key, 1 * has_statcast[key]))
             print(f"In progress games = {in_progress_games}")
             if in_progress_games == 0:
-                SLEEP_BASE = 400
-            else:
-                SLEEP_BASE = 15
+                sleep_min = 10
 
         else:
             loop_sleep = 15

@@ -18,14 +18,20 @@ else:
 #           'SituationalEventsRosters','AddDrops']
 
 def run_tables():
+    tables = ['ESPNRosters','UpcomingStartsWithStats','TeamSplits']
+    for tbl in tables:
+        bdb.table_to_csv(tbl)
 
+
+@tools.try_wrap
+def run_all_tables():
     tables = ['ESPNRosters','UpcomingStartsWithStats','TeamSplits','SituationalEventsRosters']
     for tbl in tables:
         bdb.table_to_csv(tbl)
 
 @tools.try_wrap
 def main():
-    run_tables()
+    run_all_tables()
 
 
 if __name__ == "__main__":
