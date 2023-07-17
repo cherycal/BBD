@@ -1,13 +1,22 @@
+from __future__ import print_function
 __author__ = 'chance'
 
 import inspect
 import sqlite3
+import sys
 import time
-
-import pandas as pd
 
 import push
 import tools
+
+sys.path.append('./modules')
+
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets','https://www.googleapis.com/auth/drive']
+
+import pandas as pd
+
+import gspread
+from gspread_dataframe import set_with_dataframe
 
 
 # import logging
@@ -252,6 +261,44 @@ class DB:
 			print(f'Created: {filename}')
 		else:
 			print(f'Table/view {tblname} does not exist. File {filename} not created')
+
+	def table_to_df(self, tblname):
+		lol = []
+		detail_df = None
+		if self.table_or_view(tblname):
+			detail_history = self.select_plus(f'SELECT * FROM {tblname}')
+			for row in detail_history['rows']:
+				lol.append(row)
+			detail_df = pd.DataFrame(lol, columns=detail_history['column_names'])
+		else:
+			print(f'Table/view {tblname} does not exist. df not created')
+		return detail_df
+
+	def tables_to_sheets(self, table_name, worksheet_name):
+
+		gc = gspread.service_account()
+		try:
+			sh = gc.open(worksheet_name)
+			worksheet_title = "Sheet1"
+
+			try:
+				worksheet = sh.worksheet(worksheet_title)
+				# Write a test DataFrame to the worksheet
+				df_test = self.table_to_df(table_name)
+				try:
+					set_with_dataframe(worksheet, df_test)
+					print(f"Sheet {worksheet_name}.{worksheet_title} published to sheets")
+				except Exception as ex:
+					print(str(ex))
+			except gspread.WorksheetNotFound:
+				print(f"Sheet {worksheet_name}.{worksheet_title} not found")
+
+		except gspread.SpreadsheetNotFound:
+			print(f"Sheet {worksheet_name} not found")
+
+
+
+
 
 	def close(self):
 		#print("Closing " + self.db)
