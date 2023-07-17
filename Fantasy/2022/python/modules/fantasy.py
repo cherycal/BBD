@@ -1189,6 +1189,7 @@ class Fantasy(object):
 		           str(leagueID) + "?view=mTransactions2"
 		print("build_transactions: " + url_name)
 		add_drop_count = 0
+		transaction_count = 0
 		try:
 			with urllib.request.urlopen(url_name, timeout=self.TIMEOUT) as url:
 				json_object = json.loads(url.read().decode())
@@ -1279,7 +1280,7 @@ class Fantasy(object):
 										(int(trans_obj.get_update_time_hhmmss()) >=
 										 int(self.get_roster_lock_time())):
 									if transaction.get('status') and transaction['status'] == 'EXECUTED':
-
+										transaction_count += 1
 										if espn_transaction_id not in self.espn_trans_ids:
 											if i['type'] == "ADD" or i['type'] == "DROP":
 												add_drop_count += 1
@@ -1349,12 +1350,14 @@ class Fantasy(object):
 		except Exception as ex:
 			self.logger_exception(f'ERROR in build_transactions')
 
-		return add_drop_count
+		return transaction_count
+
 
 	def process_transactions(self):
 		updates = list()
 		adds = list()
 		drops = list()
+		any_changes = False
 		for i in sorted(self.transactions.keys()):
 			transaction = self.transactions[i]
 			trans_type = transaction.get_leg_type()
@@ -1368,16 +1371,21 @@ class Fantasy(object):
 					int(self.get_roster_lock_time()):
 				# print("New transaction " + trans_type)
 				# print(transaction.get_transaction_fields())
+				any_changes = True
 				if trans_type == "LINEUP" and trans_period == "ROSTER":
 					updates.append(transaction)
 			if transaction.get_espntransid() not in self.espn_trans_ids:
+				any_changes = True
 				if trans_type == "ADD":
 					adds.append(transaction)
 				if trans_type == "DROP":
 					drops.append(transaction)
 			#else:
 				# print("Old transaction at " + str(transaction.get_update_time_hhmmss()))
-		# print("process_transactions:")
+		if any_changes:
+			print(f'process_transactions: Propagate ESPN roster changes to sheets starting at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
+			self.DB.tables_to_sheets("ESPNRosters", "ESPNRosters")
+			print(f'process_transactions: Propagate ESPN roster changes to sheets ended at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
 		self.process_updates(updates)
 		self.process_adds(adds)
 		self.process_drops(drops)
@@ -1495,13 +1503,15 @@ class Fantasy(object):
 		if not teams:
 			teams = self.get_active_leagues()
 		self.espn_trans_ids = self.get_espn_trans_ids()
-		add_drop_count = 0
+		transaction_count = 0
 		for team in teams:
-			add_drop_count += self.build_transactions(team)
+			transaction_count += self.build_transactions(team)
 			#print(f'Total add/drops: {add_drop_count}')
 			time.sleep(1.5)
-		#if add_drop_count > 0:
-		#	self.tweet_add_drops()
+		if transaction_count > 0:
+			print(f'run_transactions: Propagate {transaction_count} ESPN roster changes to sheets starting at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
+			self.DB.tables_to_sheets("ESPNRosters", "ESPNRosters")
+			print(f'run_transactions: Propagate ESPN roster changes to sheets ended at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
 		if int(self.get_hhmmss()) > int(self.get_roster_lock_time()):
 			#print("Process transactions:")
 			time.sleep(.05)
@@ -1620,11 +1630,11 @@ class Fantasy(object):
 		           f"region=us&lang=en&contentorigin=espn&limit=100&calendartype=offdays" \
 		           f"&dates={date_}&tz=America%2FNew_York"
 		print("Odds url is: " + url_name)
+		gameslist = list()
+		lol = []
 		with urllib.request.urlopen(url_name) as url:
 			data = json.loads(url.read().decode())
 			if data.get('events'):
-				gameslist = list()
-				lol = []
 				for event in data['events']:
 					temperature = None
 					indoor = None
