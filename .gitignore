@@ -138,6 +138,8 @@ bdb.db
 *idea*
 *.csv*
 */2020/beta/*
+*json*
+*quickstart.py*
 
 *.png*
 
