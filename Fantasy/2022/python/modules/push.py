@@ -1,4 +1,5 @@
 __author__ = 'chance'
+
 import inspect
 import logging
 import os
@@ -27,19 +28,19 @@ ACCESSTOKENSECRET = os.environ.get('ACCESSTOKENSECRET')
 # PUSHBUCKET
 PBTOKEN = os.environ.get('PBTOKEN')
 
-#SLACK ( DECOMMISSIONED 20230416 )
+# SLACK ( DECOMMISSIONED 20230416 )
 SLACK_URL_SUFFIX = os.environ.get('slack_url_suffix')
-
 
 ########################################################################################################################
 REG_ID = os.environ.get('reg_id')
 API_KEY = os.environ.get('api_key')
+
+
 ########################################################################################################################
 
-def get_logger(logfilename = 'push_default.log',
-               logformat = '%(asctime)s:%(levelname)s'
-                           ':%(funcName)s:%(lineno)d:%(message)s:%(pathname)s\n'):
-
+def get_logger(logfilename='push_default.log',
+               logformat='%(asctime)s:%(levelname)s'
+                         ':%(funcName)s:%(lineno)d:%(message)s:%(pathname)s\n'):
     bold_seq = '\033[1m'
     colorlog_format = (
         f'{bold_seq} '
@@ -58,12 +59,15 @@ def get_logger(logfilename = 'push_default.log',
 
     return logger_instance
 
+
 def set_tweepy(self, *args, **kwargs):
     api = tweepy.API(self.auth)
     return api
 
+
 class Push(object):
     MAX_MSG_LENGTH: int
+
     def __init__(self, logger_instance=None, *args, **kwargs):
         api_key = API_KEY
         reg_id = REG_ID
@@ -163,7 +167,7 @@ class Push(object):
                                                              message_title=title,
                                                              message_body=body, sound="whisper.mp3",
                                                              badge="Test2")
-            #self.pb.push_note(title, body)
+            # self.pb.push_note(title, body)
         return res
 
     def get_twitter_api(self):
@@ -172,7 +176,7 @@ class Push(object):
     def get_twitter_auth(self):
         return self.auth
 
-    def tweet(self, msg,  PROCESS_FLAG = False):
+    def tweet(self, msg, PROCESS_FLAG=False):
         if PROCESS_FLAG:
             ts = datetime.now()  # current date and time
             formatted_date_time = ts.strftime("%I%M")
@@ -195,7 +199,7 @@ class Push(object):
                     msg = msg[self.MAX_MSG_LENGTH:]
         return
 
-    def tweet_media(self, img, msg, PROCESS_FLAG = False):
+    def tweet_media(self, img, msg, PROCESS_FLAG=False):
         self.incr_tweet_count()
         print(f"Current tweet count is {self.tweet_count}")
         if PROCESS_FLAG and self.tweet_count:
@@ -230,12 +234,13 @@ class Push(object):
                 print("Message part:\n" + full_msg)
                 self.push(title, full_msg)
                 self.tweet(full_msg)
-                time.sleep(2.5)
+                time.sleep(1)
                 full_msg = msg
                 msg_len = len(full_msg)
             else:
                 full_msg += str(msg)
         # Push the remainder out
+        full_msg += "\n\n-------\n\n"
         print("Message remainder:\n" + full_msg)
         self.logger_instance.info(full_msg)
         self.push(title, full_msg)
@@ -256,7 +261,7 @@ class Push(object):
             img = "mytable.png"
             dfi.export(df, img)
             self.tweet_media(img, title)
-            #self.push()
+            # self.push()
         else:
             self.push(title, full_msg)
             self.tweet(full_msg)
