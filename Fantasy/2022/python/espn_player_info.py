@@ -26,7 +26,7 @@ import savant_boxscores
 import team_splits
 import tables_to_files
 
-if (not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None)):
+if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
     ssl._create_default_https_context = ssl._create_unverified_context
 
 mode = "PROD"
@@ -38,7 +38,7 @@ bdb = fantasy.get_db()
 now = datetime.now()  # current date and time
 date_time = now.strftime("%Y%m%d%H%M%S")
 out_date = now.strftime("%Y%m%d")
-date8 = out_date
+# date8 = out_date
 integer_today = int(out_date)
 string_today = out_date
 integer_yesterday = integer_today - 1
@@ -56,7 +56,7 @@ def trywrap(func):
         except Exception as ex:
             print(str(ex))
             tries += 1
-            time.sleep(2.5)
+            time.sleep(.5)
             if tries == max_tries:
                 print("Process failed: ")
                 print("Exception in user code:")
@@ -124,10 +124,10 @@ def run_odds():
 
     url = "https://sportsbook.draftkings.com/leagues/baseball/2003?category=game-lines-&subcategory=game"
     dfs = pd.read_html(url)
-    tbl = dfs[0]
+    # tbl = dfs[0]
 
     entries = []
-    column_names = ["date", "name", "time", "Tm", "Team", "OU", "ML", "UpdateTime"]
+    # column_names = ["date", "name", "time", "Tm", "Team", "OU", "ML", "UpdateTime"]
     table_name = "Odds"
 
     count = 0
@@ -164,13 +164,13 @@ def run_odds():
                 entries.append(odds)
         if count == 0:
             dt = dt + timedelta(days=1)
-            dt8 = dt.strftime("%Y%m%d")
+            # dt8 = dt.strftime("%Y%m%d")
         count += 1
 
 
 def begin_day_process():
-    ts = datetime.now()  # current date and time
-    out_time = ts.strftime("%Y%m%d-%H%M%S")
+    # ts = datetime.now()  # current date and time
+    # out_time = ts.strftime("%Y%m%d-%H%M%S")
     # print(out_time)
 
     fantasy.get_db_player_info()
@@ -178,7 +178,7 @@ def begin_day_process():
     # command = ""
     # tries = 0
     TRIES_BEFORE_QUITTING = 2
-    SLEEP = 1
+    SLEEP = .5
 
     insert_many_list = fantasy.get_espn_player_info()
 
@@ -198,7 +198,7 @@ def begin_day_process():
                 break
             else:
                 print("Skipping ESPNPlayerDataCurrent Refresh phase")
-                time.sleep(2)
+                time.sleep(.5)
                 passed = True
                 break
         except Exception as ex:
@@ -217,7 +217,7 @@ def begin_day_process():
 
 
 def eod_process():
-    command = "delete from ESPNPlayerDataHistory where Date = '" + str(date8) + "'"
+    command = "delete from ESPNPlayerDataHistory where Date = '" + str(out_date) + "'"
     try:
         bdb.delete(command)
     except Exception as ex:
@@ -226,7 +226,7 @@ def eod_process():
     tries = 0
     passed = 0
     TRIES_BEFORE_QUITTING = 2
-    SLEEP = 2.5
+    SLEEP = .5
     while tries < TRIES_BEFORE_QUITTING:
         tries += 1
         command = "insert into ESPNPlayerDataHistory select * from ESPNPlayerDataCurrent"
@@ -264,12 +264,11 @@ def run_function(function, name="none given"):
 def main():
     run_begin_day_process = True
     run_end_day_process = True
-    run_roster_suite = True
     run_odds_bool = True
     begin_day_time = 10000
     end_day_time = 211500
-    MIN_SLEEP = 10
-    MAX_SLEEP = 20
+    MIN_SLEEP = 5
+    MAX_SLEEP = 11
     run_count = 0
 
     run_roster_suite = True
@@ -282,7 +281,7 @@ def main():
     try:
         bdb.update("update ProcessUpdateTimes set Active = 1 where Process = 'PlayerInfo'")
     except Exception as ex:
-        fantasy.logger_exception(f'update ProcessUpdateTimes ERROR')
+        fantasy.logger_exception(f'update ProcessUpdateTimes ERROR {ex}')
 
     while True:
         ts = datetime.now()  # current date and time
@@ -336,7 +335,7 @@ def main():
             fantasy.logger_instance.debug(f'End begin_day_process at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
             run_begin_day_process = False
 
-        if run_count % 4 == 0:
+        if run_count % 2 == 0:
             print(f'refresh_rosters at  {datetime.now().strftime("%Y%m%d-%H%M%S")}')
             fantasy.refresh_rosters()
 
@@ -358,7 +357,8 @@ def main():
             print(f'run_transactions at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
             fantasy.run_transactions()
 
-            tables_to_files.main()
+            tables_to_files.run_tables()
+
 
         if run_roster_suite:
             fantasy.tweet_daily_schedule()
@@ -380,6 +380,10 @@ def main():
             team_splits.main()
             fantasy.refresh_batting_splits()
             tables_to_files.main()
+            bdb.tables_to_sheets("SD_WOBA", "SD_WOBA")
+            bdb.tables_to_sheets("SD_WOBA_CURRENT", "SD_WOBA_CURRENT")
+            bdb.tables_to_sheets("Standings_History_wOBA", "Standings_History_wOBA")
+            bdb.tables_to_sheets("UpcomingStartsWithStats", "USWS")
 
             inst.push("Morning suite completed",
                       "Morning suite completed")
