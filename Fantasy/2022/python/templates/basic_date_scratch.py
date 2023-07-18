@@ -3,14 +3,18 @@ import sys
 sys.path.append('../modules')
 import sqldb
 import push
-from datetime import date, datetime
+from datetime import datetime, date
+import pytz
 from datetime import timedelta
 import time
-#import datetime
+
+
 
 inst = push.Push()
 bdb = sqldb.DB('Baseball.db')
 ts = datetime.now()  # current date and time
+
+print(f'utc {datetime.now(tz=pytz.UTC).strftime("%Y%m%d-%H%M%S")}')
 
 print("unix time:" + str(int(time.time())))
 
@@ -32,24 +36,26 @@ print("Time delta:")
 today = date.today()
 yesterday = today - timedelta(days=1)
 start_date = today - timedelta(days=DAYS_AGO)
+
+
 # print(f'Today: {today.strftime("%Y%m%d")}')
 # print(f'Yesterday: {yesterday.strftime("%Y%m%d")}')
 #range of dates
 print("Range of dates:")
-#date1 = '2021-03-31'
-#date2 = '2021-05-12'
-#start = datetime.strptime(start_date, '%Y-%m-%d')
-#end = datetime.strptime(today, '%Y-%m-%d')
+date1 = '2023-07-14'
+date2 = '2023-10-03'
+start = datetime.strptime(date1, '%Y-%m-%d')
+end = datetime.strptime(date2, '%Y-%m-%d')
 step = timedelta(days=1)
-while start_date <= today:
-    print(start_date.strftime("%Y%m%d"))
-    start_date += step
+while start <= end:
+    print(start_date.strftime("%Y-%m-%d"))
+    start += step
 
 
 
 
 #range of dates
 print("Range of dates")
-start_date = date(2022, 3, 22)
-end_date = date(2022, 10, 6)
+start_date = date(2023, 7, 14)
+end_date = date(2023, 10, 3)
 [print(date.fromordinal(i)) for i in range(start_date.toordinal(), end_date.toordinal())]

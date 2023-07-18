@@ -358,6 +358,7 @@ def main():
             fantasy.run_transactions()
 
             tables_to_files.run_tables()
+            bdb.tables_to_sheets("UpcomingStartsWithStats", "USWS")
 
 
         if run_roster_suite:
