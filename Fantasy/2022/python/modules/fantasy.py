@@ -8,13 +8,10 @@ import re
 import time
 import urllib.request
 from datetime import date, datetime, timedelta
-from io import BytesIO
 from os import path
 
-import certifi
 import dataframe_image as dfi
 import pandas as pd
-import pycurl
 import requests
 from slack_sdk import WebClient
 
@@ -715,61 +712,61 @@ class Fantasy(object):
 
 		return
 
-
-	def set_next_start_curl(self):
-		# print_calling_function()
-		url_name = "https://fantasy.espn.com/apis/v3/games/flb/" \
-		           "seasons/" + self.year + "/segments/0/leagues/37863846?" \
-		           "scoringPeriodId=20&view=kona_player_info"
-
-		headers = ['authority: fantasy.espn.com',
-		           'accept: application/json',
-		           'x-fantasy-source: kona',
-		           'x-fantasy-filter: {"players":{"filterStatus":{"value":["FREEAGENT","WAIVERS","ONTEAM"]},'
-		           '"filterSlotIds":{"value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}}']
-
-		print("set_next_start: " + url_name)
-
-		buffer = BytesIO()
-		c = pycurl.Curl()
-		c.setopt(c.URL, url_name)
-		c.setopt(c.CONNECTTIMEOUT, self.TIMEOUT)
-		c.setopt(c.HTTPHEADER, headers)
-		c.setopt(c.WRITEDATA, buffer)
-		c.setopt(c.CAINFO, certifi.where())
-		c.perform()
-		c.close()
-		data = buffer.getvalue()
-
-		player_data_json = json.loads(data)
-		for player in player_data_json['players']:
-			if player.get('player'):
-				if player['player'].get('id'):
-					if self.exists_player_object(player['id']):
-						player_obj = self.get_player_object(player['id'])
-					else:
-						player_obj = self.Player(player['id'])
-					if player['player'].get('starterStatusByProGame'):
-						next_start = "NA"
-						for game in player['player']['starterStatusByProGame']:
-							if player['player']['starterStatusByProGame'][game] == 'PROBABLE':
-								if self.game_dates.get(game):
-									if self.game_dates[game] >= self.date:
-										if next_start == "NA":
-											next_start = game
-										if self.game_dates[next_start]:
-											if self.game_dates[game] < self.game_dates[next_start]:
-												next_start = game
-
-						if self.game_dates.get(next_start):
-							# print(player['player']['fullName'])
-							# print(player['player']['id'])
-							# print(next_start)
-							# print(self.game_dates[next_start])
-							# print("\n")
-							player_obj.set_start(next_start)
-
-		return
+	# Decommissioning use of pycurl 20230723
+	# def set_next_start_curl(self):
+	# 	# print_calling_function()
+	# 	url_name = "https://fantasy.espn.com/apis/v3/games/flb/" \
+	# 	           "seasons/" + self.year + "/segments/0/leagues/37863846?" \
+	# 	           "scoringPeriodId=20&view=kona_player_info"
+	#
+	# 	headers = ['authority: fantasy.espn.com',
+	# 	           'accept: application/json',
+	# 	           'x-fantasy-source: kona',
+	# 	           'x-fantasy-filter: {"players":{"filterStatus":{"value":["FREEAGENT","WAIVERS","ONTEAM"]},'
+	# 	           '"filterSlotIds":{"value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}}']
+	#
+	# 	print("set_next_start: " + url_name)
+	#
+	# 	buffer = BytesIO()
+	# 	c = pycurl.Curl()
+	# 	c.setopt(c.URL, url_name)
+	# 	c.setopt(c.CONNECTTIMEOUT, self.TIMEOUT)
+	# 	c.setopt(c.HTTPHEADER, headers)
+	# 	c.setopt(c.WRITEDATA, buffer)
+	# 	c.setopt(c.CAINFO, certifi.where())
+	# 	c.perform()
+	# 	c.close()
+	# 	data = buffer.getvalue()
+	#
+	# 	player_data_json = json.loads(data)
+	# 	for player in player_data_json['players']:
+	# 		if player.get('player'):
+	# 			if player['player'].get('id'):
+	# 				if self.exists_player_object(player['id']):
+	# 					player_obj = self.get_player_object(player['id'])
+	# 				else:
+	# 					player_obj = self.Player(player['id'])
+	# 				if player['player'].get('starterStatusByProGame'):
+	# 					next_start = "NA"
+	# 					for game in player['player']['starterStatusByProGame']:
+	# 						if player['player']['starterStatusByProGame'][game] == 'PROBABLE':
+	# 							if self.game_dates.get(game):
+	# 								if self.game_dates[game] >= self.date:
+	# 									if next_start == "NA":
+	# 										next_start = game
+	# 									if self.game_dates[next_start]:
+	# 										if self.game_dates[game] < self.game_dates[next_start]:
+	# 											next_start = game
+	#
+	# 					if self.game_dates.get(next_start):
+	# 						# print(player['player']['fullName'])
+	# 						# print(player['player']['id'])
+	# 						# print(next_start)
+	# 						# print(self.game_dates[next_start])
+	# 						# print("\n")
+	# 						player_obj.set_start(next_start)
+	#
+	# 	return
 
 	@tools.try_wrap
 	def get_db_player_info(self):
@@ -967,33 +964,34 @@ class Fantasy(object):
 			self.logger_exception(f'Exception in get_player_data_json: {ex}')
 
 
-	def get_player_data_json_curl(self):
-		#print_calling_function()
-		leagueID = self.default_league
-		url_name = "http://fantasy.espn.com/apis/v3/games/flb/seasons/" + self.year + \
-		           "/segments/0/leagues/" + \
-		           str(leagueID) + "?view=kona_playercard"
-		headers = ['authority: fantasy.espn.com',
-		           'accept: application/json',
-		           'x-fantasy-source: kona',
-		           'x-fantasy-filter: {"players":{"filterStatus":{"value":["FREEAGENT","WAIVERS","ONTEAM"]},'
-		           '"filterSlotIds":{"value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}}']
-		#print("get_player_data_json: " + url_name)
-		# self.logger_instance.debug(f'get_player_data_json: {url_name}')
-		try:
-			buffer = BytesIO()
-			c = pycurl.Curl()
-			c.setopt(c.URL, url_name)
-			c.setopt(c.HTTPHEADER, headers)
-			c.setopt(c.WRITEDATA, buffer)
-			c.setopt(c.CONNECTTIMEOUT, self.TIMEOUT)
-			c.setopt(c.CAINFO, certifi.where())
-			c.perform()
-			c.close()
-			data = buffer.getvalue()
-			self.player_data_json = json.loads(data)
-		except Exception as ex:
-			self.logger_exception(f'Exception in get_player_data_json')
+	# DECOMMISSIONING pycurl 20230723
+	# def get_player_data_json_curl(self):
+	# 	#print_calling_function()
+	# 	leagueID = self.default_league
+	# 	url_name = "http://fantasy.espn.com/apis/v3/games/flb/seasons/" + self.year + \
+	# 	           "/segments/0/leagues/" + \
+	# 	           str(leagueID) + "?view=kona_playercard"
+	# 	headers = ['authority: fantasy.espn.com',
+	# 	           'accept: application/json',
+	# 	           'x-fantasy-source: kona',
+	# 	           'x-fantasy-filter: {"players":{"filterStatus":{"value":["FREEAGENT","WAIVERS","ONTEAM"]},'
+	# 	           '"filterSlotIds":{"value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}}']
+	# 	#print("get_player_data_json: " + url_name)
+	# 	# self.logger_instance.debug(f'get_player_data_json: {url_name}')
+	# 	try:
+	# 		buffer = BytesIO()
+	# 		c = pycurl.Curl()
+	# 		c.setopt(c.URL, url_name)
+	# 		c.setopt(c.HTTPHEADER, headers)
+	# 		c.setopt(c.WRITEDATA, buffer)
+	# 		c.setopt(c.CONNECTTIMEOUT, self.TIMEOUT)
+	# 		c.setopt(c.CAINFO, certifi.where())
+	# 		c.perform()
+	# 		c.close()
+	# 		data = buffer.getvalue()
+	# 		self.player_data_json = json.loads(data)
+	# 	except Exception as ex:
+	# 		self.logger_exception(f'Exception in get_player_data_json')
 
 	# json_formatted = json.dumps(self.player_data_json, indent=2)
 	# print(json_formatted)
