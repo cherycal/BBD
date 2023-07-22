@@ -6,6 +6,7 @@ from datetime import datetime
 from typing import Dict, Any
 
 import pytz
+import requests
 
 sys.path.append('./modules')
 import sqldb
@@ -19,10 +20,9 @@ import logging
 from pathlib import Path
 import colorlog
 import os
-from io import BytesIO
 from os import path
-import certifi
-import pycurl
+# import certifi
+# import pycurl
 
 from slack_sdk import WebClient
 
@@ -450,36 +450,46 @@ def process_lineups(lineups):
 
 def get_savant_gamefeed_page(url_name):
     TIMEOUT = 10
-    headers = ["authority: baseballsavant.mlb.com"
-        ,
-               "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
-        , "accept-language: en-US,en;q=0.9"
-        , "cache-control: max-age=0"
-        , "dnt: 1"
-        , "if-modified-since: Sat, 08 Apr 2023 19:59:59 GMT"
-        , "sec-ch-ua: \"Chromium\";v=\"112\", \"Google Chrome\";v=\"112\", \"Not:A-Brand\";v=\"99\""
-        , "sec-ch-ua-mobile: ?0"
-        , "sec-ch-ua-platform: \"Windows\""
-        , "sec-fetch-dest: document"
-        , "sec-fetch-mode: navigate"
-        , "sec-fetch-site: none"
-        , "sec-fetch-user: ?1"
-        , "upgrade-insecure-requests: 1"
-        ,
-               "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
-               ]
+    headers = {"authority": "baseballsavant.mlb.com"}
+    print("sleeping ....")
+    time.sleep(.5)
 
-    buffer = BytesIO()
-    c = pycurl.Curl()
-    c.setopt(c.URL, url_name)
-    c.setopt(c.CONNECTTIMEOUT, TIMEOUT)
-    c.setopt(c.HTTPHEADER, headers)
-    c.setopt(c.WRITEDATA, buffer)
-    c.setopt(c.CAINFO, certifi.where())
-    c.perform()
-    c.close()
-    data = buffer.getvalue()
-    return json.loads(data)
+    r = requests.get(url_name, headers=headers, allow_redirects=True)
+    return json.loads(r.content)
+
+# DECOMMISSIONED 20230722
+# def get_savant_gamefeed_page_curl(url_name):
+#     TIMEOUT = 10
+#     headers = ["authority: baseballsavant.mlb.com"
+#         ,
+#                "accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
+#         , "accept-language: en-US,en;q=0.9"
+#         , "cache-control: max-age=0"
+#         , "dnt: 1"
+#         , "if-modified-since: Sat, 08 Apr 2023 19:59:59 GMT"
+#         , "sec-ch-ua: \"Chromium\";v=\"112\", \"Google Chrome\";v=\"112\", \"Not:A-Brand\";v=\"99\""
+#         , "sec-ch-ua-mobile: ?0"
+#         , "sec-ch-ua-platform: \"Windows\""
+#         , "sec-fetch-dest: document"
+#         , "sec-fetch-mode: navigate"
+#         , "sec-fetch-site: none"
+#         , "sec-fetch-user: ?1"
+#         , "upgrade-insecure-requests: 1"
+#         ,
+#                "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
+#                ]
+#
+#     buffer = BytesIO()
+#     c = pycurl.Curl()
+#     c.setopt(c.URL, url_name)
+#     c.setopt(c.CONNECTTIMEOUT, TIMEOUT)
+#     c.setopt(c.HTTPHEADER, headers)
+#     c.setopt(c.WRITEDATA, buffer)
+#     c.setopt(c.CAINFO, certifi.where())
+#     c.perform()
+#     c.close()
+#     data = buffer.getvalue()
+#     return json.loads(data)
 
 
 def start_gamefeed(gamepks):

@@ -15,6 +15,7 @@ import certifi
 import dataframe_image as dfi
 import pandas as pd
 import pycurl
+import requests
 from slack_sdk import WebClient
 
 import push
@@ -670,6 +671,52 @@ class Fantasy(object):
 
 
 	def set_next_start(self):
+		url_name = f"https://fantasy.espn.com/apis/v3/games/flb/seasons/{self.year}/" \
+		           f"segments/0/leagues/37863846?scoringPeriodId=20&view=kona_player_info"
+
+		headers = {"authority": "fantasy.espn.com",
+		           "accept": "application/json",
+		           "x-fantasy-source": "kona",
+		           "x-fantasy-filter":
+			           '{"players":{"filterStatus":{"value":["FREEAGENT","WAIVERS","ONTEAM"]},'
+			           '"filterSlotIds":{"value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}}'}
+
+		print("fetching next start data ....")
+		time.sleep(.5)
+
+		r = requests.get(url_name, headers=headers, allow_redirects=True)
+		player_data_json = json.loads(r.content)
+		for player in player_data_json['players']:
+			if player.get('player'):
+				if player['player'].get('id'):
+					if self.exists_player_object(player['id']):
+						player_obj = self.get_player_object(player['id'])
+					else:
+						player_obj = self.Player(player['id'])
+					if player['player'].get('starterStatusByProGame'):
+						next_start = "NA"
+						for game in player['player']['starterStatusByProGame']:
+							if player['player']['starterStatusByProGame'][game] == 'PROBABLE':
+								if self.game_dates.get(game):
+									if self.game_dates[game] >= self.date:
+										if next_start == "NA":
+											next_start = game
+										if self.game_dates[next_start]:
+											if self.game_dates[game] < self.game_dates[next_start]:
+												next_start = game
+
+						if self.game_dates.get(next_start):
+							# print(player['player']['fullName'])
+							# print(player['player']['id'])
+							# print(next_start)
+							# print(self.game_dates[next_start])
+							# print("\n")
+							player_obj.set_start(next_start)
+
+		return
+
+
+	def set_next_start_curl(self):
 		# print_calling_function()
 		url_name = "https://fantasy.espn.com/apis/v3/games/flb/" \
 		           "seasons/" + self.year + "/segments/0/leagues/37863846?" \
@@ -897,6 +944,30 @@ class Fantasy(object):
 		return insert_many_list
 
 	def get_player_data_json(self):
+		# print_calling_function()
+		leagueID = self.default_league
+		year = self.year
+		url_name = f"http://fantasy.espn.com/apis/v3/games/flb/seasons/{str(year)}/" \
+		           f"segments/0/leagues/{str(leagueID)}?view=kona_playercard"
+
+		headers = {"authority": "fantasy.espn.com",
+		           "accept": "application/json",
+		           "x-fantasy-source": "kona",
+		           "x-fantasy-filter":
+			           '{"players":{"filterStatus":{"value":["FREEAGENT","WAIVERS","ONTEAM"]},'
+			           '"filterSlotIds":{"value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}}'}
+
+		print("fetching ESPN player_data_json ....")
+		time.sleep(.5)
+
+		try:
+			r = requests.get(url_name, headers=headers, allow_redirects=True)
+			self.player_data_json = json.loads(r.content)
+		except Exception as ex:
+			self.logger_exception(f'Exception in get_player_data_json: {ex}')
+
+
+	def get_player_data_json_curl(self):
 		#print_calling_function()
 		leagueID = self.default_league
 		url_name = "http://fantasy.espn.com/apis/v3/games/flb/seasons/" + self.year + \
