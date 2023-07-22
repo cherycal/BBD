@@ -2,6 +2,8 @@ import json
 import sys
 from urllib.request import Request
 
+import requests
+
 sys.path.append('./modules')
 import sqldb
 import time
@@ -12,9 +14,9 @@ import fantasy
 from datetime import date, datetime
 from datetime import timedelta
 import os
-from io import BytesIO
-import certifi
-import pycurl
+# from io import BytesIO
+# import certifi
+# import pycurl
 
 inst = push.Push()
 bdb = sqldb.DB('Baseball.db')
@@ -258,23 +260,35 @@ def one_day(dt):
 
             success = True
 
+
 def get_savant_gamefeed_page(url_name):
     TIMEOUT = 10
-    headers = ["authority: baseballsavant.mlb.com",
-               "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
-            ]
+    headers = {"authority": "baseballsavant.mlb.com"}
+    print("get_savant_gamefeed_page ....")
+    time.sleep(.5)
 
-    buffer = BytesIO()
-    c = pycurl.Curl()
-    c.setopt(c.URL, url_name)
-    c.setopt(c.CONNECTTIMEOUT, TIMEOUT)
-    c.setopt(c.HTTPHEADER, headers)
-    c.setopt(c.WRITEDATA, buffer)
-    c.setopt(c.CAINFO, certifi.where())
-    c.perform()
-    c.close()
-    data = buffer.getvalue()
-    return json.loads(data)
+    r = requests.get(url_name, headers=headers, allow_redirects=True)
+    return json.loads(r.content)
+
+
+# DECOMISSIONING PYCURL 20230722
+# def get_savant_gamefeed_page_curl(url_name):
+#     TIMEOUT = 10
+#     headers = ["authority: baseballsavant.mlb.com",
+#                "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
+#             ]
+#
+#     buffer = BytesIO()
+#     c = pycurl.Curl()
+#     c.setopt(c.URL, url_name)
+#     c.setopt(c.CONNECTTIMEOUT, TIMEOUT)
+#     c.setopt(c.HTTPHEADER, headers)
+#     c.setopt(c.WRITEDATA, buffer)
+#     c.setopt(c.CAINFO, certifi.where())
+#     c.perform()
+#     c.close()
+#     data = buffer.getvalue()
+#     return json.loads(data)
 
 
 def main():
