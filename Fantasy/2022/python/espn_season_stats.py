@@ -1,11 +1,14 @@
 import json
 import sys
+import time
+
+import requests
 
 sys.path.append('./modules')
 import sqldb
-import pycurl
-import certifi
-from io import BytesIO
+# import pycurl
+# import certifi
+# from io import BytesIO
 import pandas as pd
 
 def get_stats(yr):
@@ -22,27 +25,42 @@ def get_stats(yr):
         stat_id_list.append(str(d['statid']))
         #cat_dict[d['statabbr']] = str(d['statid'])
 
-    url_name = "https://fantasy.espn.com/apis/v3/games/flb/" \
-               "seasons/" + str(yr) + "/segments/0/leaguedefaults/1?view=kona_player_info"
+    url_name = f"https://fantasy.espn.com/apis/v3/games/flb/seasons/{str(yr)}/" \
+               f"segments/0/leaguedefaults/1?view=kona_player_info"
 
-    headers = ['authority: fantasy.espn.com',
-               'accept: application/json',
-               'x-fantasy-source: kona',
-               'x-fantasy-filter: {"players":{"filterStatus":{"value":["FREEAGENT","WAIVERS","ONTEAM"]},'
-               '"filterSlotIds":{"value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}}']
+    # DEOMMISSIONING PYCURL 20230723
+    # headers = ['authority: fantasy.espn.com',
+    #            'accept: application/json',
+    #            'x-fantasy-source: kona',
+    #            'x-fantasy-filter: {"players":{"filterStatus":{"value":["FREEAGENT","WAIVERS","ONTEAM"]},'
+    #            '"filterSlotIds":{"value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}}']
+    #
+    # #print("get_player_data_json: " + url_name)
+    # buffer = BytesIO()
+    # c = pycurl.Curl()
+    # c.setopt(c.URL, url_name)
+    # c.setopt(c.HTTPHEADER, headers)
+    # c.setopt(c.WRITEDATA, buffer)
+    # c.setopt(c.CAINFO, certifi.where())
+    # c.perform()
+    # c.close()
+    #
+    # data = buffer.getvalue()
+    # json_data = json.loads(data)
 
-    #print("get_player_data_json: " + url_name)
-    buffer = BytesIO()
-    c = pycurl.Curl()
-    c.setopt(c.URL, url_name)
-    c.setopt(c.HTTPHEADER, headers)
-    c.setopt(c.WRITEDATA, buffer)
-    c.setopt(c.CAINFO, certifi.where())
-    c.perform()
-    c.close()
+    headers = {"authority": "fantasy.espn.com",
+               "accept": "application/json",
+               "x-fantasy-source": "kona",
+               "x-fantasy-filter": '{"players":{"filterStatus":{"value":["FREEAGENT","WAIVERS","ONTEAM"]},"filterSlotIds":{"value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}}'}
 
-    data = buffer.getvalue()
-    json_data = json.loads(data)
+    print("sleeping ....")
+    time.sleep(.5)
+
+    r = requests.get(url_name, headers=headers, allow_redirects=True)
+    json_data = json.loads(r.content)
+
+
+
 
     stat_rows = []
     for player in json_data['players']:
