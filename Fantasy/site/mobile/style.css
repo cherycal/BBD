@@ -1,0 +1,155 @@
+
+header{
+	position: fixed;
+	width:100%;
+	background: #222200;
+}
+
+body {
+	background-image: url("dist_dark.jpg");
+	background-position: top;
+  	background-repeat: no-repeat;
+	background-size: cover;
+	background-attachment: fixed;
+	min-height: 800px;
+	height: 100%;
+	/*
+	width: 900 px;
+	*/
+	margin: auto;
+	font-size: large;
+	color: #E0B649;
+}
+
+main {
+	min-height: 1600px;
+}
+
+
+main .images {
+	float: right;
+}
+
+
+
+header h2{
+	padding-top: 10px;
+	padding-left: 10px;
+	font-family: Courier;
+	color: darkgoldenrod;
+}
+
+div.header-links {
+	padding-top: 20px;
+	padding-bottom: 20px;
+	font-size: 10pt;
+	text-align: center;
+}
+
+div.header-links-2 {
+	
+}
+
+
+
+div.footer-links {
+	padding: 25px;
+
+}
+
+div.footer-links-2 {
+	padding: 25px;
+}
+
+
+div.contact {
+	font-family: Courier;
+	color: beige;
+	
+}
+
+footer nav{
+	float: right;
+	width: 255px;
+	
+}
+
+a.link {
+	font-family: Courier;
+	text-shadow: 4px 4px 8px #100000;
+	color: #e6f2ff;
+	text-decoration: none;
+}
+
+a.head-link {
+	font-family: Courier;
+	text-shadow: 4px 4px 8px #100000;
+	color: #e6f2ff;
+	opacity: .9;
+	text-decoration: none;
+	justify-content: center;
+}
+
+a.foot-link {
+	font-family: Courier;
+	text-shadow: 4px 4px 8px #100000;
+	color: #e6f2ff;
+	opacity: .9;
+	text-decoration: none;
+	justify-content: center;
+}
+
+a.home-link {
+	font-family: "Courier";
+	font-size: 24pt;
+	color: darkgoldenrod;
+	text-decoration: none;
+}
+
+a.link:hover {
+	background:#222200;
+	text-decoration: none;
+	color: #f3ffe6;
+	font-weight: bold;
+	opacity: 1;
+}
+
+/*
+p.link {
+	background: #2f2f00;
+	border: 10px black;
+	padding-left: 80px;
+	padding-right: 80px;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+*/
+
+p.second {
+	float: right;
+	background: black;
+	color: grey;
+	border: 10px black;
+	padding-left: 140px;
+	padding-right: 140px;
+	padding-top: 20px;
+	padding-bottom: 20px;
+}
+
+nav.nav1{
+	width: 100px;
+	float: left;
+}
+
+nav.nav2{
+	width: 100px;
+	float: left;
+}
+
+nav.nav3{
+	clear: both;
+}
+
+.nav.navbar-brand a {
+    color: darkgoldenrod;
+}

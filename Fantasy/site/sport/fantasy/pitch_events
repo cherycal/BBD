@@ -1,0 +1,3018 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset='UTF-8'>
+			<title>JSON To HTML using codebeautify.org</title>
+		</head>
+		<body>
+			<table border=1>
+				<thead>
+					<tr>
+						<th>Field1</th>
+						<th>Field2</th>
+						<th>Field3</th>
+						<th>Field4</th>
+						<th>Field5</th>
+						<th>Field6</th>
+						<th>Field7</th>
+						<th>Field8</th>
+						<th>Field9</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Luis Arraez</td>
+						<td>2021-04-01</td>
+						<td>10</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.321</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Jake Cave</td>
+						<td>2021-04-01</td>
+						<td>10</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.241</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Danny Jansen</td>
+						<td>2021-04-01</td>
+						<td>2</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.329</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Cavan Biggio</td>
+						<td>2021-04-01</td>
+						<td>1</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.297</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Vladimir Guerrero Jr.</td>
+						<td>2021-04-01</td>
+						<td>6</td>
+						<td>walk</td>
+						<td>1</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0.419</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Willians Astudillo</td>
+						<td>2021-04-01</td>
+						<td>10</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.272</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Cavan Biggio</td>
+						<td>2021-04-01</td>
+						<td>5</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.297</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Teoscar Hern�ndez</td>
+						<td>2021-04-01</td>
+						<td>2</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.369</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Bo Bichette</td>
+						<td>2021-04-01</td>
+						<td>1</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.354</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Bo Bichette</td>
+						<td>2021-04-01</td>
+						<td>3</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.354</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Vladimir Guerrero Jr.</td>
+						<td>2021-04-01</td>
+						<td>2</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.419</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Marcus Semien</td>
+						<td>2021-04-01</td>
+						<td>3</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.368</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Marcus Semien</td>
+						<td>2021-04-01</td>
+						<td>1</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.368</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Randal Grichuk</td>
+						<td>2021-04-01</td>
+						<td>5</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.3</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Randal Grichuk</td>
+						<td>2021-04-01</td>
+						<td>2</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.3</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Bo Bichette</td>
+						<td>2021-04-01</td>
+						<td>6</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.354</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Lourdes Gurriel Jr.</td>
+						<td>2021-04-01</td>
+						<td>4</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.333</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Cavan Biggio</td>
+						<td>2021-04-01</td>
+						<td>3</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.297</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Vladimir Guerrero Jr.</td>
+						<td>2021-04-01</td>
+						<td>4</td>
+						<td>walk</td>
+						<td>1</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0.419</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Rowdy Tellez</td>
+						<td>2021-04-01</td>
+						<td>2</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.306</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Rowdy Tellez</td>
+						<td>2021-04-01</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.306</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Teoscar Hern�ndez</td>
+						<td>2021-04-01</td>
+						<td>4</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.369</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Lourdes Gurriel Jr.</td>
+						<td>2021-04-01</td>
+						<td>2</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.333</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Marcus Semien</td>
+						<td>2021-04-01</td>
+						<td>5</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.368</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Danny Jansen</td>
+						<td>2021-04-01</td>
+						<td>5</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.329</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Teoscar Hern�ndez</td>
+						<td>2021-04-01</td>
+						<td>6</td>
+						<td>home_run</td>
+						<td>4</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.369</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Anthony Santander</td>
+						<td>2021-04-06</td>
+						<td>3</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.307</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Freddy Galvis</td>
+						<td>2021-04-06</td>
+						<td>7</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.305</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Anthony Santander</td>
+						<td>2021-04-06</td>
+						<td>6</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.307</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Freddy Galvis</td>
+						<td>2021-04-06</td>
+						<td>2</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.305</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Chance Sisco</td>
+						<td>2021-04-06</td>
+						<td>5</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.205</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Ryan Mountcastle</td>
+						<td>2021-04-06</td>
+						<td>1</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.335</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Ryan Mountcastle</td>
+						<td>2021-04-06</td>
+						<td>4</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.335</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Maikel Franco</td>
+						<td>2021-04-06</td>
+						<td>2</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.263</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Rio Ruiz</td>
+						<td>2021-04-06</td>
+						<td>7</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.231</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Trey Mancini</td>
+						<td>2021-04-06</td>
+						<td>3</td>
+						<td>double</td>
+						<td>2</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.326</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Pedro Severino</td>
+						<td>2021-04-06</td>
+						<td>2</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.299</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Cedric Mullins</td>
+						<td>2021-04-06</td>
+						<td>3</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.371</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Trey Mancini</td>
+						<td>2021-04-06</td>
+						<td>1</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.326</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Rio Ruiz</td>
+						<td>2021-04-06</td>
+						<td>4</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.231</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Maikel Franco</td>
+						<td>2021-04-06</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.263</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Trey Mancini</td>
+						<td>2021-04-06</td>
+						<td>6</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.326</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Ryan Mountcastle</td>
+						<td>2021-04-06</td>
+						<td>6</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.335</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Cedric Mullins</td>
+						<td>2021-04-06</td>
+						<td>5</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.371</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Rio Ruiz</td>
+						<td>2021-04-06</td>
+						<td>2</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.231</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Maikel Franco</td>
+						<td>2021-04-06</td>
+						<td>7</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.263</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Chance Sisco</td>
+						<td>2021-04-06</td>
+						<td>3</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.205</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Anthony Santander</td>
+						<td>2021-04-06</td>
+						<td>1</td>
+						<td>fielders_choice_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.307</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Freddy Galvis</td>
+						<td>2021-04-06</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.305</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Cedric Mullins</td>
+						<td>2021-04-06</td>
+						<td>1</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.371</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Pedro Severino</td>
+						<td>2021-04-06</td>
+						<td>5</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.299</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Ian Happ</td>
+						<td>2021-04-07</td>
+						<td>9</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.328</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Eric Sogard</td>
+						<td>2021-04-07</td>
+						<td>9</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.259</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Anthony Rizzo</td>
+						<td>2021-04-07</td>
+						<td>9</td>
+						<td>walk</td>
+						<td>1</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0.339</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Kris Bryant</td>
+						<td>2021-04-07</td>
+						<td>9</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.356</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Randal Grichuk</td>
+						<td>2021-04-12</td>
+						<td>6</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.3</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Vladimir Guerrero Jr.</td>
+						<td>2021-04-12</td>
+						<td>3</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.419</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Bo Bichette</td>
+						<td>2021-04-12</td>
+						<td>6</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.354</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Cavan Biggio</td>
+						<td>2021-04-12</td>
+						<td>1</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.297</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Vladimir Guerrero Jr.</td>
+						<td>2021-04-12</td>
+						<td>6</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.419</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Josh Palacios</td>
+						<td>2021-04-12</td>
+						<td>2</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.236</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Vladimir Guerrero Jr.</td>
+						<td>2021-04-12</td>
+						<td>1</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.419</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Rowdy Tellez</td>
+						<td>2021-04-12</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.306</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Aaron Judge</td>
+						<td>2021-04-12</td>
+						<td>4</td>
+						<td>walk</td>
+						<td>1</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0.387</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Bo Bichette</td>
+						<td>2021-04-12</td>
+						<td>1</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.354</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Jason Heyward</td>
+						<td>2021-04-12</td>
+						<td>9</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.275</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Mike Tauchman</td>
+						<td>2021-04-12</td>
+						<td>5</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.26</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>DJ LeMahieu</td>
+						<td>2021-04-12</td>
+						<td>1</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.315</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Gleyber Torres</td>
+						<td>2021-04-12</td>
+						<td>2</td>
+						<td>walk</td>
+						<td>1</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0.307</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Giancarlo Stanton</td>
+						<td>2021-04-12</td>
+						<td>1</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.37</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Mike Tauchman</td>
+						<td>2021-04-12</td>
+						<td>3</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.26</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Gleyber Torres</td>
+						<td>2021-04-12</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.307</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Marcus Semien</td>
+						<td>2021-04-12</td>
+						<td>1</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.368</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Clint Frazier</td>
+						<td>2021-04-12</td>
+						<td>2</td>
+						<td>walk</td>
+						<td>1</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0.289</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Kyle Higashioka</td>
+						<td>2021-04-12</td>
+						<td>3</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.272</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Rougned Odor</td>
+						<td>2021-04-12</td>
+						<td>2</td>
+						<td>force_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.289</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Kyle Higashioka</td>
+						<td>2021-04-12</td>
+						<td>5</td>
+						<td>home_run</td>
+						<td>4</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.272</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Gio Urshela</td>
+						<td>2021-04-12</td>
+						<td>2</td>
+						<td>grounded_into_double_play</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.309</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Cavan Biggio</td>
+						<td>2021-04-12</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.297</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Marcus Semien</td>
+						<td>2021-04-12</td>
+						<td>2</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.368</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Lourdes Gurriel Jr.</td>
+						<td>2021-04-12</td>
+						<td>2</td>
+						<td>walk</td>
+						<td>1</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0.333</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Lourdes Gurriel Jr.</td>
+						<td>2021-04-12</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.333</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Josh Palacios</td>
+						<td>2021-04-12</td>
+						<td>5</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.236</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Alejandro Kirk</td>
+						<td>2021-04-12</td>
+						<td>5</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.33</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Randal Grichuk</td>
+						<td>2021-04-12</td>
+						<td>1</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.3</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Alejandro Kirk</td>
+						<td>2021-04-12</td>
+						<td>2</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.33</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Aaron Judge</td>
+						<td>2021-04-12</td>
+						<td>1</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.387</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Randal Grichuk</td>
+						<td>2021-04-12</td>
+						<td>3</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.3</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Bo Bichette</td>
+						<td>2021-04-12</td>
+						<td>3</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.354</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>David Bote</td>
+						<td>2021-04-12</td>
+						<td>9</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.268</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Rowdy Tellez</td>
+						<td>2021-04-12</td>
+						<td>2</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.306</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Gio Urshela</td>
+						<td>2021-04-12</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.309</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Rougned Odor</td>
+						<td>2021-04-12</td>
+						<td>5</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.289</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>DJ LeMahieu</td>
+						<td>2021-04-12</td>
+						<td>5</td>
+						<td>grounded_into_double_play</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.315</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Clint Frazier</td>
+						<td>2021-04-12</td>
+						<td>5</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.289</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Giancarlo Stanton</td>
+						<td>2021-04-12</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.37</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Marcus Semien</td>
+						<td>2021-04-12</td>
+						<td>5</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.368</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>DJ LeMahieu</td>
+						<td>2021-04-12</td>
+						<td>3</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.315</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Joey Wendle</td>
+						<td>2021-04-18</td>
+						<td>7</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.317</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Bryan Reynolds</td>
+						<td>2021-04-18</td>
+						<td>9</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.385</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Manuel Margot</td>
+						<td>2021-04-18</td>
+						<td>3</td>
+						<td>sac_fly</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.301</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Phillip Evans</td>
+						<td>2021-04-18</td>
+						<td>9</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.278</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Yandy D�az</td>
+						<td>2021-04-18</td>
+						<td>5</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.325</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Yoshi Tsutsugo</td>
+						<td>2021-04-18</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.302</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Kevin Kiermaier</td>
+						<td>2021-04-18</td>
+						<td>3</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.31</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Mike Brosseau</td>
+						<td>2021-04-18</td>
+						<td>4</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.268</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Michael A. Taylor</td>
+						<td>2021-04-18</td>
+						<td>5</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.286</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Austin Meadows</td>
+						<td>2021-04-18</td>
+						<td>1</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.327</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Manuel Margot</td>
+						<td>2021-04-18</td>
+						<td>1</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.301</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Kyle Isbel</td>
+						<td>2021-04-18</td>
+						<td>3</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.333</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Salvador Perez</td>
+						<td>2021-04-18</td>
+						<td>1</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.359</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Salvador Perez</td>
+						<td>2021-04-18</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.359</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Hanser Alberto</td>
+						<td>2021-04-18</td>
+						<td>3</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.296</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Jorge Soler</td>
+						<td>2021-04-18</td>
+						<td>3</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.319</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Michael A. Taylor</td>
+						<td>2021-04-18</td>
+						<td>3</td>
+						<td>walk</td>
+						<td>1</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0.286</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Hanser Alberto</td>
+						<td>2021-04-18</td>
+						<td>5</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.296</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Carlos Santana</td>
+						<td>2021-04-18</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.294</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Salvador Perez</td>
+						<td>2021-04-18</td>
+						<td>2</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.359</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Whit Merrifield</td>
+						<td>2021-04-18</td>
+						<td>1</td>
+						<td>walk</td>
+						<td>1</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0.306</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Jorge Soler</td>
+						<td>2021-04-18</td>
+						<td>5</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.319</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Brandon Lowe</td>
+						<td>2021-04-18</td>
+						<td>3</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.363</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Austin Meadows</td>
+						<td>2021-04-18</td>
+						<td>3</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.327</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Yoshi Tsutsugo</td>
+						<td>2021-04-18</td>
+						<td>2</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.302</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Kyle Isbel</td>
+						<td>2021-04-18</td>
+						<td>2</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.333</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Austin Meadows</td>
+						<td>2021-04-18</td>
+						<td>6</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.327</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Hunter Dozier</td>
+						<td>2021-04-18</td>
+						<td>3</td>
+						<td>walk</td>
+						<td>1</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0.293</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Joey Wendle</td>
+						<td>2021-04-18</td>
+						<td>2</td>
+						<td>hit_by_pitch</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.317</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Carlos Santana</td>
+						<td>2021-04-18</td>
+						<td>2</td>
+						<td>walk</td>
+						<td>1</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0.294</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Kevin Kiermaier</td>
+						<td>2021-04-18</td>
+						<td>5</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.31</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Manuel Margot</td>
+						<td>2021-04-18</td>
+						<td>6</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.301</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Yoshi Tsutsugo</td>
+						<td>2021-04-18</td>
+						<td>7</td>
+						<td>double</td>
+						<td>2</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.302</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Hanser Alberto</td>
+						<td>2021-04-18</td>
+						<td>1</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.296</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Carlos Santana</td>
+						<td>2021-04-18</td>
+						<td>1</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.294</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Hunter Dozier</td>
+						<td>2021-04-18</td>
+						<td>5</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.293</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Brandon Lowe</td>
+						<td>2021-04-18</td>
+						<td>6</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.363</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Nicky Lopez</td>
+						<td>2021-04-18</td>
+						<td>4</td>
+						<td>double</td>
+						<td>2</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.329</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Brandon Lowe</td>
+						<td>2021-04-18</td>
+						<td>2</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.363</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Hunter Dozier</td>
+						<td>2021-04-18</td>
+						<td>1</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.293</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Nicky Lopez</td>
+						<td>2021-04-18</td>
+						<td>2</td>
+						<td>force_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.329</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Yandy D�az</td>
+						<td>2021-04-18</td>
+						<td>1</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.325</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Whit Merrifield</td>
+						<td>2021-04-18</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.306</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Mike Brosseau</td>
+						<td>2021-04-18</td>
+						<td>2</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.268</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Mike Brosseau</td>
+						<td>2021-04-18</td>
+						<td>7</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.268</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Whit Merrifield</td>
+						<td>2021-04-18</td>
+						<td>2</td>
+						<td>walk</td>
+						<td>1</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0.306</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Mike Zunino</td>
+						<td>2021-04-18</td>
+						<td>5</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.359</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Michael A. Taylor</td>
+						<td>2021-04-18</td>
+						<td>2</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.286</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Mike Zunino</td>
+						<td>2021-04-18</td>
+						<td>3</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.359</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Yandy D�az</td>
+						<td>2021-04-18</td>
+						<td>3</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.325</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Adam Frazier</td>
+						<td>2021-04-18</td>
+						<td>9</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.341</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Jorge Soler</td>
+						<td>2021-04-18</td>
+						<td>1</td>
+						<td>walk</td>
+						<td>1</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0.319</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Joey Wendle</td>
+						<td>2021-04-18</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.317</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Manny Machado</td>
+						<td>2021-04-19</td>
+						<td>9</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.35</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Jake Cronenworth</td>
+						<td>2021-04-19</td>
+						<td>9</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.338</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Eric Hosmer</td>
+						<td>2021-04-19</td>
+						<td>9</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.319</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Fernando Tatis Jr.</td>
+						<td>2021-04-19</td>
+						<td>9</td>
+						<td>walk</td>
+						<td>1</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0.403</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Jake Cronenworth</td>
+						<td>2021-04-21</td>
+						<td>9</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.338</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Trent Grisham</td>
+						<td>2021-04-21</td>
+						<td>9</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.32</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Eric Hosmer</td>
+						<td>2021-04-21</td>
+						<td>9</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.319</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Manny Machado</td>
+						<td>2021-04-21</td>
+						<td>9</td>
+						<td>walk</td>
+						<td>1</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0.35</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Fernando Tatis Jr.</td>
+						<td>2021-04-21</td>
+						<td>9</td>
+						<td>double</td>
+						<td>2</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.403</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Josh Naylor</td>
+						<td>2021-04-24</td>
+						<td>2</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.301</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Jake Bauers</td>
+						<td>2021-04-24</td>
+						<td>3</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.256</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Roberto P�rez</td>
+						<td>2021-04-24</td>
+						<td>3</td>
+						<td>double</td>
+						<td>2</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.251</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Andr�s Gim�nez</td>
+						<td>2021-04-24</td>
+						<td>3</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.277</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Eddie Rosario</td>
+						<td>2021-04-24</td>
+						<td>7</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.316</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Jos� Ram�rez</td>
+						<td>2021-04-24</td>
+						<td>6</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.372</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Franmil Reyes</td>
+						<td>2021-04-24</td>
+						<td>2</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.354</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>C�sar Hern�ndez</td>
+						<td>2021-04-24</td>
+						<td>1</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.302</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>C�sar Hern�ndez</td>
+						<td>2021-04-24</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.302</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Willy Adames</td>
+						<td>2021-04-24</td>
+						<td>2</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.349</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>C�sar Hern�ndez</td>
+						<td>2021-04-24</td>
+						<td>6</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.302</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Brett Phillips</td>
+						<td>2021-04-24</td>
+						<td>5</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.307</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Nico Hoerner</td>
+						<td>2021-04-24</td>
+						<td>9</td>
+						<td>walk</td>
+						<td>1</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0.33</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Mike Brosseau</td>
+						<td>2021-04-24</td>
+						<td>1</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.268</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Manuel Margot</td>
+						<td>2021-04-24</td>
+						<td>4</td>
+						<td>double</td>
+						<td>2</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.301</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Randy Arozarena</td>
+						<td>2021-04-24</td>
+						<td>3</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.35</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Kevin Kiermaier</td>
+						<td>2021-04-24</td>
+						<td>6</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.31</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Randy Arozarena</td>
+						<td>2021-04-24</td>
+						<td>1</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.35</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Manuel Margot</td>
+						<td>2021-04-24</td>
+						<td>6</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.301</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Ian Happ</td>
+						<td>2021-04-24</td>
+						<td>9</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.328</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Brandon Lowe</td>
+						<td>2021-04-24</td>
+						<td>6</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.363</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Brett Phillips</td>
+						<td>2021-04-24</td>
+						<td>3</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.307</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Mike Brosseau</td>
+						<td>2021-04-24</td>
+						<td>4</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.268</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Willson Contreras</td>
+						<td>2021-04-24</td>
+						<td>9</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.337</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Kevin Kiermaier</td>
+						<td>2021-04-24</td>
+						<td>2</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.31</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Yandy D�az</td>
+						<td>2021-04-24</td>
+						<td>5</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.325</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Mike Zunino</td>
+						<td>2021-04-24</td>
+						<td>6</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.359</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Manuel Margot</td>
+						<td>2021-04-24</td>
+						<td>2</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.301</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Yandy D�az</td>
+						<td>2021-04-24</td>
+						<td>1</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.325</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Brandon Lowe</td>
+						<td>2021-04-24</td>
+						<td>1</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.363</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Mike Zunino</td>
+						<td>2021-04-24</td>
+						<td>5</td>
+						<td>field_error</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.359</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Willy Adames</td>
+						<td>2021-04-24</td>
+						<td>5</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.349</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Randy Arozarena</td>
+						<td>2021-04-24</td>
+						<td>6</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.35</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Josh Naylor</td>
+						<td>2021-04-24</td>
+						<td>7</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.301</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Josh Naylor</td>
+						<td>2021-04-24</td>
+						<td>4</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.301</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Franmil Reyes</td>
+						<td>2021-04-24</td>
+						<td>4</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.354</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Jos� Ram�rez</td>
+						<td>2021-04-24</td>
+						<td>1</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.372</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Eddie Rosario</td>
+						<td>2021-04-24</td>
+						<td>4</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.316</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Yandy D�az</td>
+						<td>2021-04-24</td>
+						<td>3</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.325</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Jake Bauers</td>
+						<td>2021-04-24</td>
+						<td>5</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.256</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Franmil Reyes</td>
+						<td>2021-04-24</td>
+						<td>7</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.354</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Amed Rosario</td>
+						<td>2021-04-24</td>
+						<td>3</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.315</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Amed Rosario</td>
+						<td>2021-04-24</td>
+						<td>6</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.315</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Amed Rosario</td>
+						<td>2021-04-24</td>
+						<td>1</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.315</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Kevin Kiermaier</td>
+						<td>2021-04-24</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.31</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Mike Zunino</td>
+						<td>2021-04-24</td>
+						<td>2</td>
+						<td>home_run</td>
+						<td>4</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.359</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Brandon Lowe</td>
+						<td>2021-04-24</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.363</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Eddie Rosario</td>
+						<td>2021-04-24</td>
+						<td>2</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.316</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Andr�s Gim�nez</td>
+						<td>2021-04-24</td>
+						<td>5</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.277</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Mike Brosseau</td>
+						<td>2021-04-24</td>
+						<td>6</td>
+						<td>home_run</td>
+						<td>4</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.268</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Jake Marisnick</td>
+						<td>2021-04-24</td>
+						<td>9</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.287</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Jos� Ram�rez</td>
+						<td>2021-04-24</td>
+						<td>4</td>
+						<td>triple</td>
+						<td>3</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.372</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Roberto P�rez</td>
+						<td>2021-04-24</td>
+						<td>5</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.251</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Jon Berti</td>
+						<td>2021-04-27</td>
+						<td>9</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.282</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Chad Wallach</td>
+						<td>2021-04-27</td>
+						<td>9</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.224</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Sandy Le�n</td>
+						<td>2021-04-27</td>
+						<td>9</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.225</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Mookie Betts</td>
+						<td>2021-04-29</td>
+						<td>9</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.365</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Chris Taylor</td>
+						<td>2021-04-29</td>
+						<td>9</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.338</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>AJ Pollock</td>
+						<td>2021-04-29</td>
+						<td>9</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.375</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Sheldon Neuse</td>
+						<td>2021-04-29</td>
+						<td>9</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.214</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Austin Barnes</td>
+						<td>2021-04-29</td>
+						<td>9</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.285</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Harold Castro</td>
+						<td>2021-04-30</td>
+						<td>4</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.291</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Jeimer Candelario</td>
+						<td>2021-04-30</td>
+						<td>2</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.344</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Willi Castro</td>
+						<td>2021-04-30</td>
+						<td>2</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.271</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Wilson Ramos</td>
+						<td>2021-04-30</td>
+						<td>2</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.272</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Jonathan Schoop</td>
+						<td>2021-04-30</td>
+						<td>4</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.324</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Robbie Grossman</td>
+						<td>2021-04-30</td>
+						<td>1</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.337</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Freddie Freeman</td>
+						<td>2021-04-30</td>
+						<td>1</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.379</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Marcell Ozuna</td>
+						<td>2021-04-30</td>
+						<td>1</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.284</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Austin Riley</td>
+						<td>2021-04-30</td>
+						<td>3</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.379</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Ehire Adrianza</td>
+						<td>2021-04-30</td>
+						<td>3</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.316</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Alex Jackson</td>
+						<td>2021-04-30</td>
+						<td>3</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.227</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Dansby Swanson</td>
+						<td>2021-04-30</td>
+						<td>5</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.322</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Marcell Ozuna</td>
+						<td>2021-04-30</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.284</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Freddie Freeman</td>
+						<td>2021-04-30</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.379</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Ronald Acu�a Jr.</td>
+						<td>2021-04-30</td>
+						<td>7</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.412</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Marcell Ozuna</td>
+						<td>2021-04-30</td>
+						<td>7</td>
+						<td>double</td>
+						<td>2</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.284</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Ozzie Albies</td>
+						<td>2021-04-30</td>
+						<td>7</td>
+						<td>home_run</td>
+						<td>4</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.336</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Ronald Acu�a Jr.</td>
+						<td>2021-04-30</td>
+						<td>1</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.412</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Travis d'Arnaud</td>
+						<td>2021-04-30</td>
+						<td>2</td>
+						<td>double</td>
+						<td>2</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.291</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Freddie Freeman</td>
+						<td>2021-04-30</td>
+						<td>7</td>
+						<td>grounded_into_double_play</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.379</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Travis d'Arnaud</td>
+						<td>2021-04-30</td>
+						<td>5</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.291</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Robbie Grossman</td>
+						<td>2021-04-30</td>
+						<td>6</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.337</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Travis d'Arnaud</td>
+						<td>2021-04-30</td>
+						<td>7</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.291</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Austin Riley</td>
+						<td>2021-04-30</td>
+						<td>6</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.379</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Ronald Acu�a Jr.</td>
+						<td>2021-04-30</td>
+						<td>4</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.412</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Ehire Adrianza</td>
+						<td>2021-04-30</td>
+						<td>6</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.316</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Corey Seager</td>
+						<td>2021-04-30</td>
+						<td>9</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.389</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Alex Jackson</td>
+						<td>2021-04-30</td>
+						<td>6</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.227</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Ozzie Albies</td>
+						<td>2021-04-30</td>
+						<td>2</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.336</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Miguel Cabrera</td>
+						<td>2021-04-30</td>
+						<td>4</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.305</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Jonathan Schoop</td>
+						<td>2021-04-30</td>
+						<td>2</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.324</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Wilson Ramos</td>
+						<td>2021-04-30</td>
+						<td>4</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.272</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Robbie Grossman</td>
+						<td>2021-04-30</td>
+						<td>3</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.337</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Victor Reyes</td>
+						<td>2021-04-30</td>
+						<td>6</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.298</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Harold Castro</td>
+						<td>2021-04-30</td>
+						<td>1</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.291</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Dansby Swanson</td>
+						<td>2021-04-30</td>
+						<td>2</td>
+						<td>double_play</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.322</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Justin Turner</td>
+						<td>2021-04-30</td>
+						<td>9</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.358</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Niko Goodrum</td>
+						<td>2021-04-30</td>
+						<td>5</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.286</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Akil Baddoo</td>
+						<td>2021-04-30</td>
+						<td>5</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.329</td>
+					</tr>
+					<tr>
+						<td>Ray, Robbie</td>
+						<td>Ozzie Albies</td>
+						<td>2021-04-30</td>
+						<td>5</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.336</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Willi Castro</td>
+						<td>2021-04-30</td>
+						<td>5</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.271</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Miguel Cabrera</td>
+						<td>2021-04-30</td>
+						<td>1</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.305</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Max Muncy</td>
+						<td>2021-04-30</td>
+						<td>9</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.379</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Harold Castro</td>
+						<td>2021-04-30</td>
+						<td>6</td>
+						<td>grounded_into_double_play</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.291</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Akil Baddoo</td>
+						<td>2021-04-30</td>
+						<td>3</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.329</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Niko Goodrum</td>
+						<td>2021-04-30</td>
+						<td>3</td>
+						<td>strikeout</td>
+						<td>0</td>
+						<td>0</td>
+						<td>1</td>
+						<td>0.286</td>
+					</tr>
+					<tr>
+						<td>Cole, Gerrit</td>
+						<td>Jeimer Candelario</td>
+						<td>2021-04-30</td>
+						<td>4</td>
+						<td>single</td>
+						<td>1</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.344</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>AJ Pollock</td>
+						<td>2021-05-01</td>
+						<td>9</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.375</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Austin Barnes</td>
+						<td>2021-05-01</td>
+						<td>9</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.285</td>
+					</tr>
+					<tr>
+						<td>Hader, Josh</td>
+						<td>Will Smith</td>
+						<td>2021-05-01</td>
+						<td>9</td>
+						<td>field_out</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0</td>
+						<td>0.364</td>
+					</tr>
+					<tr>
+						<td></td>
+						<td>&nbsp</td>
+						<td>&nbsp</td>
+						<td>&nbsp</td>
+						<td>&nbsp</td>
+						<td>&nbsp</td>
+						<td>&nbsp</td>
+						<td>&nbsp</td>
+						<td>&nbsp</td>
+					</tr>
+				</tbody>
+			</table>
+		</body>
+	</html>

@@ -1,0 +1,5 @@
+expected-stats-pitching (11/28/19):
+Issue: no IBB data from savant
+Solution: Redo FGBatting to include IBB
+FGPitching has IBB already
+Python script to create dummy IBB events for IBBs into events_batting(_short) and events_pitching(_short)

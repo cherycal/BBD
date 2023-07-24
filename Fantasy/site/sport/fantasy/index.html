@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="Windows-1252">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="shortcut icon" href="https://cherycal.github.io/first/site/sport/fantasy/favicon.png" type="image/png">
+    <title>Prostillery</title>
+    <link href="style.css" rel="stylesheet" type="text/css">
+	/*
+    <!link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"
+            integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	*/
+</head>
+<body>
+	<ul>
+		<li>
+			<a href="https://cherycal.github.io/first/site/mobile" style="color: beige; font-family: Courier; font-size: .8cm">Home</a>
+		</li>
+	</ul>
+	<div class="container">
+		<table style="background-color: #222200; color: grey; font-family: Courier;" class="table">
+			<tr class = "bg-info" >
+                <th data-column=0 data-order="desc"
+					style="background-color: #222200; color: grey; font-family: Courier;">Pitcher &#9650</th>
+                <th data-column=1 data-order="desc"
+					style="background-color: #222200; color: grey; font-family: Courier;">Batter &#9650</th>
+                <th data-column=2 data-order="desc"
+					style="background-color: #222200; color: grey; font-family: Courier;">Date &#9650</th>
+                <th data-column=3 data-order="desc"
+					style="background-color: #222200; color: grey; font-family: Courier;">Inning &#9650</th>
+                <th data-column=4 data-order="desc"
+					style="background-color: #222200; color: grey; font-family: Courier;">Result &#9650</th>
+                <th data-column=5 data-order="desc"
+					style="background-color: #222200; color: grey; font-family: Courier;">Bases &#9650</th>
+                <th data-column=6 data-order="desc"
+					style="background-color: #222200; color: grey; font-family: Courier;">isBB &#9650</th>
+                <th data-column=7 data-order="desc"
+					style="background-color: #222200; color: grey; font-family: Courier;">isK &#9650</th>
+                <th data-column=8 data-order="desc"
+					style="background-color: #222200; color: grey; font-family: Courier;">opp_Woba &#9650</th>
+			</tr>
+			<tbody id = "myTable">
+			</tbody>
+			</table>
+			<p id="pitch_events" style="color: beige; font-family: Courier;"></p>
+			<script  type="text/javascript">
+                var myArray = []
+
+				fetch('./pitch_events.json').then(function(response){
+                    	return response.json();
+				}).then(function(pitch_events){
+					myArray = pitch_events.rows
+					buildTableFromArray(myArray)
+				}).catch(function(err){
+					console.log(err);
+				});
+				
+				$('th').on('click', function(){
+					var column = $(this).data('column')
+					var order = $(this).data('order')
+					var text = $(this).html()
+					text = text.substring( 0, text.length - 1 )
+					console.log("Column was clicked ", column, order);
+					if ( order == 'desc' ){
+						$(this).data('order', 'asc')
+						myArray = myArray.sort((a,b) => a[column] >= b[column] ? 1 : -1 )
+						text += '&#9660'
+					} else {
+						$(this).data('order', 'desc')
+						myArray = myArray.sort((a,b) => a[column] <= b[column] ? 1 : -1 )
+						text += '&#9650'
+					}
+					$(this).html(text)
+					buildTableFromArray(myArray)
+				})
+
+                /*
+				$.ajax({
+					method:'GET',
+					url:'https://cherycal.github.io/first/site/sport/fantasy/pitch_events',
+					success:function(response){
+						myArray=response.data
+						buildTable(myArray)
+						console.log(response)
+					}
+				})
+                */
+
+                buildTableFromArray(myArray)
+
+				function buildTableFromArray(data) {
+
+					var table = document.getElementById('myTable')
+					table.innerHTML = ''
+					for (var i = 0; i < data.length; i++) {
+						var batter = data[i][1]
+						batter.normalize("NFD").replace(/\p{Diacritic}/gu, "")
+						var row = `<tr>
+										<td>${data[i][0]}</td>
+										<td>${batter}</td>
+										<td>${data[i][2]}</td>
+										<td>${data[i][3]}</td>
+										<td>${data[i][4]}</td>
+										<td>${data[i][5]}</td>
+										<td>${data[i][6]}</td>
+										<td>${data[i][7]}</td>
+										<td>${data[i][8]}</td>
+									</tr>`
+						table.innerHTML += row
+					}
+					// for(var i=0; i<pitch_events.length;i++ ){
+					//     document.getElementById("pitch_events").innerHTML +=
+					//     pitch_events[i] + "<br />"
+					// }
+
+				}
+
+				function buildTable(data) {
+
+					fetch('./pitch_events.json').then(function(response){
+                    	return response.json();
+					}).then(function(pitch_events){
+						var table = document.getElementById('myTable')
+						table.innerHTML = ''
+						for (var i = 0; i < pitch_events.length; i++) {
+							var batter = pitch_events.rows[i][1]
+							batter.normalize("NFD").replace(/\p{Diacritic}/gu, "")
+							var row = `<tr>
+											<td>${pitch_events.rows[i][0]}</td>
+											<td>${batter}</td>
+											<td>${pitch_events.rows[i][2]}</td>
+											<td>${pitch_events.rows[i][3]}</td>
+											<td>${pitch_events.rows[i][4]}</td>
+											<td>${pitch_events.rows[i][5]}</td>
+											<td>${pitch_events.rows[i][6]}</td>
+											<td>${pitch_events.rows[i][7]}</td>
+											<td>${pitch_events.rows[i][8]}</td>
+										</tr>`
+							table.innerHTML += row
+						}
+						// for(var i=0; i<pitch_events.length;i++ ){
+						//     document.getElementById("pitch_events").innerHTML +=
+						//     pitch_events[i] + "<br />"
+						// }
+
+					}).catch(function(err){
+						console.log(err);
+					});
+
+				}
+			</script>
+
+	</div>
+
+</body>
+</html>
