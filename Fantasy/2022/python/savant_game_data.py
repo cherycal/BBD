@@ -344,71 +344,71 @@ def process_mlb(data, gamepk, player_teams):
 
 
 # NOT USED AS OF 20230506 #################
-def process_statcast(data, gamepk):
-    global watch_ids
-    global reported_statcast_count
-    global statcast_count
-    global mlb_first_run
-    global PLAYOFFS
-    events = data['exit_velocity']
-    for event in events:
-        at_bat = 0
-        if event.get('ab_number'):
-            at_bat = event['ab_number']
-        statcast_count[gamepk] = at_bat
-        batter_id = str(event['batter'])
-        pitcher_id = str(event['pitcher'])
-        batter_name = event['batter_name']
-        pitcher_name = event['pitcher_name']
-        if statcast_count[gamepk] > reported_statcast_count[gamepk]:
-            if batter_id in watch_ids or pitcher_id in watch_ids:
-                time.sleep(1)
-                msg = "-----------------------------------------------"
-                msg += "\n" + "Gamepk: " + str(gamepk)
-                msg += "\n" + "Savant data: event number " + str(statcast_count[gamepk])
-                msg += "\n" + "Previously reported events: " + str(reported_statcast_count[gamepk])
-                msg += "\n" + batter_name
-                msg += ", " + event['team_batting']
-                msg += "\n" + pitcher_name
-                msg += ", " + event['team_fielding']
-                if event.get('des'):
-                    msg2 = str(event['des'])[0:40]
-                    msg2 += "\nPitcher: " + pitcher_name
-                else:
-                    msg2 = f'Batter: {batter_name}\nPitcher: {pitcher_name}'
-                if event.get('result'):
-                    msg += "\n" + event['result']
-                if event.get('xba'):
-                    msg2 += "\n" + "xba: {0}".format(str(event['xba']))
-                if event.get('hit_distance'):
-                    msg2 += "\n" + "hit distance: {0}".format(str(event['hit_distance']))
-                if event.get('hit_speed'):
-                    msg2 += "\n" + "hit speed: " + str(event['hit_speed'])
-                if event.get('hit_angle'):
-                    msg2 += "\n" + "hit angle: " + str(event['hit_angle']) + "\n"
-                msg += "\n" + "-----------------------------------------------"
-                print(msg)
-                print("--------------------")
-                print(msg2)
-                print("--------------------")
-                # print("--------------------")
-                title = msg2[0:160] + " " + event['team_batting'] + " vs " + event['team_fielding']
-                if not mlb_first_run:
-                    inst.push(title, msg2)
-                    # inst.tweet(msg2)
-                    time.sleep(.25)
-                else:
-                    print("Not pushing on MLB first run")
-                    time.sleep(.5)
-                reported_statcast_count[gamepk] = at_bat
-
-            else:
-                print("Skipped play, players not on watch list, play number " +
-                      str(statcast_count[gamepk]))
-                print(event)
-                reported_statcast_count[gamepk] = at_bat
-
-    mlb_first_run = 0
+# def process_statcast(data, gamepk):
+#     global watch_ids
+#     global reported_statcast_count
+#     global statcast_count
+#     global mlb_first_run
+#     global PLAYOFFS
+#     events = data['exit_velocity']
+#     for event in events:
+#         at_bat = 0
+#         if event.get('ab_number'):
+#             at_bat = event['ab_number']
+#         statcast_count[gamepk] = at_bat
+#         batter_id = str(event['batter'])
+#         pitcher_id = str(event['pitcher'])
+#         batter_name = event['batter_name']
+#         pitcher_name = event['pitcher_name']
+#         if statcast_count[gamepk] > reported_statcast_count[gamepk]:
+#             if batter_id in watch_ids or pitcher_id in watch_ids:
+#                 time.sleep(1)
+#                 msg = "-----------------------------------------------"
+#                 msg += "\n" + "Gamepk: " + str(gamepk)
+#                 msg += "\n" + "Savant data: event number " + str(statcast_count[gamepk])
+#                 msg += "\n" + "Previously reported events: " + str(reported_statcast_count[gamepk])
+#                 msg += "\n" + batter_name
+#                 msg += ", " + event['team_batting']
+#                 msg += "\n" + pitcher_name
+#                 msg += ", " + event['team_fielding']
+#                 if event.get('des'):
+#                     msg2 = str(event['des'])[0:40]
+#                     msg2 += "\nPitcher: " + pitcher_name
+#                 else:
+#                     msg2 = f'Batter: {batter_name}\nPitcher: {pitcher_name}'
+#                 if event.get('result'):
+#                     msg += "\n" + event['result']
+#                 if event.get('xba'):
+#                     msg2 += "\n" + "xba: {0}".format(str(event['xba']))
+#                 if event.get('hit_distance'):
+#                     msg2 += "\n" + "hit distance: {0}".format(str(event['hit_distance']))
+#                 if event.get('hit_speed'):
+#                     msg2 += "\n" + "hit speed: " + str(event['hit_speed'])
+#                 if event.get('hit_angle'):
+#                     msg2 += "\n" + "hit angle: " + str(event['hit_angle']) + "\n"
+#                 msg += "\n" + "-----------------------------------------------"
+#                 print(msg)
+#                 print("--------------------")
+#                 print(msg2)
+#                 print("--------------------")
+#                 # print("--------------------")
+#                 title = msg2[0:160] + " " + event['team_batting'] + " vs " + event['team_fielding']
+#                 if not mlb_first_run:
+#                     inst.push(title, msg2)
+#                     # inst.tweet(msg2)
+#                     time.sleep(.25)
+#                 else:
+#                     print("Not pushing on MLB first run")
+#                     time.sleep(.5)
+#                 reported_statcast_count[gamepk] = at_bat
+#
+#             else:
+#                 print("Skipped play, players not on watch list, play number " +
+#                       str(statcast_count[gamepk]))
+#                 print(event)
+#                 reported_statcast_count[gamepk] = at_bat
+#
+#     mlb_first_run = 0
 ##################################################
 
 def process_lineups(lineups):
