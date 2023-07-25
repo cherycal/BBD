@@ -26,4 +26,5 @@ ACCESSTOKENSECRET = os.environ.get('ACCESSTOKENSECRET')
 API_KEY = os.environ.get('api_key')
 REG_ID = os.environ.get('reg_id')
 
-print(fantasy.roster_list('Wheel'))
+
+print(fantasy.tweet_add_drops('Wheel'))
