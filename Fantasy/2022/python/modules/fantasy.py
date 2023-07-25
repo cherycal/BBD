@@ -1078,7 +1078,7 @@ class Fantasy(object):
 		        " percentOwned, LeagueID from AddDrops A," \
 		        " ESPNPlayerDataCurrent E where A.ESPNID = E.ESPNID and" \
 		        f" A.UpdateDate like '{dt}%' order by percentOwned desc"
-		#print(query)
+		print(query)
 		self.run_query(query, "Adds / drops: ")
 		return
 
