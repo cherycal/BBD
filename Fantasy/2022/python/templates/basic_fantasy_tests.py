@@ -27,4 +27,6 @@ API_KEY = os.environ.get('api_key')
 REG_ID = os.environ.get('reg_id')
 
 
-print(fantasy.tweet_add_drops('Wheel'))
+#fantasy.tweet_daily_schedule()
+fantasy.tweet_add_drops()
+#fantasy.run_injury_updates()
