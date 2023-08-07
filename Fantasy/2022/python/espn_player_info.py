@@ -267,8 +267,8 @@ def main():
     run_odds_bool = True
     begin_day_time = 10000
     end_day_time = 211500
-    MIN_SLEEP = 5
-    MAX_SLEEP = 11
+    MIN_SLEEP = 8
+    MAX_SLEEP = 14
     run_count = 0
 
     run_roster_suite = True
@@ -289,16 +289,16 @@ def main():
         time6 = ts.strftime("%H%M%S")
         current_time = int(time6)
         minute = int(ts.strftime("%M"))
-        if (20 <= minute < 25 or 0 <= minute < 5) and run_odds_bool:
-            print("Running odds & refresh starter history")
-            try:
-                fantasy.run_espn_odds()
-                fantasy.refresh_starter_history()
-            except Exception as ex:
-                print(ex)
-            run_odds_bool = False
-        else:
-            run_odds_bool = True
+        # if (20 <= minute < 25 or 0 <= minute < 5) and run_odds_bool:
+        #     print("Running odds & refresh starter history")
+        #     try:
+        #         fantasy.run_espn_odds()
+        #         fantasy.refresh_starter_history()
+        #     except Exception as ex:
+        #         print(ex)
+        #     run_odds_bool = False
+        # else:
+        #     run_odds_bool = True
 
         print(f'Start at {formatted_date_time}, run count: {run_count}')
 
@@ -358,8 +358,11 @@ def main():
             fantasy.run_transactions()
 
             tables_to_files.run_tables()
+
             bdb.tables_to_sheets("UpcomingStartsWithStats", "USWS")
 
+        if run_count % 6 == 0:
+                fantasy.run_espn_odds()
 
         if run_roster_suite:
             fantasy.tweet_daily_schedule()
@@ -381,10 +384,13 @@ def main():
             team_splits.main()
             fantasy.refresh_batting_splits()
             tables_to_files.main()
-            bdb.tables_to_sheets("SD_WOBA", "SD_WOBA")
-            bdb.tables_to_sheets("SD_WOBA_CURRENT", "SD_WOBA_CURRENT")
-            bdb.tables_to_sheets("Standings_History_wOBA", "Standings_History_wOBA")
-            bdb.tables_to_sheets("UpcomingStartsWithStats", "USWS")
+            try:
+                bdb.tables_to_sheets("SD_WOBA", "SD_WOBA")
+                bdb.tables_to_sheets("SD_WOBA_CURRENT", "SD_WOBA_CURRENT")
+                bdb.tables_to_sheets("Standings_History_wOBA", "Standings_History_wOBA")
+                bdb.tables_to_sheets("UpcomingStartsWithStats", "USWS")
+            except Exception as ex:
+                print(f"error: {ex}")
 
             inst.push("Morning suite completed",
                       "Morning suite completed")

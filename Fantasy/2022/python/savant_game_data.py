@@ -159,6 +159,7 @@ def read_slack():
     if len(msgs) > 0:
         for msg in msgs:
             text = msg['text']
+            print(f"read slack {text}")
             if text != slack_most_recent:
                 try:
                     slack_most_recent = text
@@ -190,7 +191,7 @@ def process_mlb(data, gamepk, player_teams):
     if away_team == "Sox":
         away_team = ' '.join(data['gameData']['teams']['home']['name'].split()[-2:])
     print(f'{away_team} vs {home_team} at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
-    print(f'{away_team} vs {home_team} game start time: {datetime.now(tz=pytz.UTC).strftime("%Y%m%d-%H%M%S")}')
+    print(f'{away_team} vs {home_team} current time: {datetime.now(tz=pytz.UTC).strftime("%Y%m%d-%H%M%S")}')
     # dt = datetime.datetime.now(timezone.utc)
     #
     # print("************ START PLAYS *****************")
@@ -498,7 +499,8 @@ def start_gamefeed(gamepks):
     global reported_statcast_count
     lineups = dict()
     TIMEOUT = 15
-    sleep_min = 8
+    sleep_min = 6
+    sleep_max = 14
 
     player_teams = roster_list()
     # for p in player_teams:
@@ -556,24 +558,26 @@ def start_gamefeed(gamepks):
 
         print(f'Games left: {games}: {gamepks}')
 
-        if slack_on and read_slack() == "EGF":
+        if slack_on and read_slack().upper() == "EGF":
             slack_on = False
-            print(f"Slack flag is now set to OFF")
+            msg = f"Slack flag is now set to OFF"
+            logger_instance.info(msg)
+            print(msg)
+            inst.push(msg, msg)
 
         if not slack_on:
-            if read_slack() == "SGF":
+            if read_slack().upper() == "SGF":
                 slack_on = True
-                print(f"Slack flag is now set to ON")
+                msg = f"Slack flag is now set to ON"
+                logger_instance.info(msg)
+                print(msg)
+                inst.push(msg, msg)
 
         if slack_on:
             in_progress_games = 0
             for gamepk in gamepks:
 
                 not_eod = True
-
-
-                sleep_max = sleep_min + 8
-
                 ts = datetime.now()  # current date and time
                 # formatted_date_time = ts.strftime("%Y%m%d-%H%M%S")
                 update_time = ts.strftime("%Y%m%d%H%M%S")
@@ -689,8 +693,10 @@ def start_gamefeed(gamepks):
 
         else:
             loop_sleep = 15
-            print(f"Slack flag set to OFF - sleeping for {loop_sleep} seconds")
-            time.sleep(15)
+            #print(f"Slack flag set to OFF - sleeping for {loop_sleep} seconds")
+            #inst.push(f"Slack flag set to OFF", f"Slack flag set to OFF")
+            logger_instance.info(f"Slack flag set to OFF")
+            time.sleep(loop_sleep)
             not_eod = True
 
     print("Games are done for today")

@@ -120,6 +120,7 @@ class Fantasy(object):
 		self.push_instance = push.Push(self.logger_instance)
 		self.slack_api_token = os.environ["SLACK_BOT_TOKEN"]
 		self.slack_channel = os.environ["SLACK_CHANNEL"]  # "C051T1FKZUN"
+		self.slack_alerts_channel = os.environ["SLACK_ALERTS_CHANNEL"]  # "C051T1FKZUN"
 		self.slack_client = WebClient(token=self.slack_api_token)
 		self.slack_most_recent = ""
 		self.slack_first_run = True
@@ -1046,7 +1047,7 @@ class Fantasy(object):
 			self.push_msg_list.clear()
 		return
 
-	def run_query(self, query, msg=""):
+	def run_query(self, query, msg="query"):
 		lol = []
 		index = list()
 
@@ -1058,10 +1059,12 @@ class Fantasy(object):
 				index.append("")
 
 			df = pd.DataFrame(lol, columns=col_headers, index=index)
-			print(df)
-			img = "mytable.png"
+			#print(df)
+			img = f"./{msg}.png"
+			print(f"Upload file: {img}")
 			dfi.export(df, img,table_conversion="matplotlib")
-			self.push_instance.tweet_media(img, msg, True)
+			#self.push_instance.tweet_media(img, msg, True)
+			self.push_instance.push_attachment(img, msg)
 		except Exception as ex:
 			print(str(ex))
 
@@ -1079,7 +1082,7 @@ class Fantasy(object):
 		        " ESPNPlayerDataCurrent E where A.ESPNID = E.ESPNID and" \
 		        f" A.UpdateDate like '{dt}%' order by percentOwned desc"
 		print(query)
-		self.run_query(query, "Adds / drops: ")
+		self.run_query(query, "Adds-Drops")
 		return
 
 
@@ -1088,21 +1091,21 @@ class Fantasy(object):
 	def tweet_sprk_on_opponents(self):
 		query = "select * from SPRKOnOpponents"
 		#print(query)
-		self.run_query(query, "SPRK on Opponents: ")
+		self.run_query(query, "SPRK-on-Opponents")
 		return
 
 	@tools.try_wrap
 	def tweet_fran_on_opponents(self):
 		query = "select * from FRANOnOpponents"
 		#print(query)
-		self.run_query(query, "FRAN on Opponents: ")
+		self.run_query(query, "FRAN-on-Opponents")
 		return
 
 	@tools.try_wrap
 	def tweet_oppo_rosters(self):
 		query = "select * from OppoRosters"
 		#print(query)
-		self.run_query(query, "Oppo Rosters ")
+		self.run_query(query, "Oppo-Rosters")
 		return
 
 	@tools.try_wrap
@@ -1110,7 +1113,7 @@ class Fantasy(object):
 		if dt == "":
 			dt = self.date
 		if msg == "":
-			msg = "Daily schedule for " + str(dt)
+			msg = f"Daily_schedule_for_{str(dt)}"
 		query = "select Date, G.GameID,A.AwayTeam,H.HomeTeam," \
 		        " substr(GameTime,9,17) as Time from ESPNGameData G, " \
 		        "(select G.GameID,T.MLBTeam as AwayTeam from ESPNGameData G," \
@@ -1193,12 +1196,12 @@ class Fantasy(object):
 		        "eligiblePositions,Time from InjuryStatusHistory where Time like '" + \
 		        self.date + "%' order by percentOwned desc"
 
-		self.run_query(query, "Today's injuries:")
+		self.run_query(query, "Todays_injuries")
 
 		time.sleep(1)
 
 		query = "Select * From InjuryMovesToMake"
-		self.run_query(query, "IL moves to make:")
+		self.run_query(query, "IL_moves_to_make")
 
 	def set_espn_position_map(self):
 		position = {}
@@ -1375,7 +1378,7 @@ class Fantasy(object):
 											if ( i['type'] == "ADD" or i['type'] == "DROP" ) and \
 													( team_name in team_list):
 												espnid_list.append(espnid)
-												rr_msg += f'{player_name} {from_team} {to_team} {i["type"]}\n'
+												rr_msg += f'{player_name}-{from_team}-{to_team}-{i["type"]}\n'
 
 											if i['type'] == "LINEUP" and team_name \
 													not in team_list or i['type'] == "DRAFT":
@@ -1405,7 +1408,7 @@ class Fantasy(object):
 						f' where espnid in {list_str} order by Player, Team'
 				print(query)
 				try:
-					self.run_query(query, f'Relevant rosters: {rr_msg}')
+					self.run_query(query, f'Relevant_rosters:_{rr_msg}')
 				except Exception as ex:
 					self.push_instance.push("Error in relevant roster query", "Error: " + str(ex))
 
@@ -1610,6 +1613,7 @@ class Fantasy(object):
 					try:
 						self.slack_most_recent = text
 						if not self.slack_first_run:
+							print(f"Processing slack text: {text}")
 							self.slack_process_text(text)
 						else:
 							print(F"Skipping first run")
@@ -1632,6 +1636,18 @@ class Fantasy(object):
 		if text_ == "Adds":
 			print("Tweet add drops")
 			self.tweet_add_drops()
+		elif text_ == "Help" or text_ == "help" or text_ == "HELP" or text_ == "H" or text_ == "h":
+			help_text = f"Help:\n" \
+			      f"[player_name]: ESPN rosters info for player\n" \
+			      f"'Adds': Adds & Drops\n" \
+			      f"'Injuries': Injuries\n" \
+			      f"SGF: start game feed\n" \
+			      f"EGF: end (pause) game feed\n" \
+			      f"USWS: Upcoming starters\n" \
+			      f"ODDS: odds\n" \
+			      f"S: [player_name]: stats for player\n" \
+			      f"M: [player_name]: Minor lg stats for player\n"
+			self.push_instance.push("Help", help_text)
 		elif text_ == "Injuries":
 			print("Tweet injuries")
 			self.run_injury_updates()
@@ -1664,7 +1680,7 @@ class Fantasy(object):
 			        f"order by player_name, substr(game_date,0,5),stand,vs,avg(points) desc LIMIT 20"
 			print(query)
 			self.push_instance.push("query", query)
-			self.run_query(query, f"Stats for {name}")
+			self.run_query(query, f"Stats_for_{name}")
 		elif re.search("^M: ", text_):
 			name = text_.split(' ', 1)[1]
 			print(f"MILB name: {name}")
@@ -1672,7 +1688,7 @@ class Fantasy(object):
 			        f'"K%",ISO,wSB,OPS,wOBA,"wrc+",LGOPS FROM FGMILBBattingPlus ' \
 			        f'WHERE Name like "%{name}%" order by age, ISO_K desc , season desc LIMIT 20'
 			print(query)
-			self.run_query(query, f"MiLB Stats for {name}")
+			self.run_query(query, f"MiLB_Stats_for_{name}")
 		else:
 			self.roster_list(text_)
 
@@ -1790,7 +1806,7 @@ class Fantasy(object):
 			if len(gamestuple):
 				df.to_sql(table_name, self.DB.conn, if_exists='append', index=False)
 
-
+	@tools.try_wrap
 	def run_espn_odds(self):
 		now = datetime.now()  # current date and time
 		date_time = now.strftime("%Y%m%d%H%M%S")
@@ -1834,8 +1850,7 @@ class Fantasy(object):
 				print(f"{cmd}")
 			else:
 				# print(f"id {d['mlbid']} not found")
-				insertcols = "(IDPLAYER, PLAYERNAME, TEAM, POS, IDFANGRAPHS, FANGRAPHSNAME, ESPNID, ESPNNAME, " \
-				             "MLBID", "MLBNAME", "BATS, THROWS)"
+				insertcols = "(IDPLAYER, PLAYERNAME, TEAM, POS, IDFANGRAPHS, FANGRAPHSNAME, ESPNID, ESPNNAME, MLBID, MLBNAME, BATS, THROWS)"
 				idfangraphs = d.get('idfangraphs', 'NULL')
 				fangraphsname = d.get('name', "")
 				espnid = d.get('espnid', "NULL")
