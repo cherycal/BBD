@@ -29,14 +29,14 @@ def get_player_data_json_requests():
     # print_calling_function()
     leagueID = "6455"
     year = "2023"
-    url_name = "http://fantasy.espn.com/apis/v3/games/flb/seasons/" + year + \
-               "/segments/0/leagues/" + \
-               str(leagueID) + "?view=kona_playercard"
+    url_name = f"http://fantasy.espn.com/apis/v3/games/flb/seasons/{year}/" \
+               f"segments/0/leagues/{str(leagueID)}?view=kona_playercard"
 
     headers = {"authority": "fantasy.espn.com",
                "accept": "application/json",
                "x-fantasy-source": "kona",
-               "x-fantasy-filter": '{"players":{"filterStatus":{"value":["FREEAGENT","WAIVERS","ONTEAM"]},"filterSlotIds":{"value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}}'}
+               "x-fantasy-filter": '{"players":{"filterStatus":{"value":["FREEAGENT","WAIVERS","ONTEAM"]},'
+                                   '"filterSlotIds":{"value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}}'}
 
     print("sleeping ....")
     time.sleep(.5)
@@ -52,13 +52,13 @@ def get_player_data_json():
     # print_calling_function()
     leagueID = "6455"
     year = "2023"
-    url_name = "http://fantasy.espn.com/apis/v3/games/flb/seasons/" + year + \
-               "/segments/0/leagues/" + \
-               str(leagueID) + "?view=kona_playercard"
+    url_name = f"http://fantasy.espn.com/apis/v3/games/flb/seasons/{year}/" \
+               f"segments/0/leagues/{str(leagueID)}?view=kona_playercard"
     headers = ['authority: fantasy.espn.com',
                'accept: application/json',
                'x-fantasy-source: kona',
-               'x-fantasy-filter: {"players":{"filterStatus":{"value":["FREEAGENT","WAIVERS","ONTEAM"]},"filterSlotIds":{"value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}}']
+               'x-fantasy-filter: {"players":{"filterStatus":{"value":["FREEAGENT","WAIVERS","ONTEAM"]},'
+               '"filterSlotIds":{"value":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}}']
     # print("get_player_data_json: " + url_name)
     # self.logger_instance.debug(f'get_player_data_json: {url_name}')
     try:
@@ -98,10 +98,6 @@ def get_savant_gamefeed_page_curl(url_name):
 
 
 def main():
-    # url = "https://baseballsavant.mlb.com/gf?game_pk=718666"
-    # data = get_savant_gamefeed_page_curl(url)
-    # print(data)
-
     get_player_data_json()
     get_player_data_json_requests()
 
