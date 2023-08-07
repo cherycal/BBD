@@ -16,7 +16,8 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 
 slack_api_token = os.environ["SLACK_BOT_TOKEN"]
-slack_channel = os.environ["SLACK_ALERTS_CHANNEL"]
+slack_alerts_channel = os.environ["SLACK_ALERTS_CHANNEL"]
+slack_requests_channel = os.environ["SLACK_CHANNEL"]
 slack_client = WebClient(token=slack_api_token)
 
 # TWITTER KEYS
@@ -116,7 +117,6 @@ class Push(object):
         return
 
     def push(self, title="None", body="None"):
-
         res = 0
         SUPPRESS_FLAG = False
         if not SUPPRESS_FLAG:
@@ -124,7 +124,7 @@ class Push(object):
 
             try:
                 response = slack_client.chat_postMessage(
-                    channel=slack_channel,
+                    channel=slack_alerts_channel,
                     text=message
                 )
             except SlackApiError as e:
@@ -168,6 +168,33 @@ class Push(object):
                                                              message_body=body, sound="whisper.mp3",
                                                              badge="Test2")
             # self.pb.push_note(title, body)
+        return res
+
+    def push_attachment(self, attachment, body="None"):
+        res = False
+        try:
+            file_response = slack_client.files_upload_v2(
+                channel=slack_alerts_channel,
+                initial_comment=body,
+                file=attachment,
+                title=body
+            )
+            file_url = file_response["file"]["permalink"]
+            text = f"{body}: {file_url}"
+        except SlackApiError as e:
+            # You will get a SlackApiError if "ok" is False
+            assert f"Upload error {e.response['error']}"
+
+        # try:
+        #     response = slack_client.chat_postMessage(
+        #         channel=slack_alerts_channel,
+        #         text=text,
+        #         blocks=[{"type": "section", "text": {"type": "mrkdwn", "text": text}}]
+        #     )
+        #     #print(f"Slack response: {response}")
+        # except SlackApiError as e:
+        #     # You will get a SlackApiError if "ok" is False
+        #     assert f"Post error {e.response['error']}"
         return res
 
     def get_twitter_api(self):
