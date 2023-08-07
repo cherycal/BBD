@@ -275,6 +275,8 @@ class DB:
             print(f'Table/view {tblname} does not exist. df not created')
         return detail_df
 
+
+    @tools.try_wrap
     def tables_to_sheets(self, table_name, worksheet_name):
 
         gc = gspread.service_account()
