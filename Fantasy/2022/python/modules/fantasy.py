@@ -1514,7 +1514,7 @@ class Fantasy(object):
 					teams[mlbid].append(roster_spot)
 		except Exception as ex:
 			print(f'Exception: {str(ex)}')
-		return_string = ""
+		return_string = f"{name}: "
 		for player in teams:
 			return_string += f'{player}: '
 			for roster_spot_name in teams[player]:
