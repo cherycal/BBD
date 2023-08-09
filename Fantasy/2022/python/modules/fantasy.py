@@ -1633,10 +1633,10 @@ class Fantasy(object):
 
 	def slack_process_text(self, text_):
 		date8 = self.get_date8()
-		if text_ == "Adds":
+		if text_lower() == "adds" or text_lower() == "a":
 			print("Tweet add drops")
 			self.tweet_add_drops()
-		elif text_ == "Help" or text_ == "help" or text_ == "HELP" or text_ == "H" or text_ == "h":
+		elif text_.lower() == "help" or text_.lower() == "h":
 			help_text = f"Help:\n" \
 			      f"[player_name]: ESPN rosters info for player\n" \
 			      f"'Adds': Adds & Drops\n" \
@@ -1648,12 +1648,12 @@ class Fantasy(object):
 			      f"S: [player_name]: stats for player\n" \
 			      f"M: [player_name]: Minor lg stats for player\n"
 			self.push_instance.push("Help", help_text)
-		elif text_ == "Injuries":
+		elif text_.lower() == "injuries" or text_.lower() == "i":
 			print("Tweet injuries")
 			self.run_injury_updates()
-		elif text_ == "SGF" or text_ == "EGF":
+		elif text_.lower() == "sgf" or text_.lower() == "sgf":
 			pass
-		elif text_ == "USWS":
+		elif text_.lower() == "usws":
 			print("Tweet USWS")
 			query = f"SELECT Date,name,tm,HA,Opp,TH,woba,OWRC,PwB,OLR,OHA,pa,HR,OU,ML " \
 			        f"from UpcomingStartsWithStats where Date >= {date8} limit 80"
@@ -1663,13 +1663,13 @@ class Fantasy(object):
 			        f"from UpcomingStartsWithStats where Date >= {date8} limit 80"
 			print(query)
 			self.run_query(query, f"USWS")
-		elif text_ == "ODDS":
+		elif text_.lower() == "odds":
 			print("Tweet ODDS")
 			query = f"SELECT gamedate, Team, HomeAway, Starter, temperature, overUnder as OU, " \
 			        f"details from ESPNOddsView WHERE gamedate >= {date8} order by gamedate, overUnder limit 80"
 			print(query)
 			self.run_query(query, f"ODDS")
-		elif re.search("^S: ", text_):
+		elif re.search("^S: ", text_) or re.search("^s: ", text_):
 			name = text_.split(' ',1)[1]
 			print(f"Stats name: {name}")
 			query = f"SELECT player_name,substr(game_date,0,5)yr,stand,(p_throws)Vs,count(*)PA," \
@@ -1681,7 +1681,7 @@ class Fantasy(object):
 			print(query)
 			self.push_instance.push("query", query)
 			self.run_query(query, f"Stats_for_{name}")
-		elif re.search("^M: ", text_):
+		elif re.search("^M: ", text_) or re.search("^m: ", text_):
 			name = text_.split(' ', 1)[1]
 			print(f"MILB name: {name}")
 			query = f'SELECT Season,Name,Team,Level,Age,PA,adjops,adjwoba,' \
