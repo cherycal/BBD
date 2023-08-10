@@ -1515,12 +1515,15 @@ class Fantasy(object):
 		except Exception as ex:
 			print(f'Exception: {str(ex)}')
 		return_string = f"{name}: "
-		for player in teams:
-			return_string += f'{player}: '
-			for roster_spot_name in teams[player]:
-				return_string += f'{roster_spot_name}, '
-			return_string = return_string[:-2]
-			return_string += f'\n'
+		if teams.items():
+			for player in teams:
+				return_string += f'{player}: '
+				for roster_spot_name in teams[player]:
+					return_string += f'{roster_spot_name}, '
+				return_string = return_string[:-2]
+				return_string += f'\n'
+		else:
+			return_string += f'No Teams\n'
 		self.push_instance.push(name,return_string)
 		return teams
 
@@ -1613,7 +1616,7 @@ class Fantasy(object):
 					try:
 						self.slack_most_recent = text
 						if not self.slack_first_run:
-							print(f"Processing slack text: {text}")
+							print(f"Processing Slack text: {text}")
 							self.slack_process_text(text)
 						else:
 							print(F"Skipping first run")
@@ -1633,7 +1636,7 @@ class Fantasy(object):
 
 	def slack_process_text(self, text_):
 		date8 = self.get_date8()
-		if text_lower() == "adds" or text_lower() == "a":
+		if text_.lower() == "adds" or text_.lower() == "a":
 			print("Tweet add drops")
 			self.tweet_add_drops()
 		elif text_.lower() == "help" or text_.lower() == "h":
