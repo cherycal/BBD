@@ -23,7 +23,6 @@ import statcast_event_level
 import statcast_season_level
 import espn_season_stats
 import savant_boxscores
-import team_splits
 import tables_to_files
 
 if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
@@ -381,7 +380,6 @@ def main():
             statcast_season_level.main()
             espn_season_stats.main()
             savant_boxscores.main()
-            team_splits.main()
             fantasy.refresh_batting_splits()
             tables_to_files.main()
             try:
@@ -391,6 +389,7 @@ def main():
                 bdb.tables_to_sheets("UpcomingStartsWithStats", "USWS")
             except Exception as ex:
                 print(f"error: {ex}")
+            # team_splits.main()
 
             inst.push("Morning suite completed",
                       "Morning suite completed")
