@@ -300,13 +300,13 @@ def process_mlb(data, gamepk, player_teams):
                     # logger_instance.info(f'Play info: {play}')
                     # print(f'\n\n{play}\n\n')
                     # print("event: " + str(event_count[gamepk]))
-                    msg = f"\r\n*\r\n"
-                    msg += f"{description[0:160]}"  # TWEET DESCRIPTION LENGTH
+                    ##msg = f"\r\n**\r\n"
+                    msg = f"{description[0:100]}  "  # TWEET DESCRIPTION LENGTH
                     # logger_instance.info(f'Play description: {msg}')
-                    msg += f'\nP: {pitcher_name} {pitcher_teams}\n{home_team} {home_score}, ' \
-                           f'{away_team} {away_score}, {inning} {outs}o, {on_base_str}\n' \
+                    msg += f'({pitcher_name} {pitcher_teams}), {home_team} {home_score}, ' \
+                           f'{away_team} {away_score},  {inning} {outs}o,  {on_base_str}  ' \
                            f'{batter_teams}'
-                    msg = msg[0:280]
+                    msg = msg[0:240]
                     # print("----------")
                     print(msg)
                     # print("-----------------------------------------------")
@@ -315,6 +315,7 @@ def process_mlb(data, gamepk, player_teams):
                         logger_instance.info(f'Pushing play info: {msg}')
                         print("Pushing: " + msg)
                         inst.push(title, msg)
+                        inst.send_message(msg)
                         # inst.tweet(msg)
                         time.sleep(1.25)
                     else:
@@ -499,8 +500,8 @@ def start_gamefeed(gamepks):
     global reported_statcast_count
     lineups = dict()
     TIMEOUT = 15
-    sleep_min = 6
-    sleep_max = 14
+    sleep_min = 4
+    sleep_max = 11
 
     player_teams = roster_list()
     # for p in player_teams:
