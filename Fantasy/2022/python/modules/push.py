@@ -3,6 +3,7 @@ __author__ = 'chance'
 import inspect
 import logging
 import os
+import smtplib
 import time
 from datetime import datetime
 
@@ -25,6 +26,9 @@ APIKEY = os.environ.get('APIKEY')
 APISECRETKEY = os.environ.get('APISECRETKEY')
 ACCESSTOKEN = os.environ.get('ACCESSTOKEN')
 ACCESSTOKENSECRET = os.environ.get('ACCESSTOKENSECRET')
+SE = f"{os.environ.get('GMA')}@gmail.com"
+SP = os.environ.get('GMPY')
+SN = f"{str(int(os.environ.get('PN'))-4)}@vtext.com"
 
 # PUSHBUCKET
 PBTOKEN = os.environ.get('PBTOKEN')
@@ -95,6 +99,10 @@ class Push(object):
         self.tweet_count = 0
         # self.pb = PushBullet(PBTOKEN)
         self.slack_url = f"https://hooks.slack.com/services/{SLACK_URL_SUFFIX}"
+        self.se = SE
+        self.sp = SP
+        self.sn = SN
+        self.sms_auth = (self.se, self.sp)
 
     def incr_tweet_count(self):
         self.tweet_count += 1
@@ -203,6 +211,18 @@ class Push(object):
     def get_twitter_auth(self):
         return self.auth
 
+    def send_message(self, message):
+        message = f"\r\n{message}"
+        recipient = self.sn
+        try:
+            server = smtplib.SMTP("smtp.gmail.com", 587)
+            server.starttls()
+            server.login(self.sms_auth[0], self.sms_auth[1])
+            server.sendmail(self.sms_auth[0], recipient, message)
+        except Exception as ex:
+            print(f"Exception in push.send_message: {ex}")
+        return
+
     def tweet(self, msg, PROCESS_FLAG=False):
         if PROCESS_FLAG:
             ts = datetime.now()  # current date and time
@@ -259,19 +279,22 @@ class Push(object):
             # print(msg_len)
             if msg_len > max_msg_len:
                 print("Message part:\n" + full_msg)
+                self.logger_instance.info(full_msg)
                 self.push(title, full_msg)
-                self.tweet(full_msg)
+                self.send_message(full_msg)
+                #self.tweet(full_msg)
                 time.sleep(1)
                 full_msg = msg
                 msg_len = len(full_msg)
             else:
                 full_msg += str(msg)
         # Push the remainder out
-        full_msg += "\n\n-------\n\n"
+        #full_msg += "\n\n-------\n\n"
         print("Message remainder:\n" + full_msg)
         self.logger_instance.info(full_msg)
         self.push(title, full_msg)
-        self.tweet(full_msg)
+        self.send_message(full_msg)
+        #self.tweet(full_msg)
         return
 
     def push_list_twtr(self, push_list, title="None"):
