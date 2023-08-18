@@ -800,7 +800,7 @@ class Fantasy(object):
 	@tools.try_wrap
 	def refresh_starter_history(self):
 		starter_history_columns = f"Date,name,tm,HA,Opp,TH,woba,kpct,OwLR,OwHA,OOPS,OWRC," \
-		                          f"PwB,OLR,OHA,pa,HR,OU,ML,FRAN,FLIP,PRAC,wB,BOHM,FOMO," \
+		                          f"PwB,OLR,OHA,OW,pa,HR,OU,ML,FRAN,FLIP,PRAC,wB,BOHM,FOMO," \
 		                          f"percentOwned,OppKPct,woba2021,xwoba2021,MLBID,ESPNID, espn_gameid"
 		command = f"INSERT INTO StarterHistory ({starter_history_columns}) SELECT {starter_history_columns} FROM UpcomingStartsWithStats"
 		print(f"refresh_starter_history: {command}")
@@ -1399,7 +1399,9 @@ class Fantasy(object):
 					                                     player_name, str(i['type'] or "")])
 													print("Push String: " + push_str)
 													self.logger_instance.debug(f'PUSH: {push_str}')
-													push_list.append(push_str)
+													#push_list.append(push_str)
+													self.push_instance.push("Transaction:",push_str)
+													self.push_instance.send_message(push_str)
 
 			if len(espnid_list) > 0:
 				list_str = str(tuple(espnid_list))
@@ -1412,12 +1414,12 @@ class Fantasy(object):
 				except Exception as ex:
 					self.push_instance.push("Error in relevant roster query", "Error: " + str(ex))
 
-			if len(push_list) > 4:
+			if len(push_list) > 20:
 				self.push_instance.push("Over 4 transactions", "Look for table tweet")
 
-			if len(push_list) > 0:
-				self.push_instance.push_list(push_list, "Transactions")
-				push_list.clear()
+			# if len(push_list) > 0:
+			# 	self.push_instance.push_list(push_list, "Transactions")
+			# 	push_list.clear()
 
 		except Exception as ex:
 			self.logger_exception(f'ERROR in build_transactions')
