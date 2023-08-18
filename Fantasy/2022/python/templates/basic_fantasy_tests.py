@@ -26,7 +26,7 @@ ACCESSTOKENSECRET = os.environ.get('ACCESSTOKENSECRET')
 API_KEY = os.environ.get('api_key')
 REG_ID = os.environ.get('reg_id')
 
-
-#fantasy.tweet_daily_schedule()
-fantasy.tweet_add_drops()
-#fantasy.run_injury_updates()
+push_instance.send_message("pymessage from basic_fantasy")
+#fantasy.refresh_starter_history()
+# fantasy.tweet_add_drops()p
+# fantasy.run_injury_updates()

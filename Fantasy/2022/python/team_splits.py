@@ -65,10 +65,11 @@ def do_splits(split_name, yr, date10=None):
 
 		try:
 
-			tbl_array = pd.read_html(url_text, attrs={'id': 'LeaderBoard1_dg1_ctl00'}, header=1)
+			#tbl_array = pd.read_html(url_text, attrs={'id': 'LeaderBoard1_dg1_ctl00'}, header=1)
+			tbl_array = pd.read_html(url_text)
 
-			print("sleeping 25 ....")
-			time.sleep(25)
+			print("sleeping 5 ....")
+			time.sleep(5)
 
 			df = tbl_array[0]
 			df.drop(df.tail(1).index, inplace=True)
