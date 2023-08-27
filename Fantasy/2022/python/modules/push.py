@@ -4,8 +4,10 @@ import inspect
 import logging
 import os
 import smtplib
+import sqlite3
 import time
 from datetime import datetime
+from email.mime.text import MIMEText
 
 import colorlog
 import dataframe_image as dfi
@@ -28,7 +30,7 @@ ACCESSTOKEN = os.environ.get('ACCESSTOKEN')
 ACCESSTOKENSECRET = os.environ.get('ACCESSTOKENSECRET')
 SE = f"{os.environ.get('GMA')}@gmail.com"
 SP = os.environ.get('GMPY')
-SN = f"{str(int(os.environ.get('PN'))-4)}@vtext.com"
+SN = f"{str(int(os.environ.get('PN')) - 4)}@vtext.com"
 
 # PUSHBUCKET
 PBTOKEN = os.environ.get('PBTOKEN')
@@ -44,8 +46,7 @@ API_KEY = os.environ.get('api_key')
 ########################################################################################################################
 
 def get_logger(logfilename='push_default.log',
-               logformat='%(asctime)s:%(levelname)s'
-                         ':%(funcName)s:%(lineno)d:%(message)s:%(pathname)s\n'):
+               logformat='%(asctime)s:%(levelname)s:%(funcName)s:%(lineno)d:%(message)s:%(pathname)s\n'):
     bold_seq = '\033[1m'
     colorlog_format = (
         f'{bold_seq} '
@@ -65,7 +66,7 @@ def get_logger(logfilename='push_default.log',
     return logger_instance
 
 
-def set_tweepy(self, *args, **kwargs):
+def set_tweepy(self):
     api = tweepy.API(self.auth)
     return api
 
@@ -73,7 +74,7 @@ def set_tweepy(self, *args, **kwargs):
 class Push(object):
     MAX_MSG_LENGTH: int
 
-    def __init__(self, logger_instance=None, *args, **kwargs):
+    def __init__(self, logger_instance=None):
         api_key = API_KEY
         reg_id = REG_ID
         self.push_service = FCMNotification(api_key=api_key)
@@ -95,21 +96,23 @@ class Push(object):
             self.logger_instance = logger_instance
 
         # Create API object
-        self.api = set_tweepy(self, *args, **kwargs)
+        self.api = set_tweepy(self)
         self.tweet_count = 0
         # self.pb = PushBullet(PBTOKEN)
         self.slack_url = f"https://hooks.slack.com/services/{SLACK_URL_SUFFIX}"
-        self.se = SE
-        self.sp = SP
-        self.sn = SN
-        self.sms_auth = (self.se, self.sp)
-
-    def incr_tweet_count(self):
-        self.tweet_count += 1
-        return self.tweet_count
-
-    def get_tweet_count(self):
-        return self.tweet_count
+        self.EMAIL_FROM = f"{os.environ.get('GMA')}@gmail.com"
+        self.EMAIL_PASSWORD = os.environ.get('GMPY')
+        self.EMAIL_TO = f"{str(int(os.environ.get('PN')) - 4)}@vtext.com"
+        self.DEFAULT_SMS = f"{str(int(os.environ.get('PN')) - 4)}@vtext.com"
+        # self.server = smtplib.SMTP("smtp.gmail.com", 587)
+        # self.server.starttls()
+        # self.server.login(self.EMAIL_FROM, self.EMAIL_PASSWORD)
+        # self.server.set_debuglevel(2)
+        self.send_message_flag = False
+        self.db = f'C:\\Ubuntu\\Shared\\data\\Push.db'
+        self.conn = sqlite3.connect(self.db, timeout=15)
+        # print("Opening " + self.db)
+        self.cursor = self.conn.cursor()
 
     def print_calling_function(self):
         print('\n')
@@ -124,59 +127,82 @@ class Push(object):
         print("#############################")
         return
 
-    def push(self, title="None", body="None"):
+    def execute(self, cmd, verbose=0):
+        if verbose:
+            self.print_calling_function()
+        self.cursor.execute(cmd)
+        self.conn.commit()
+
+    def select(self, query, verbose=0):
+        if verbose:
+            self.print_calling_function()
+        self.cursor.execute(query)
+        self.conn.commit()
+        return self.cursor.fetchall()
+
+    def incr_tweet_count(self):
+        self.tweet_count += 1
+        return self.tweet_count
+
+    def get_tweet_count(self):
+        return self.tweet_count
+
+    def push(self, body, title = None):
         res = 0
         SUPPRESS_FLAG = False
+        if title is None:
+            title = "No title provided"
         if not SUPPRESS_FLAG:
             message = f"{body}\r\n\r\n"
 
             try:
                 response = slack_client.chat_postMessage(
                     channel=slack_alerts_channel,
-                    text=message
-                )
+                    text=message)
+                view_response = False
+                if view_response:
+                    print(f"Response: {response}")
             except SlackApiError as e:
                 # You will get a SlackApiError if "ok" is False
-                assert e.response["error"]  # st
+                assert e.response["error"]
 
-            # All slack data
-            # slack_data = {
-            #     "channel": "alerts",
-            #     "username": "AlertsBaseball",
-            #     "attachments": [
-            #         {
-            #             "color": "#FF0000",
-            #             "title": body,
-            #             "fields": [
-            #                 {
-            #                     "title": title,
-            #                     "value": message,
-            #                     "short": True,
-            #                 }
-            #             ]
-            #         }
-            #     ]
-            # }
-            # byte_length = str(sys.getsizeof(slack_data))
-            # headers = {'Content-Type': "application/json",
-            #            'Content-Length': byte_length}
-            #
-            # # Posting requests after dumping the slack data
-            # response = requests.post(self.slack_url, data=json.dumps(slack_data), headers=headers)
-            #
-            # # Post request is valid or not!
-            # if response.status_code != 200:
-            #     raise Exception(response.status_code, response.text)
-
-            # push to android device
             ANDROID = False
             if ANDROID:
                 res = self.push_service.notify_single_device(registration_id=self.registration_id,
                                                              message_title=title,
                                                              message_body=body, sound="whisper.mp3",
                                                              badge="Test2")
-            # self.pb.push_note(title, body)
         return res
+
+    def set_send_message_flag(self, flag_, calling_function = None ):
+        self.send_message_flag = flag_
+
+        if calling_function:
+            cmd = f"update SMSflag set flag = {flag_} where Function = '{calling_function}'"
+            self.logger_instance.info(cmd)
+            self.execute(cmd)
+            self.logger_instance.info(f"Successfully set_send_message_flag to {flag_} for {calling_function}")
+            self.push(title="set_send_message_flag", body=f"Successfully set_send_message_flag to {flag_} for {calling_function}")
+        else:
+            cmd = f"update SMSflag set flag = {flag_}"
+            self.logger_instance.info(cmd)
+            self.execute(cmd)
+            self.logger_instance.info(f"Successfully set_send_message_flag to {flag_} for all")
+            self.push(title="set_send_message_flag",
+                      body=f"Successfully set_send_message_flag to {flag_} for all")
+        return self.send_message_flag
+
+    def get_send_message_flag(self, calling_function = None):
+        if calling_function:
+            cmd = f"select flag from SMSflag where Function = '{calling_function}'"
+            self.logger_instance.info(cmd)
+            d = self.select(cmd)
+        else:
+            cmd = f"select max(flag) from SMSflag"
+            self.logger_instance.info(cmd)
+            d = self.select(f"select max(flag) from SMSflag")
+        send_message_flag = d[0][0]
+        return "On" if send_message_flag else "Off"
 
     def push_attachment(self, attachment, body="None"):
         res = False
@@ -187,8 +213,11 @@ class Push(object):
                 file=attachment,
                 title=body
             )
-            file_url = file_response["file"]["permalink"]
-            text = f"{body}: {file_url}"
+            view_response = False
+            if view_response:
+                print(f"Response: {file_response}")
+            # file_url = file_response["file"]["permalink"]
+            # text = f"{body}: {file_url}"
         except SlackApiError as e:
             # You will get a SlackApiError if "ok" is False
             assert f"Upload error {e.response['error']}"
@@ -211,17 +240,42 @@ class Push(object):
     def get_twitter_auth(self):
         return self.auth
 
-    def send_message(self, message):
-        message = f"\r\n{message}"
-        recipient = self.sn
-        try:
-            server = smtplib.SMTP("smtp.gmail.com", 587)
-            server.starttls()
-            server.login(self.sms_auth[0], self.sms_auth[1])
-            server.sendmail(self.sms_auth[0], recipient, message)
-        except Exception as ex:
-            print(f"Exception in push.send_message: {ex}")
+    def send_message(self, message, subject="No subject given", calling_function=None, recipients=None):
+        if not recipients:
+            recipients = self.EMAIL_TO
+        on_flag = self.get_send_message_flag(calling_function)
+        print(f"send_message is set to {on_flag}")
+        if on_flag == "On":
+            try:
+                EMAIL_FROM = f"{os.environ.get('GMA')}@gmail.com"
+                PASSWORD = os.environ.get('GMPY')
+                EMAIL_TO = recipients
+                auth = (EMAIL_FROM, PASSWORD)
+
+                msg = MIMEText(f"{message} {datetime.now().strftime('%m %d %I%M %p')}")
+                msg['Subject'] = subject
+                msg['From'] = EMAIL_FROM
+                msg['To'] = EMAIL_TO
+
+                with smtplib.SMTP("smtp.gmail.com", 587) as server:
+                    server.starttls()
+                    server.login(auth[0], auth[1])
+                    server.set_debuglevel(1)
+                    server.sendmail(EMAIL_FROM, EMAIL_TO, msg.as_string())
+                    server.quit()
+                    time.sleep(6)
+            except Exception as ex:
+                print(f"Exception in push.send_message: {ex}")
         return
+
+    def quit_sms_server(self):
+        self.server.quit()
+
+    def login_sms_server(self):
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()
+            server.login(self.EMAIL_TO, self.EMAIL_PASSWORD)
+            server.set_debuglevel(1)
 
     def tweet(self, msg, PROCESS_FLAG=False):
         if PROCESS_FLAG:
@@ -282,19 +336,19 @@ class Push(object):
                 self.logger_instance.info(full_msg)
                 self.push(title, full_msg)
                 self.send_message(full_msg)
-                #self.tweet(full_msg)
+                # self.tweet(full_msg)
                 time.sleep(1)
                 full_msg = msg
                 msg_len = len(full_msg)
             else:
                 full_msg += str(msg)
         # Push the remainder out
-        #full_msg += "\n\n-------\n\n"
+        # full_msg += "\n\n-------\n\n"
         print("Message remainder:\n" + full_msg)
         self.logger_instance.info(full_msg)
         self.push(title, full_msg)
         self.send_message(full_msg)
-        #self.tweet(full_msg)
+        # self.tweet(full_msg)
         return
 
     def push_list_twtr(self, push_list, title="None"):

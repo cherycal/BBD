@@ -215,7 +215,7 @@ class DB:
             except Exception as ex:
                 print(str(ex) + ": " + command)
                 tries += 1
-                self.push_instance.push("DB command failed", str(ex) + ": " + command)
+                self.push_instance.push(title="DB command failed", body = f"{str(ex)}: {command}")
                 time.sleep(2.5)
         if tries == max_tries:
             print("DB command failed: " + command)
@@ -238,7 +238,7 @@ class DB:
             except Exception as ex:
                 print(str(ex))
                 tries += 1
-                self.push_instance.push("DB command failed", str(ex) + ": " + command)
+                self.push_instance.push(title="DB command failed", body = f"{str(ex)}: {command}")
                 time.sleep(2.5)
 
         if tries == max_tries:

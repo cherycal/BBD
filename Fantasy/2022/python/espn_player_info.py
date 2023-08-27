@@ -23,6 +23,7 @@ import statcast_event_level
 import statcast_season_level
 import espn_season_stats
 import savant_boxscores
+#import team_splits
 import tables_to_files
 
 if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
@@ -62,7 +63,7 @@ def trywrap(func):
                 print("-" * 60)
                 traceback.print_exc(file=sys.stdout)
                 print("-" * 60)
-                inst.push("Attempt failed:", f'Error: {ex}\nFunction: {func}')
+                inst.push(title = "Attempt failed:",body = f'Error: {ex}\nFunction: {func}')
 
 
 def print_calling_function():
@@ -201,18 +202,18 @@ def begin_day_process():
                 passed = True
                 break
         except Exception as ex:
-            inst.push("DATABASE ERROR - try " + str(tries) + " at " + str(date_time),
-                      "Insert ESPNPlayerDataCurrent" + ": " + str(ex))
+            inst.push(title = "DATABASE ERROR - try " + str(tries) + " at " + str(date_time),
+                      body = "Insert ESPNPlayerDataCurrent" + ": " + str(ex))
             fantasy.logger_exception(f'begin_day_process ERROR:')
 
         time.sleep(SLEEP)
 
     if not passed:
-        inst.push("DATABASE ERROR", "insert ESPNPlayerDataCurrent, "
+        inst.push(title ="DATABASE ERROR", body ="insert ESPNPlayerDataCurrent, "
                                     "espn_player_info")
     else:
-        inst.push("BEGIN DAY PROCESS SUCCEEDS",
-                  "insert ESPNPlayerDataCurrent, espn_player_info")
+        inst.push(title ="BEGIN DAY PROCESS SUCCEEDS",
+                  body = "insert ESPNPlayerDataCurrent, espn_player_info")
 
 
 def eod_process():
@@ -234,7 +235,8 @@ def eod_process():
             passed = 1
             break
         except Exception as ex:
-            inst.push("DATABASE ERROR - try " + str(tries) + " at " + str(date_time), command + ": " + str(ex))
+            inst.push(title = "DATABASE ERROR - try " + str(tries) + " at " + str(date_time),
+                      body = command + ": " + str(ex))
             fantasy.logger_exception(f'DB error in cmd {command}: Exception: {ex}')
         time.sleep(SLEEP)
 
@@ -247,9 +249,9 @@ def eod_process():
     fantasy.refresh_starter_history()
 
     if not passed:
-        inst.push("DB ERROR eod_process(): " + str(date_time), "espn_player_info.py")
+        inst.push(body  = "DB ERROR eod_process(): " + str(date_time), title = "espn_player_info.py")
     else:
-        inst.push("EOD PROCESS SUCCEEDS: " + str(date_time), "espn_player_info.py")
+        inst.push(body  = "EOD PROCESS SUCCEEDS: " + str(date_time),title = "espn_player_info.py")
 
     return
 
@@ -266,8 +268,8 @@ def main():
     run_odds_bool = True
     begin_day_time = 10000
     end_day_time = 211500
-    MIN_SLEEP = 8
-    MAX_SLEEP = 14
+    MIN_SLEEP = 2
+    MAX_SLEEP = 8
     run_count = 0
 
     run_roster_suite = True
@@ -287,17 +289,7 @@ def main():
         formatted_date_time = ts.strftime("%Y%m%d-%H%M%S")
         time6 = ts.strftime("%H%M%S")
         current_time = int(time6)
-        minute = int(ts.strftime("%M"))
-        # if (20 <= minute < 25 or 0 <= minute < 5) and run_odds_bool:
-        #     print("Running odds & refresh starter history")
-        #     try:
-        #         fantasy.run_espn_odds()
-        #         fantasy.refresh_starter_history()
-        #     except Exception as ex:
-        #         print(ex)
-        #     run_odds_bool = False
-        # else:
-        #     run_odds_bool = True
+        # minute = int(ts.strftime("%M"))
 
         print(f'Start at {formatted_date_time}, run count: {run_count}')
 
@@ -309,7 +301,7 @@ def main():
             bdb.update(cmd)
         except Exception as ex:
             print(str(ex))
-            inst.push("DB error in player_info", str(ex))
+            inst.push(title = "DB error in player_info", body = str(ex))
             # inst.tweet("DB error in player_info\n" + cmd + ":\n" + str(ex))
             # fantasy.post_log_msg(f'DB error in cmd {cmd}: Exception: {ex}')
             fantasy.logger_exception(f'DB error in cmd {cmd}: Exception: {ex}')
@@ -323,6 +315,7 @@ def main():
 
         if current_time >= end_day_time:
             try:
+                fantasy.logger_instance.debug(f'End of day reached at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
                 bdb.update("update ProcessUpdateTimes set Active = 0 where Process = 'PlayerInfo'")
             except Exception as ex:
                 print(str(ex))
@@ -390,24 +383,38 @@ def main():
             except Exception as ex:
                 print(f"error: {ex}")
             # team_splits.main()
-
             inst.push("Morning suite completed",
                       "Morning suite completed")
 
             fantasy.set_roster_run_date(date8)
             run_roster_suite = False
 
-        fantasy.check_roster_lock_time()
-        fantasy.read_slack()
+        #
+        #
+        #
+        #
+        #
+        #
+        #
+        #
+        #
+        #
+        #
+        #
+        #
 
+        fantasy.check_roster_lock_time()
+        rt = fantasy.read_slack()
+        print(f"fantasy.read_slack(): {rt}")
+        print(f"send_message_flag: {fantasy.push_instance.get_send_message_flag(calling_function='Info')}")
         num1 = random.randint(MIN_SLEEP, MAX_SLEEP)
 
-        # formatted_date_time = datetime.now().strftime("%Y%m%d-%H%M%S")
         print(f'Sleep at {datetime.now().strftime("%Y%m%d-%H%M%S")} for {num1} seconds')
         # fantasy.logger_instance.debug(f'Sleep at {datetime.now().strftime("%Y%m%d-%H%M%S")} for {num1} seconds')
         time.sleep(num1)
         run_count += 1
 
+    #inst.quit_sms_server()
     exit(0)
 
 

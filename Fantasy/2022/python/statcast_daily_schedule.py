@@ -1,5 +1,7 @@
 __author__ = 'chance'
 
+## Populates StatcastGameData table with Games and Game Data from MLB
+
 import json
 import sys
 import time
@@ -27,7 +29,7 @@ sleep_interval = 1
 msg = ""
 
 
-def get_page(statcast_date):
+def populate_one_day(statcast_date):
     date8 = str(statcast_date.replace("-", ""))
     url_name = f"http://statsapi.mlb.com/api/v1/schedule?sportId=1&date={statcast_date}"
 
@@ -51,12 +53,21 @@ def get_page(statcast_date):
     df.to_sql(table_name, bdb.conn, if_exists='append', index=False)
     time.sleep(.5)
 
+def get_gamepks_from_db():
+    pass
+
+def update_game_data(gamepk):
+    pass
 
 def main():
     start_date = date(2023, 7, 14)
     end_date = date(2023, 10, 3)
-    [get_page(str(date.fromordinal(i))) for i in range(start_date.toordinal(), end_date.toordinal())]
+    # If games aren't in the table yet for a given day, populate_one_day does it
+    # It only enters a row for each game ( the game id is known as a gamepk )
+    [populate_one_day(str(date.fromordinal(i))) for i in range(start_date.toordinal(), end_date.toordinal())]
     time.sleep(.5)
+
+
 
 
 if __name__ == "__main__":

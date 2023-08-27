@@ -1,9 +1,12 @@
+import datetime
 import logging
 import sys
 import time
 import traceback
+from datetime import datetime, timedelta
 
 import colorlog
+import pytz
 from selenium import webdriver
 
 import push
@@ -29,10 +32,10 @@ import push
 
 push_instance = push.Push()
 
-def get_logger(logfilename = 'test.log',
-               logformat = '%(asctime)s:%(levelname)s'
-                           ':%(funcName)s:%(lineno)d:%(message)s:%(pathname)s\n'):
 
+def get_logger(logfilename='test.log',
+               logformat='%(asctime)s:%(levelname)s'
+                         ':%(funcName)s:%(lineno)d:%(message)s:%(pathname)s\n'):
     bold_seq = '\033[1m'
     colorlog_format = (
         f'{bold_seq} '
@@ -64,6 +67,7 @@ def get_platform():
 
     return platforms[sys.platform]
 
+
 def get_driver(mode=""):
     platform = get_platform()
     options = webdriver.ChromeOptions()
@@ -91,6 +95,7 @@ def string_from_list(in_list):
     out_string += '\n'
     return out_string
 
+
 def tryfunc(func):
     tries = 0
     max_tries = 4
@@ -110,6 +115,7 @@ def tryfunc(func):
                 traceback.print_exc(file=sys.stdout)
                 print("-" * 60)
                 push_instance.push("Process failed:", f'Error: {ex}\nFunction: {func}')
+
 
 def try_wrap(func):
     def tryfunction(*args, **kwargs):
@@ -131,3 +137,36 @@ def try_wrap(func):
             print("-" * 60)
 
     return tryfunction
+
+
+def time_diff(start_time, end_time):
+    t1 = datetime.strptime(str(start_time), "%H%M%S")
+    #print('Start time:', t1.time())
+
+    t2 = datetime.strptime(str(end_time), "%H%M%S")
+    #print('End time:', t2.time())
+
+    # get difference
+    delta = t2 - t1
+    return delta
+
+def unixtime_from_mlb_format(mlbtimestr):
+    return datetime.strptime(mlbtimestr, "%Y-%m-%dT%H:%M:%SZ").timestamp()
+
+def unix_gmt():
+    nowtime = int(datetime.now().timestamp())
+    tzoffset = 3600 * (int(datetime.now(pytz.timezone('America/Tijuana')).strftime("%z")) / -100)
+    #print(f'now: {nowtime} txoffset: {tzoffset}')
+    return nowtime + tzoffset
+
+def local_time_from_mlb_format(mlbtimestr):
+    gmt_game_time = datetime.strptime(mlbtimestr, "%Y-%m-%dT%H:%M:%SZ")
+    tzoffset = (int(datetime.now(pytz.timezone('America/Tijuana')).strftime("%z")) / -100)
+    game_time = gmt_game_time - timedelta(hours=tzoffset)
+    return game_time
+
+def local_hhmmss_from_mlb_format(mlbtimestr):
+    gmt_game_time = datetime.strptime(mlbtimestr, "%Y-%m-%dT%H:%M:%SZ")
+    tzoffset = (int(datetime.now(pytz.timezone('America/Tijuana')).strftime("%z")) / -100)
+    game_time = gmt_game_time - timedelta(hours=tzoffset)
+    return game_time.strftime("%H%M%S")
