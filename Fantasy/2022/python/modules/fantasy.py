@@ -125,6 +125,15 @@ class Fantasy(object):
 		self.slack_most_recent = ""
 		self.slack_first_run = True
 
+		def get_position_name_from_position_abbr(verbose=True):
+			return_dict = {}
+			rows = self.DB.select("SELECT Position, PositionName from ESPNPositions")
+			for row in rows:
+				return_dict[str(row[0])] = row[1]
+			return return_dict
+
+		self.position_name_dict = get_position_name_from_position_abbr()
+
 	def post_log_msg(self,msg):
 		self.logger_instance.debug(msg)
 
@@ -1214,8 +1223,8 @@ class Fantasy(object):
 			teamName[str(row['OwnerID'])] = str(row['TeamName'])
 		return teamName
 
-	def build_transactions(self, leagueID):
 
+	def build_transactions(self, leagueID):
 		url_name = "http://fantasy.espn.com/apis/v3/games/flb/seasons/" + \
 		           self.roster_year + \
 		           "/segments/0/leagues/" + \
@@ -1223,6 +1232,7 @@ class Fantasy(object):
 		print("build_transactions: " + url_name)
 		add_drop_count = 0
 		transaction_count = 0
+
 		try:
 			with urllib.request.urlopen(url_name, timeout=self.TIMEOUT) as url:
 				json_object = json.loads(url.read().decode())
@@ -1272,6 +1282,7 @@ class Fantasy(object):
 									from_position = \
 										self.position[str(i['fromLineupSlotId'])]
 								trans_obj.set_from_position(from_position)
+								from_position_name = self.position_name_dict.get(from_position, "Position Name Not Found")
 
 								from_team = ""
 								if i['fromTeamId'] > 0:
@@ -1296,6 +1307,7 @@ class Fantasy(object):
 									to_position = self.position[str(i['toLineupSlotId'])]
 									item_list.append(to_position)
 								trans_obj.set_to_position(to_position)
+								to_position_name = self.position_name_dict.get(to_position, "Position Name Not Found")
 
 								to_team = ""
 								if 'toTeamId' in i and i['toTeamId'] > 0:
@@ -1353,12 +1365,18 @@ class Fantasy(object):
 													push_str = \
 														self.push_instance.string_from_list(
 														[ team_name, f'({league_abbr})',
-														"from:", from_position,"."
+														". from:", from_position_name,"."
 					                                     "to: ",
-					                                     to_position, from_team,".",
+					                                     to_position_name, from_team,".",
 					                                     to_team,".",
 					                                     player_name, ".", str(i['type'] or "")])
+													if str(i['type'] in ['ADD','DROP']):
+														push_str = f"{team_name} {player_name} {str(i['type'])}"
 													print("Push String: " + push_str)
+													if str(i['type'] in ['LINEUP']):
+														push_str = f"LINEUP change for {team_name}" \
+														           f", player {player_name}, " \
+														           f"from {from_position_name} to {to_position_name}"
 													self.logger_instance.debug(f'Adding to push_list: {push_str}')
 													push_list.append(push_str)
 
