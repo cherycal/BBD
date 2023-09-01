@@ -826,15 +826,15 @@ class Fantasy(object):
 				player_obj.set_name(player['player']['fullName'])
 			if 'injuryStatus' in player['player']:
 				if player['player'].get('injuryStatus') == "DAY_TO_DAY":
-					player['player']['injuryStatus'] = "DTD"
+					player['player']['injuryStatus'] = "DAY TO DAY"
 				if player['player'].get('injuryStatus') == "TEN_DAY_DL":
-					player['player']['injuryStatus'] = "10DL"
+					player['player']['injuryStatus'] = "TEN DAY D L"
 				if player['player'].get('injuryStatus') == "FIFTEEN_DAY_DL":
-					player['player']['injuryStatus'] = "15DL"
+					player['player']['injuryStatus'] = "FIFTEEN DAY DL"
 				if player['player'].get('injuryStatus') == "SIXTY_DAY_DL":
-					player['player']['injuryStatus'] = "60DL"
+					player['player']['injuryStatus'] = "SIXTY DAY D L"
 				if player['player'].get('injuryStatus') == "SEVEN_DAY_DL":
-					player['player']['injuryStatus'] = "7DL"
+					player['player']['injuryStatus'] = "SEVEN DAY D L"
 				player_obj.set_injuryStatus(player['player']['injuryStatus'])
 			if 'status' in player:
 				player_obj.set_status(player['status'])

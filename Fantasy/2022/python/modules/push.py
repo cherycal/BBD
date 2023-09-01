@@ -257,7 +257,7 @@ class Push(object):
                     AMPM_flag = "A M"
                 else:
                     AMPM_flag = "P M"
-                msg = MIMEText(f" sent at {message} {datetime.now().strftime('%m %d %I%M')} {AMPM_flag}")
+                msg = MIMEText(f"{message} sent at {datetime.now().strftime('%m %d %I%M')} {AMPM_flag}")
                 msg['Subject'] = subject
                 msg['From'] = EMAIL_FROM
                 msg['To'] = EMAIL_TO
