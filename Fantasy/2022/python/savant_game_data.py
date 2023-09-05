@@ -213,10 +213,17 @@ def read_slack():
                         print(F"Skipping slack first run")
                         slack_first_run = False
                 except Exception as ex:
-                    inst.push(body = f"Error in push_instance, Error: {str(ex)}")
+                    inst.push(body=f"Error in push_instance, Error: {str(ex)}")
             else:
                 pass
     return text
+
+
+def ordinal(n):
+    if 10 <= n % 100 < 20:
+        return str(n) + 'th'
+    else:
+        return str(n) + {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, "th")
 
 
 def process_mlb(data, gamepk, player_teams):
@@ -331,14 +338,17 @@ def process_mlb(data, gamepk, player_teams):
                                  f'Event type: {play["result"].get("eventType", "No event type listed")}')
             print("Batter: " + batter_name)
             print("Pitcher: " + pitcher_name)
-            if play["result"].get("eventType", "No event type listed") in\
-                    ["batter_timeout","mound_visit","runner_placed"]:
+            if play["result"].get("eventType", "No event type listed") in \
+                    ["batter_timeout", "mound_visit", "runner_placed"]:
                 continue
             if batter_id in watch_ids or pitcher_id in watch_ids:
                 # print(play)
                 home_score = play['result']['awayScore']
                 away_score = play['result']['homeScore']
-                inning = str(play['about']['halfInning'])[0].capitalize() + "" + str(play['about']['inning'])
+                topbot = "Top of the"
+                if (str(play['about']['halfInning'])[0].capitalize()) == "B":
+                    topbot = "Bottom of the"
+                inning = f"{topbot} {ordinal(int(play['about']['inning']))}"
                 outs = str(play['count']['outs'])
                 # logger_instance.info(f'On watch list: {play}')
                 # print("Batter ID: " + batter_id)
@@ -351,7 +361,7 @@ def process_mlb(data, gamepk, player_teams):
                     msg = f"{description[0:100]}  "  # TWEET DESCRIPTION LENGTH
                     # logger_instance.info(f'Play description: {msg}')
                     msg += f'({pitcher_name} {pitcher_teams}), {home_team} {home_score}, ' \
-                           f'{away_team} {away_score},  {inning} {outs}o,  {on_base_str}  ' \
+                           f'{away_team} {away_score}, {inning} {outs}o,  {on_base_str}  ' \
                            f'{batter_teams}'
                     msg = msg[0:240]
                     # print("----------")
@@ -365,16 +375,16 @@ def process_mlb(data, gamepk, player_teams):
                         outs = "Nobody"
                     sms_msg = f"{shorten_description(description, 6)}. {pitcher_name}. {home_team} {home_score} " \
                               f"{away_team} {away_score}, " \
-                              f"{inning} {outs} {outstr}, {men_on_base_str}"
+                              f"{inning}, {outs} {outstr}, {men_on_base_str}"
                     print(msg)
                     print(sms_msg)
                     # print("-----------------------------------------------")
-                    title = msg[0:140]
+                    # title = msg[0:140]
                     if not sc_first_run[gamepk] or at_bat <= 1:
                         logger_instance.info(f'Pushing play info: {msg}')
                         print("Pushing: " + msg)
-                        inst.push(title = "Status Change", body = msg)
-                        inst.send_message(sms_msg, "Game Data", calling_function = "GameData")
+                        inst.push(title="Status Change", body=msg)
+                        inst.send_message(sms_msg, "Game Data", calling_function="GameData")
                         # inst.tweet(msg)
                         time.sleep(4)
                     else:
@@ -478,7 +488,7 @@ def start_gamefeed(gamepks_):
             reader2 = csv.reader(inp2)
             reported_statcast_count = {str(rows[0]): int(rows[1]) for rows in reader2}
 
-    game_start_times = get_start_times(now.strftime("%Y%m%d"))
+    # game_start_times = get_start_times(now.strftime("%Y%m%d"))
 
     # Sets counts to zero if event counts are not found in event_count.csv file
     for gamepk in gamepks_:
@@ -549,8 +559,8 @@ def start_gamefeed(gamepks_):
                 time.sleep(first_game_sleep)
             in_progress_games = 0
             for gamepk in gamepks:
-                print(f"\nGamepk {gamepk}: {game_start_times[gamepk].get('away_team','Missing away team')} "
-                      f"at {game_start_times[gamepk].get('home_team','Missing home team')}")
+                print(f"\nGamepk {gamepk}: {game_start_times[gamepk].get('away_team', 'Missing away team')} "
+                      f"at {game_start_times[gamepk].get('home_team', 'Missing home team')}")
                 if int(current_time) < int(game_start_times[gamepk]['start_time']):
                     print(f"Skipping game {gamepk} at {datetime.now().strftime('%H%M%S')}:"
                           f" game doesn't start until {game_start_times[gamepk]['start_time']}")
@@ -569,7 +579,7 @@ def start_gamefeed(gamepks_):
                     bdb.update(cmd)
                 except Exception as ex:
                     print(str(ex))
-                    inst.push(title = "DB error in savant_game_data", body = str(ex))
+                    inst.push(title="DB error in savant_game_data", body=str(ex))
                     # inst.tweet("DB error in game_data: " + str(ex))
 
                 ########### Statcast ######################
@@ -692,7 +702,7 @@ def start_gamefeed(gamepks_):
             not_eod = True
 
     print("Games are done for today")
-    #inst.quit_sms_server()
+    # inst.quit_sms_server()
     try:
         bdb.update("update ProcessUpdateTimes set Active = 0 where Process = 'GameData'")
     except Exception as ex:

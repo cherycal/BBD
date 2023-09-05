@@ -947,7 +947,7 @@ class Fantasy(object):
 						where_attr = 'espnid'
 						if set_attr != "nextStartID":
 							self.push_msg_list.append(
-								tools.string_from_list([name, set_attr, 'old:', old, 'new:', new]))
+								tools.string_from_list([name, set_attr, 'old: ', old, 'new: ', new]))
 							# removed 20230406 run_injury_updates = True
 						self.DB.update_list("ESPNPlayerDataCurrent", set_attr, where_attr, (new, espnid))
 						self.DB.update_list("ESPNPlayerDataCurrent", "Date", where_attr, (out_date, espnid))
@@ -1282,7 +1282,8 @@ class Fantasy(object):
 									from_position = \
 										self.position[str(i['fromLineupSlotId'])]
 								trans_obj.set_from_position(from_position)
-								from_position_name = self.position_name_dict.get(from_position, "Position Name Not Found")
+								from_position_name = self.position_name_dict.get(from_position,
+								                                                 "Position Name Not Found")
 
 								from_team = ""
 								if i['fromTeamId'] > 0:

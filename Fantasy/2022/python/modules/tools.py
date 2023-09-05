@@ -87,7 +87,7 @@ def get_driver(mode=""):
 def string_from_list(in_list):
     out_string = ""
     for i in in_list:
-        if i[-1] == ":":
+        if i[-2:] == ": ":
             out_string += i
         else:
             out_string += i + ", "

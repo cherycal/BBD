@@ -14,6 +14,7 @@ import fantasy
 from datetime import date, datetime
 from datetime import timedelta
 import os
+
 # from io import BytesIO
 # import certifi
 # import pycurl
@@ -25,7 +26,8 @@ fantasy = fantasy.Fantasy(mode, caller=os.path.basename(__file__))
 
 
 def process_statcast(data, gamepk, game_date):
-
+    season = str(game_date)
+    season = season[0:4]
     team_dict = dict()
     team_dict['away'] = dict()
     team_dict['away']['abbr'] = data['away_team_data']['abbreviation']
@@ -33,8 +35,8 @@ def process_statcast(data, gamepk, game_date):
     team_dict['home'] = dict()
     team_dict['home']['abbr'] = data['home_team_data']['abbreviation']
     team_dict['home']['data'] = data['boxscore']['teams']['home']
-    away_team = data['boxscore']['teams']['away']
-    home_team = data['boxscore']['teams']['home']
+    # away_team = data['boxscore']['teams']['away']
+    # home_team = data['boxscore']['teams']['home']
     print("Game: " + str(gamepk))
 
     # for team in [home_team, away_team]:
@@ -42,7 +44,7 @@ def process_statcast(data, gamepk, game_date):
         home_away = str(team_key)
         team_abbr = team_dict[team_key]['abbr']
         team = team_dict[team_key]['data']
-        opp_abbr = ""
+        # opp_abbr = ""
         if home_away == 'away':
             opp_abbr = team_dict['home']['abbr']
         else:
@@ -71,9 +73,7 @@ def process_statcast(data, gamepk, game_date):
             bid = "ID" + str(batter)
             bname = team['players'][bid]['person']['fullName']
             game_stats = team['players'][bid]['stats']['batting']
-            season = str(game_date)
-            season = season[0:4]
-            gametype = "R"
+            # gametype = "R"
             for cat in batcats:
                 if game_stats.get(cat):
                     statlist.append(game_stats[cat])
@@ -90,7 +90,7 @@ def process_statcast(data, gamepk, game_date):
             index.append("")
 
         df = pd.DataFrame(batlol, columns=batcats, index=index)
-        #print(df.columns)
+        # print(df.columns)
         df = df.sort_values(by=['points'], ascending=[False])
         df = df[column_names]
         df['pa'] = df['atBats'] + df['baseOnBalls'] + df['hitByPitch']
@@ -106,9 +106,9 @@ def process_statcast(data, gamepk, game_date):
         df['GameType'] = "R"
         df['Season'] = season
         # df_styled = df.style.background_gradient()  # adding a gradient based on values in cell
-        img = "mytable.png"
-        #dfi.export(df, img)
-        #inst.tweet_media(img, "Batting stats: " + teamname)
+        # img = "mytable.png"
+        # dfi.export(df, img)
+        # inst.tweet_media(img, "Batting stats: " + teamname)
 
         table_name = "StatcastBoxscores"
         del_cmd = f'delete from {table_name} where gamepk = {gamepk} and team = \'{teamname}\''
@@ -129,10 +129,9 @@ def process_statcast(data, gamepk, game_date):
         except Exception as ex:
             print(str(ex))
 
-        column_names = ['name', 'team', 'date', 'points', 'qs', 'outs', 'strikeOuts', 'wins', 'saves', 'holds',
-                        'earnedRuns', 'baseOnBalls', 'losses', 'hits', 'gamesStarted', 'intentionalWalks', 'mlbid',
-                        'gamepk','numberOfPitches']
-
+        # column_names = ['name', 'team', 'date', 'points', 'qs', 'outs', 'strikeOuts', 'wins', 'saves', 'holds',
+        #                 'earnedRuns', 'baseOnBalls', 'losses', 'hits', 'gamesStarted', 'intentionalWalks', 'mlbid',
+        #                 'gamepk', 'numberOfPitches']
 
         pitchcats = list()
         index.clear()
@@ -178,15 +177,15 @@ def process_statcast(data, gamepk, game_date):
             index.append("")
 
         df = pd.DataFrame(pitchlol, columns=pitchcats, index=index)
-        #print(df.columns)
+        # print(df.columns)
         df = df.sort_values(by=['points'], ascending=[False])
-        #df = df[column_names]
+        # df = df[column_names]
         df['GameType'] = "R"
         df['Season'] = season
         # df_styled = df.style.background_gradient()  # adding a gradient based on values in cell
-        img = "mytable.png"
-        #dfi.export(df, img)
-        #inst.tweet_media(img, "Pitching stats: " + teamname)
+        # img = "mytable.png"
+        # dfi.export(df, img)
+        # inst.tweet_media(img, "Pitching stats: " + teamname)
 
         table_name = "StatcastBoxscoresPitching"
         del_cmd = f'delete from {table_name} where gamepk = {gamepk} and team = \'{teamname}\''
@@ -207,8 +206,8 @@ def one_day(dt):
 
     gamepks = dict()
 
-    q = f'select game, date from StatcastGameData where date >= {out_date} and date <= {out_date} ' \
-        f'and (game_state = "Final" or game_state is NULL)'
+    q = f'select game, date from StatcastGameData where date >= {out_date} and date <= {out_date}'
+    # f'and (game_state = "Final" or game_state is NULL)'
 
     c = bdb.select(q)
 
@@ -262,7 +261,7 @@ def one_day(dt):
 
 
 def get_savant_gamefeed_page(url_name):
-    TIMEOUT = 10
+    # TIMEOUT = 10
     headers = {"authority": "baseballsavant.mlb.com"}
     print("get_savant_gamefeed_page ....")
     time.sleep(.5)
@@ -271,32 +270,13 @@ def get_savant_gamefeed_page(url_name):
     return json.loads(r.content)
 
 
-# DECOMISSIONING PYCURL 20230722
-# def get_savant_gamefeed_page_curl(url_name):
-#     TIMEOUT = 10
-#     headers = ["authority: baseballsavant.mlb.com",
-#                "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36"
-#             ]
-#
-#     buffer = BytesIO()
-#     c = pycurl.Curl()
-#     c.setopt(c.URL, url_name)
-#     c.setopt(c.CONNECTTIMEOUT, TIMEOUT)
-#     c.setopt(c.HTTPHEADER, headers)
-#     c.setopt(c.WRITEDATA, buffer)
-#     c.setopt(c.CAINFO, certifi.where())
-#     c.perform()
-#     c.close()
-#     data = buffer.getvalue()
-#     return json.loads(data)
-
-
 def main():
     DAYS_AGO = 2
     end_date = date.today()
     start_date = end_date - timedelta(days=DAYS_AGO)
     step = timedelta(days=1)
 
+    # Manual date range entry
     # date1 = '2023-03-31'
     # date2 = '2023-04-22'
     # start_date = datetime.strptime(date1, '%Y-%m-%d')
