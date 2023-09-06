@@ -21,7 +21,6 @@ import logging
 from pathlib import Path
 import colorlog
 import os
-import re
 from os import path
 # import certifi
 # import pycurl
@@ -154,10 +153,11 @@ def shorten_description(description, length):
     words = description.split(' ')
     shortdesc = ""
     for word in words[0:length - 1]:
+        # print(word)
         shortdesc += f"{word} "
         if word in ["out", "to", "singles", "doubles", "triples", "homers", "play", "walks", "pitch", "error"]:
             break
-        if word[-1] == "," or (word[-1] == "." and not re.search("[A-Z]\.|Jr\.", word[-1])):
+        if (word[-1] == "," or word[-1] == ".") and len(word) > 3:
             break
     while shortdesc[-1] in [" ", ",", "."]:
         shortdesc = shortdesc[:-1]
@@ -271,8 +271,8 @@ def process_mlb(data, gamepk, player_teams):
             description = description.replace("shortstop", "SS")
             description = description.replace("catcher", "C")
             description = description.replace("pitcher", "P")
-            description = description.replace("strikes out", "Ks")
-            description = description.replace("called out on strikes", "Ks")
+            description = description.replace("strikes out", "struck out by ")
+            description = description.replace("called out on strikes", "struck out by ")
             # description = description.replace("walks", "BBs")
             # description = description.replace("singles", "sgls")
             # description = description.replace("doubles", "dbls")
@@ -358,7 +358,7 @@ def process_mlb(data, gamepk, player_teams):
                     # print(f'\n\n{play}\n\n')
                     # print("event: " + str(event_count[gamepk]))
                     ##msg = f"\r\n**\r\n"
-                    msg = f"{description[0:100]}  "  # TWEET DESCRIPTION LENGTH
+                    msg = f"{description[0:80]}  "  # TWEET DESCRIPTION LENGTH
                     # logger_instance.info(f'Play description: {msg}')
                     msg += f'({pitcher_name} {pitcher_teams}), {home_team} {home_score}, ' \
                            f'{away_team} {away_score}, {inning} {outs}o,  {on_base_str}  ' \
@@ -373,7 +373,7 @@ def process_mlb(data, gamepk, player_teams):
                         men_on_base_str = ""
                     if int(outs) == 0:
                         outs = "Nobody"
-                    sms_msg = f"{shorten_description(description, 6)}. {pitcher_name}. {home_team} {home_score} " \
+                    sms_msg = f"{shorten_description(description, 6)} Pitcher: {pitcher_name}. {home_team} {home_score} " \
                               f"{away_team} {away_score}, " \
                               f"{inning}, {outs} {outstr}, {men_on_base_str}"
                     print(msg)
