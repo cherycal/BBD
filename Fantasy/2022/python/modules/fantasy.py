@@ -991,8 +991,9 @@ class Fantasy(object):
 			img = f"./{msg}.png"
 			print(f"Upload file: {img}")
 			dfi.export(df, img,table_conversion="matplotlib")
-			#self.push_instance.tweet_media(img, msg, True)
-			self.push_instance.push_attachment(img, msg)
+			# self.push_instance.tweet_media(img, msg, True)
+			# self.push_instance.push_attachment(img, msg)
+			push.push_attachment(img, msg)
 		except Exception as ex:
 			print(str(ex))
 
