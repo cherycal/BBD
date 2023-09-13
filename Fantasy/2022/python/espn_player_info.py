@@ -268,8 +268,8 @@ def main():
     run_odds_bool = True
     begin_day_time = 10000
     end_day_time = 211500
-    MIN_SLEEP = 2
-    MAX_SLEEP = 8
+    MIN_SLEEP = 6
+    MAX_SLEEP = 10
     run_count = 0
 
     run_roster_suite = True
