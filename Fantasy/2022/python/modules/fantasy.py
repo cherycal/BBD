@@ -924,7 +924,8 @@ class Fantasy(object):
 		out_date = now.strftime("%Y%m%d")
 		run_injury_updates = False
 		#####################################
-		skip_ids = ['41134','4722949','41257','33089','36138','4917897']
+		skip_ids = ['41134']
+		## skip_ids = ['41134','4722949','41257','33089','36138','4917897','39802']
 		# ESPN has some players who
 		# change injury status
 		# back & forth like 10 times a day
@@ -948,7 +949,17 @@ class Fantasy(object):
 						if set_attr != "nextStartID":
 							self.push_msg_list.append(
 								tools.string_from_list([name, set_attr, 'old: ', old, 'new: ', new]))
-							# removed 20230406 run_injury_updates = True
+							if old in ['OUT','DAY TO DAY','ACTIVE','SUSPENSION','BEREAVEMENT'] or old[-2:] == "DL" or\
+									new in ['OUT','DAY TO DAY','ACTIVE','SUSPENSION','BEREAVEMENT'] or new[-2:] == "DL":
+								run_injury_updates = True
+							try:
+								query = f"SELECT Player, Team, BATS, THROWS," \
+								        f"LeagueID, Position,UpdateDate from ESPNRostersWithMLBID " \
+								        f"where ESPNID = {espnid}"
+								print(query)
+								self.run_query(query, f"Roster status for {name}, status {new}")
+							except Exception as ex:
+								print(f"roster_list_from_id failed: {ex}")
 						self.DB.update_list("ESPNPlayerDataCurrent", set_attr, where_attr, (new, espnid))
 						self.DB.update_list("ESPNPlayerDataCurrent", "Date", where_attr, (out_date, espnid))
 						self.DB.update_list("ESPNPlayerDataCurrent", "UpdateTime", where_attr, (date_time, espnid))
@@ -1163,7 +1174,7 @@ class Fantasy(object):
 
 
 	def run_injury_updates(self):
-		query = "select name, mlbTeam, OldValue,NewValue,percentOwned," \
+		query = "select name, mlbTeam, espnid, OldValue,NewValue,percentOwned," \
 		        "eligiblePositions,Time from InjuryStatusHistory where Time like '" + \
 		        self.date + "%' order by percentOwned desc"
 
@@ -1279,7 +1290,7 @@ class Fantasy(object):
 								item_list.append(transaction_id)
 
 								from_position = ""
-								if int(i['fromLineupSlotId']) >= 0:
+								if int(i['fromLineupSlotId']) >= -1:
 									from_position = \
 										self.position[str(i['fromLineupSlotId'])]
 								trans_obj.set_from_position(from_position)
@@ -1304,8 +1315,8 @@ class Fantasy(object):
 								trans_obj.set_player_name(player_name)
 								trans_obj.set_espnid(espnid)
 
-								to_position = "B"
-								if i.get('toLineupSlotId') and int(i['toLineupSlotId']) >= 0:
+								to_position = ""
+								if i.get('toLineupSlotId') and int(i['toLineupSlotId']) >= -1:
 									to_position = self.position[str(i['toLineupSlotId'])]
 									item_list.append(to_position)
 								trans_obj.set_to_position(to_position)
@@ -1372,37 +1383,41 @@ class Fantasy(object):
 					                                     to_position_name, from_team,".",
 					                                     to_team,".",
 					                                     player_name, ".", str(i['type'] or "")])
-													if str(i['type'] in ['ADD','DROP']):
-														push_str = f"{team_name} {player_name} {str(i['type'])}"
-													print("Push String: " + push_str)
-													if str(i['type'] in ['LINEUP']):
+													if str(i['type']) in ['ADD','DROP']:
+														push_str = f"Roster change for {team_name} ({league_abbr}) - " \
+														           f"player {player_name} {str(i['type'])}"
+														self.logger_instance.debug(f'Adding to push_list: {push_str}')
+														push_list.append(push_str)
+														print(f"Push list: {push_list}")
+													if str(i['type']) in ['LINEUP']:
 														push_str = f"LINEUP change for {team_name}" \
 														           f", player {player_name}, " \
 														           f"from {from_position_name} to {to_position_name}"
-													self.logger_instance.debug(f'Adding to push_list: {push_str}')
-													push_list.append(push_str)
+														self.logger_instance.debug(f'Adding to push_list: {push_str}')
+														push_list.append(push_str)
+														print(f"Push list: {push_list}")
 
-			if len(espnid_list) > 0:
-				list_str = str(tuple(espnid_list))
-				list_str = list_str.replace(",)",")")
-				query = f'select Player, Team, LeagueID,Position from ESPNRosters' \
-						f' where espnid in {list_str} order by Player, Team'
-				print(query)
-				try:
-					self.run_query(query, f'Relevant_rosters:_{rr_msg}')
-				except Exception as ex:
-					self.push_instance.push(title = "Error in relevant roster query", body ="Error: " + str(ex))
+					if len(espnid_list) > 0:
+						list_str = str(tuple(espnid_list))
+						list_str = list_str.replace(",)",")")
+						query = f'select Player, Team, LeagueID,Position from ESPNRosters' \
+								f' where espnid in {list_str} order by Player, Team'
+						print(query)
+						try:
+							self.run_query(query, f'Relevant_rosters:_{rr_msg}')
+						except Exception as ex:
+							self.push_instance.push(title = "Error in relevant roster query", body ="Error: " + str(ex))
 
-			if len(push_list) > 20:
-				self.push_instance.push(title = "Over 4 transactions", body = "Look for table tweet")
+					if len(push_list) > 20:
+						self.push_instance.push(title = "Over 4 transactions", body = "Look for table tweet")
 
-			if len(push_list) > 0:
-				for push_str in push_list:
-					self.logger_instance.debug(f'PUSH from push_list: {push_str}')
-					self.push_instance.push(title = "Transaction:", body = push_str)
-					self.push_instance.send_message(push_str,subject="Player info",calling_function="Info")
-					#self.push_instance.push_list(push_list, "Transactions")
-				push_list.clear()
+					if len(push_list) > 0:
+						for push_str in push_list:
+							self.logger_instance.debug(f'PUSH from push_list: {push_str}')
+							self.push_instance.push(title = "Transaction:", body = push_str)
+							self.push_instance.send_message(push_str,subject="Player info",calling_function="Info")
+							#self.push_instance.push_list(push_list, "Transactions")
+						push_list.clear()
 
 		except Exception as ex:
 			self.logger_exception(f'ERROR in build_transactions')
@@ -1514,6 +1529,33 @@ class Fantasy(object):
 		self.push_instance.push(title = name,body = return_string)
 		return teams
 
+	def roster_list_from_id(self, id_):
+		teams = dict()
+		try:
+			r = self.DB.select_plus(f'SELECT * FROM ESPNRostersWithMLBID where ESPNID = {id_} order by ESPNID')
+			for d in r['dicts']:
+				mlbid = f'{str(d["Player"])}({str(d["MLBID"])})'
+				roster_spot = str(d["RosterSpotFull"])
+				roster_spot = roster_spot.replace(' ','_')
+				if teams.get(mlbid):
+					teams[mlbid].append(roster_spot)
+				else:
+					teams[mlbid] = list()
+					teams[mlbid].append(roster_spot)
+		except Exception as ex:
+			print(f'Exception: {str(ex)}')
+		return_string = f"{id_}: "
+		if teams.items():
+			for player in teams:
+				return_string += f'{player}: '
+				for roster_spot_name in teams[player]:
+					return_string += f'{roster_spot_name}, '
+				return_string = return_string[:-2]
+				return_string += f'\n'
+		else:
+			return_string += f'No Teams\n'
+		self.push_instance.push(title = id_,body = return_string)
+		return teams
 
 	def process_drops(self, drops):
 		#print("Number of process_drops:")
@@ -1640,8 +1682,8 @@ class Fantasy(object):
 			      f"'Injuries': Injuries\n" \
 			      f"SGF: start game feed\n" \
 			      f"EGF: end (pause) game feed\n" \
-			        f"SMSON (Function): turn on sms feed\n"\
-			        f"SMSOFF (Function): turn off sms feed\n" \
+			        f"ON (Function): turn on sms feed\n"\
+			        f"OFF (Function): turn off sms feed\n" \
 			        f"USWS: Upcoming starters\n" \
 			      f"ODDS: odds\n" \
 			      f"S: [player_name]: stats for player\n" \
@@ -1664,13 +1706,13 @@ class Fantasy(object):
 			self.run_query(query, f"USWS")
 			#
 			#
-		elif text_.lower() == "smson info":
+		elif text_.lower() == "on i":
 			self.push_instance.set_send_message_flag(True,"Info")
-		elif text_.lower() == "smsoff info":
+		elif text_.lower() == "off i":
 			self.push_instance.set_send_message_flag(False, "Info")
-		elif text_.lower() == "smson gamedata":
+		elif text_.lower() == "on g":
 			self.push_instance.set_send_message_flag(True, "GameData")
-		elif text_.lower() == "smsoff gamedata":
+		elif text_.lower() == "off g":
 			self.push_instance.set_send_message_flag(False, "GameData")
 		elif text_.lower() == "odds":
 			print("Tweet ODDS")
