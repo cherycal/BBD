@@ -150,14 +150,18 @@ is_in_pitching_change = dict()
 
 
 def shorten_description(description, length):
-    words = description.split(' ')
+    words = description.split()
     shortdesc = ""
+    continue_flag = False
     for word in words[0:length - 1]:
-        # print(word)
+        if word in ['intentionally', 'replaces']:
+            continue_flag = True
+        if word == "":
+            continue
+        print(f"_{word}_")
         shortdesc += f"{word} "
-        if word in ["out", "to", "singles", "doubles", "triples", "homers", "play", "walks", "pitch", "error"]:
-            break
-        if (word[-1] == "," or word[-1] == ".") and len(word) > 3:
+        if word in ["out", "out,", "out.", "to", "by", "singles", "doubles", "triples",
+                    "homers", "play", "walks", "pitch", "error"] and continue_flag is False:
             break
     while shortdesc[-1] in [" ", ",", "."]:
         shortdesc = shortdesc[:-1]
@@ -271,8 +275,9 @@ def process_mlb(data, gamepk, player_teams):
             description = description.replace("shortstop", "SS")
             description = description.replace("catcher", "C")
             description = description.replace("pitcher", "P")
-            description = description.replace("strikes out", "struck out by ")
-            description = description.replace("called out on strikes", "struck out by ")
+            description = description.replace("strikes out", "struckout by")
+            description = description.replace("on foul tip", "")
+            description = description.replace("called out on strikes", "struckout by")
             # description = description.replace("walks", "BBs")
             # description = description.replace("singles", "sgls")
             # description = description.replace("doubles", "dbls")
@@ -373,7 +378,8 @@ def process_mlb(data, gamepk, player_teams):
                         men_on_base_str = ""
                     if int(outs) == 0:
                         outs = "Nobody"
-                    sms_msg = f"{shorten_description(description, 6)} Pitcher: {pitcher_name}. {home_team} {home_score} " \
+                    sms_msg = f"{shorten_description(description, 10)} " \
+                              f"Pitcher {pitcher_name}. {home_team} {home_score} " \
                               f"{away_team} {away_score}, " \
                               f"{inning}, {outs} {outstr}, {men_on_base_str}"
                     print(msg)
