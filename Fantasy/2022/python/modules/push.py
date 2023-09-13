@@ -51,6 +51,7 @@ def ordinal(n):
     else:
         return str(n) + {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, "th")
 
+
 def get_logger(logfilename='push_default.log',
                logformat='%(asctime)s:%(levelname)s:%(funcName)s:%(lineno)d:%(message)s:%(pathname)s\n'):
     bold_seq = '\033[1m'
@@ -71,6 +72,7 @@ def get_logger(logfilename='push_default.log',
 
     return logger_instance
 
+
 def print_calling_function():
     print('\n')
     print("Printing calling information (fantasy.py)")
@@ -83,6 +85,7 @@ def print_calling_function():
     #      ", " + str(inspect.stack()[-1].lineno))
     print("#############################")
     return
+
 
 def push_attachment(attachment, body="None"):
     res = False
@@ -100,6 +103,7 @@ def push_attachment(attachment, body="None"):
         # You will get a SlackApiError if "ok" is False
         assert f"Upload error {e.response['error']}"
     return res
+
 
 def set_tweepy(self):
     api = tweepy.API(self.auth)
@@ -143,8 +147,6 @@ class Push(object):
         self.db = f'C:\\Ubuntu\\Shared\\data\\Push.db'
         self.conn = sqlite3.connect(self.db, timeout=15)
         self.cursor = self.conn.cursor()
-
-
 
     def execute(self, cmd, verbose=0):
         if verbose:
@@ -245,9 +247,10 @@ class Push(object):
                     AMPM_flag = "A M"
                 else:
                     AMPM_flag = "P M"
-                ordinal_day = ordinal(int(datetime.now().strftime('%#d')))
-                msg = MIMEText(f"{message}, sent on {datetime.now().strftime('%B')} {ordinal_day} at"
-                               f" {datetime.now().strftime('%#I:%M')} {AMPM_flag}")
+                # ordinal_day = ordinal(int(datetime.now().strftime('%#d')))
+                msg = MIMEText(f"{message}, sent at "
+                               f"{datetime.now().strftime('%#I:%M')} {AMPM_flag}")
+                ## f" on {datetime.now().strftime('%B')} {ordinal_day} ")
                 msg['Subject'] = subject
                 msg['From'] = EMAIL_FROM
                 msg['To'] = EMAIL_TO
