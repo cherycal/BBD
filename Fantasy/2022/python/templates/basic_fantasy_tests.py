@@ -1,5 +1,4 @@
 import sys
-import time
 
 sys.path.append('../modules')
 import sqldb
@@ -27,11 +26,9 @@ ACCESSTOKENSECRET = os.environ.get('ACCESSTOKENSECRET')
 API_KEY = os.environ.get('api_key')
 REG_ID = os.environ.get('reg_id')
 
-count = 0
-while count < 2:
-    push_instance.send_message(f"basic_fantasy_tests message","basic_fantasy_tests subject")
-    time.sleep(4)
-    count += 1
+
+fantasy.tweet_daily_schedule()
+fantasy.tweet_add_drops()
 
 #fantasy.refresh_statcast_schedule()
 # fantasy.tweet_add_drops()p

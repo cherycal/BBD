@@ -36,6 +36,7 @@ print(diff.total_seconds())
 
 # format time as string
 now = datetime.now()  # current date and time
+
 date_time = now.strftime("%Y%m%d%H%M%S")
 out_date = now.strftime("%Y%m%d")
 
