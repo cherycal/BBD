@@ -1,5 +1,7 @@
 import datetime
+import inspect
 import logging
+import sqlite3
 import sys
 import time
 import traceback
@@ -54,6 +56,18 @@ def get_logger(logfilename='test.log',
 
     return logger_instance
 
+def print_calling_function():
+    print('\n')
+    print("Printing calling information (fantasy.py)")
+    print("#############################")
+    # print(str(inspect.stack()[-2].filename) + ", " + str(inspect.stack()[-2].function) +
+    #      ", " + str(inspect.stack()[-2].lineno))
+    print(str(inspect.stack()[1].filename) + ", " + str(inspect.stack()[1].function) +
+          ", " + str(inspect.stack()[1].lineno))
+    # print(str(inspect.stack()[-1].filename) + ", " + str(inspect.stack()[-1].function) +
+    #      ", " + str(inspect.stack()[-1].lineno))
+    print("#############################")
+    return
 
 def get_platform():
     platforms = {
@@ -65,7 +79,7 @@ def get_platform():
     if sys.platform not in platforms:
         return sys.platform
 
-    return platforms[sys.platform]
+    return f"{platforms[sys.platform]}"
 
 
 def get_driver(mode=""):
@@ -170,3 +184,64 @@ def local_hhmmss_from_mlb_format(mlbtimestr):
     tzoffset = (int(datetime.now(pytz.timezone('America/Tijuana')).strftime("%z")) / -100)
     game_time = gmt_game_time - timedelta(hours=tzoffset)
     return game_time.strftime("%H%M%S")
+
+class Process(object):
+
+    def __init__(self, logger_instance=None):
+        self.db = f'C:\\Ubuntu\\Shared\\data\\Process.db'
+        self.conn = sqlite3.connect(self.db, timeout=15)
+        self.cursor = self.conn.cursor()
+        self.name = "process_instance"
+        if logger_instance is None:
+            logname = './logs/pushlog.log'
+            self.logger_instance = get_logger(logfilename=logname)
+        else:
+            self.logger_instance = logger_instance
+
+    def execute(self, cmd, verbose=0):
+        if verbose:
+            print_calling_function()
+        self.cursor.execute(cmd)
+        self.conn.commit()
+
+    def select(self, query, verbose=0):
+        if verbose:
+            print_calling_function()
+        self.cursor.execute(query)
+        self.conn.commit()
+        return self.cursor.fetchall()
+
+    def get_process(self):
+        return self.name
+
+    def set_process_status(self, calling_function, flag_):
+        if calling_function:
+            cmd = f"update ProcessStatus set ProcessStatus = {flag_}, " \
+                  f"UpdateDate = {datetime.now().strftime('%Y%m%d')}, " \
+                  f"UpdateTime = {datetime.now().strftime('%Y%m%d%H%M%S')} " \
+                  f"where ProcessName = '{calling_function}'"
+            self.logger_instance.info(cmd)
+            self.execute(cmd)
+            self.logger_instance.info(f"Successfully ProcessStatus to {flag_} for {calling_function}")
+            # self.push(title="ProcessStatus",
+            #           body=f"Successfully ProcessStatus to {flag_} for {calling_function}")
+
+        return
+
+    def get_process_status(self, calling_function=None):
+        status_flag = None
+        if calling_function:
+            cmd = f"select ProcessStatus from ProcessStatus where ProcessName = '{calling_function}'"
+            self.logger_instance.info(cmd)
+            d = self.select(cmd)
+            status_flag = d[0][0]
+        return status_flag
+
+    def get_process_date(self, calling_function=None):
+        status_flag = None
+        if calling_function:
+            cmd = f"select UpdateDate from ProcessStatus where ProcessName = '{calling_function}'"
+            self.logger_instance.info(cmd)
+            d = self.select(cmd)
+            status_flag = d[0][0]
+        return status_flag

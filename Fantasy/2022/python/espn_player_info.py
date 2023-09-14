@@ -9,6 +9,7 @@ import unidecode
 sys.path.append('./modules')
 import push
 import fantasy
+import tools
 import inspect
 import random
 import traceback
@@ -34,6 +35,7 @@ mode = "PROD"
 inst = push.Push()
 fantasy = fantasy.Fantasy(mode, caller=os.path.basename(__file__))
 bdb = fantasy.get_db()
+process_instance = tools.Process()
 
 now = datetime.now()  # current date and time
 date_time = now.strftime("%Y%m%d%H%M%S")
@@ -274,10 +276,15 @@ def main():
 
     run_roster_suite = True
     date8 = int(fantasy.get_date8())
-    roster_run_date = fantasy.get_roster_run_date()
-    if date8 == roster_run_date:
-        print("Roster suite already run. Skipping")
-        run_roster_suite = False
+
+    # roster_run_date = fantasy.get_roster_run_date()
+    # if date8 == roster_run_date:
+    #     print("Roster suite already run. Skipping")
+    #     run_roster_suite = False
+
+    process_name = "RosterRun"
+    # run_roster_suite = process_instance.get_process_status(process_name)
+    # process_instance.set_process_status(process_name, 0)
 
     try:
         bdb.update("update ProcessUpdateTimes set Active = 1 where Process = 'PlayerInfo'")
@@ -356,7 +363,8 @@ def main():
         if run_count % 6 == 0:
                 fantasy.run_espn_odds()
 
-        if run_roster_suite:
+        if not process_instance.get_process_status(process_name) and\
+                process_instance.get_process_date(process_name) == date8:
             fantasy.tweet_daily_schedule()
             #fantasy.tweet_fran_on_opponents()
             #fantasy.tweet_oppo_rosters()
@@ -386,8 +394,10 @@ def main():
             inst.push("Morning suite completed",
                       "Morning suite completed")
 
-            fantasy.set_roster_run_date(date8)
-            run_roster_suite = False
+            #fantasy.set_roster_run_date(date8)
+            process_instance.set_process_status(process_name, 1)
+        else:
+            print(f"Not running roster suite, already run according to Process.db ProcessStatus table")
 
         #
         #

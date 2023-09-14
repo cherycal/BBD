@@ -248,7 +248,7 @@ class Push(object):
                 else:
                     AMPM_flag = "P M"
                 # ordinal_day = ordinal(int(datetime.now().strftime('%#d')))
-                msg = MIMEText(f"{message}, sent at "
+                msg = MIMEText(f"{message}, "
                                f"{datetime.now().strftime('%#I:%M')} {AMPM_flag}")
                 ## f" on {datetime.now().strftime('%B')} {ordinal_day} ")
                 msg['Subject'] = subject
