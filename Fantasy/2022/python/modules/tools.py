@@ -245,3 +245,19 @@ class Process(object):
             d = self.select(cmd)
             status_flag = d[0][0]
         return status_flag
+
+    def set_slack_timestamp(self, calling_function, timestamp):
+        cmd = f"update Slack set " \
+              f"TimeStamp = {timestamp} " \
+              f"where ProcessName = '{calling_function}'"
+        self.logger_instance.info(cmd)
+        self.execute(cmd)
+        self.logger_instance.info(f"Successfully TimeStamp to {timestamp} for {calling_function}")
+        return
+
+    def get_slack_timestamp(self, calling_function):
+        cmd = f"select TimeStamp from Slack where ProcessName = '{calling_function}'"
+        self.logger_instance.info(cmd)
+        d = self.select(cmd)
+        timestamp = d[0][0]
+        return timestamp

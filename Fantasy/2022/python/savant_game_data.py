@@ -390,7 +390,7 @@ def process_mlb(data, gamepk, player_teams):
                         logger_instance.info(f'Pushing play info: {msg}')
                         print("Pushing: " + msg)
                         inst.push(title="Status Change", body=msg)
-                        inst.send_message(sms_msg, "Game Data", calling_function="GameData")
+                        inst.send_message(sms_msg, " ", calling_function="GameData")
                         # inst.tweet(msg)
                         time.sleep(4)
                     else:

@@ -24,7 +24,7 @@ import statcast_event_level
 import statcast_season_level
 import espn_season_stats
 import savant_boxscores
-#import team_splits
+# import team_splits
 import tables_to_files
 
 if not os.environ.get('PYTHONHTTPSVERIFY', '') and getattr(ssl, '_create_unverified_context', None):
@@ -65,7 +65,7 @@ def trywrap(func):
                 print("-" * 60)
                 traceback.print_exc(file=sys.stdout)
                 print("-" * 60)
-                inst.push(title = "Attempt failed:",body = f'Error: {ex}\nFunction: {func}')
+                inst.push(title="Attempt failed:", body=f'Error: {ex}\nFunction: {func}')
 
 
 def print_calling_function():
@@ -95,7 +95,6 @@ def process_oddsline(text):
                          "(TEX)|(Rangers)|"
                          "(LA)|(Angels)|"
                          "(Dodgers)|"
-                         "(OAK)|(Athletics)|"
                          "(SEA)|(Mariners)|"
                          "(COL)|(Rockies)|"
                          "(MIL)|(Brewers)|"
@@ -105,7 +104,6 @@ def process_oddsline(text):
                          "(PHI)|(Phillies)|"
                          "(PIT)|(Pirates)|"
                          "(WAS)|(Nationals)|"
-                         "(BOS)|(Red Sox)|"
                          "(STL)|(Cardinals)|"
                          "(MIA)|(Marlins)|"
                          "(CLE)|(Indians)|"
@@ -204,18 +202,18 @@ def begin_day_process():
                 passed = True
                 break
         except Exception as ex:
-            inst.push(title = "DATABASE ERROR - try " + str(tries) + " at " + str(date_time),
-                      body = "Insert ESPNPlayerDataCurrent" + ": " + str(ex))
+            inst.push(title="DATABASE ERROR - try " + str(tries) + " at " + str(date_time),
+                      body="Insert ESPNPlayerDataCurrent" + ": " + str(ex))
             fantasy.logger_exception(f'begin_day_process ERROR:')
 
         time.sleep(SLEEP)
 
     if not passed:
-        inst.push(title ="DATABASE ERROR", body ="insert ESPNPlayerDataCurrent, "
-                                    "espn_player_info")
+        inst.push(title="DATABASE ERROR", body="insert ESPNPlayerDataCurrent, "
+                                               "espn_player_info")
     else:
-        inst.push(title ="BEGIN DAY PROCESS SUCCEEDS",
-                  body = "insert ESPNPlayerDataCurrent, espn_player_info")
+        inst.push(title="BEGIN DAY PROCESS SUCCEEDS",
+                  body="insert ESPNPlayerDataCurrent, espn_player_info")
 
 
 def eod_process():
@@ -237,8 +235,8 @@ def eod_process():
             passed = 1
             break
         except Exception as ex:
-            inst.push(title = "DATABASE ERROR - try " + str(tries) + " at " + str(date_time),
-                      body = command + ": " + str(ex))
+            inst.push(title="DATABASE ERROR - try " + str(tries) + " at " + str(date_time),
+                      body=command + ": " + str(ex))
             fantasy.logger_exception(f'DB error in cmd {command}: Exception: {ex}')
         time.sleep(SLEEP)
 
@@ -251,9 +249,9 @@ def eod_process():
     fantasy.refresh_starter_history()
 
     if not passed:
-        inst.push(body  = "DB ERROR eod_process(): " + str(date_time), title = "espn_player_info.py")
+        inst.push(body="DB ERROR eod_process(): " + str(date_time), title="espn_player_info.py")
     else:
-        inst.push(body  = "EOD PROCESS SUCCEEDS: " + str(date_time),title = "espn_player_info.py")
+        inst.push(body="EOD PROCESS SUCCEEDS: " + str(date_time), title="espn_player_info.py")
 
     return
 
@@ -267,24 +265,20 @@ def run_function(function, name="none given"):
 def main():
     run_begin_day_process = True
     run_end_day_process = True
-    run_odds_bool = True
+    # run_odds_bool = True
     begin_day_time = 10000
     end_day_time = 211500
     MIN_SLEEP = 6
     MAX_SLEEP = 10
     run_count = 0
 
-    run_roster_suite = True
+    # run_roster_suite = True
     date8 = int(fantasy.get_date8())
 
     # roster_run_date = fantasy.get_roster_run_date()
     # if date8 == roster_run_date:
     #     print("Roster suite already run. Skipping")
     #     run_roster_suite = False
-
-    process_name = "RosterRun"
-    # run_roster_suite = process_instance.get_process_status(process_name)
-    # process_instance.set_process_status(process_name, 0)
 
     try:
         bdb.update("update ProcessUpdateTimes set Active = 1 where Process = 'PlayerInfo'")
@@ -308,7 +302,7 @@ def main():
             bdb.update(cmd)
         except Exception as ex:
             print(str(ex))
-            inst.push(title = "DB error in player_info", body = str(ex))
+            inst.push(title="DB error in player_info", body=str(ex))
             # inst.tweet("DB error in player_info\n" + cmd + ":\n" + str(ex))
             # fantasy.post_log_msg(f'DB error in cmd {cmd}: Exception: {ex}')
             fantasy.logger_exception(f'DB error in cmd {cmd}: Exception: {ex}')
@@ -343,7 +337,7 @@ def main():
             fantasy.get_db_player_info()
 
             # ESPNPlayerDataCurrent, ESPNPlayerDataHistory, StatusChanges
-            # Retrieve fron ESPN API
+            # Retrieve from ESPN API
             print(f'get_espn_player_info at {datetime.now().strftime("%Y%m%d-%H%M%S")}')
             fantasy.get_espn_player_info()
 
@@ -361,13 +355,24 @@ def main():
             bdb.tables_to_sheets("UpcomingStartsWithStats", "USWS")
 
         if run_count % 6 == 0:
-                fantasy.run_espn_odds()
+            fantasy.run_espn_odds()
 
-        if not process_instance.get_process_status(process_name) and\
-                process_instance.get_process_date(process_name) == date8:
+        process_name = "RosterRun"
+        process_last_run_date = int(process_instance.get_process_date(process_name))
+        # run_roster_suite = process_instance.get_process_status(process_name)
+        # process_instance.set_process_status(process_name, 0)
+
+        print(f"{process_name} status: {process_instance.get_process_status(process_name)}")
+        print(f"{process_name} last run date: {process_last_run_date}")
+        print(f"Current date: {date8}")
+        print(f"Last run date not equal to current date: {process_last_run_date != date8}")
+
+        if process_instance.get_process_status(process_name) == 0 or \
+                process_last_run_date != date8:
+            print(f"Running {process_name} ...")
             fantasy.tweet_daily_schedule()
-            #fantasy.tweet_fran_on_opponents()
-            #fantasy.tweet_oppo_rosters()
+            # fantasy.tweet_fran_on_opponents()
+            # fantasy.tweet_oppo_rosters()
             ##
             fantasy.refresh_statcast_schedule()
             fantasy.refresh_espn_schedule()
@@ -394,7 +399,7 @@ def main():
             inst.push("Morning suite completed",
                       "Morning suite completed")
 
-            #fantasy.set_roster_run_date(date8)
+            # fantasy.set_roster_run_date(date8)
             process_instance.set_process_status(process_name, 1)
         else:
             print(f"Not running roster suite, already run according to Process.db ProcessStatus table")
@@ -424,7 +429,7 @@ def main():
         time.sleep(num1)
         run_count += 1
 
-    #inst.quit_sms_server()
+    # inst.quit_sms_server()
     exit(0)
 
 

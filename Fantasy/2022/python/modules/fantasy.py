@@ -124,6 +124,7 @@ class Fantasy(object):
 		self.slack_client = WebClient(token=self.slack_api_token)
 		self.slack_most_recent = ""
 		self.slack_first_run = True
+		self.process_instance = tools.Process()
 
 		def get_position_name_from_position_abbr(verbose=True):
 			return_dict = {}
@@ -1637,25 +1638,40 @@ class Fantasy(object):
 
 	@tools.try_wrap
 	def read_slack(self):
+		process_name = "General"
+		unix_timestamp = datetime.timestamp(datetime.now())
+		last_msg_time_db = self.process_instance.get_slack_timestamp(process_name)
 		history = self.slack_client.conversations_history(channel=self.slack_channel,
-		                                                  tokem=self.slack_api_token, limit=1)
+		                                                  tokem=self.slack_api_token, limit=5)
 		msgs = history['messages']
 		return_text = ""
 		if len(msgs) > 0:
 			for msg in msgs:
 				text = msg['text']
-				if text != self.slack_most_recent:
+				ts = float(msg['ts'])
+				msg_age = ts - last_msg_time_db
+				print(f"Msg time ({ts}) is {msg_age} seconds "
+				      f"older than last recorded message time ({last_msg_time_db})")
+				if msg_age > 0:
 					try:
-						self.slack_most_recent = text
-						if not self.slack_first_run:
-							print(f"Processing Slack text: {text}")
-							self.slack_process_text(text)
-							return_text = text
-						else:
-							print(F"Skipping first run")
-							self.slack_first_run = False
+						self.slack_process_text(text)
+						return_text = text
+						self.process_instance.set_slack_timestamp(process_name, ts)
+						time.sleep(.25)
 					except Exception as ex:
 						self.push_instance.push(body = f"Error in push_instance, Error: {str(ex)}")
+				# if text != self.slack_most_recent:
+				# 	try:
+				# 		self.slack_most_recent = text
+				# 		if not self.slack_first_run:
+				# 			print(f"Processing Slack text: {text}")
+				# 			self.slack_process_text(text)
+				# 			return_text = text
+				# 		else:
+				# 			print(F"Skipping first run")
+				# 			self.slack_first_run = False
+				# 	except Exception as ex:
+				# 		self.push_instance.push(body = f"Error in push_instance, Error: {str(ex)}")
 				else:
 					pass
 					#print(f"Skipping most recent post: {text}"
