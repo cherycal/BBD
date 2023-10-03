@@ -270,8 +270,7 @@ def get_savant_gamefeed_page(url_name):
     return json.loads(r.content)
 
 
-def main():
-    DAYS_AGO = 2
+def main(DAYS_AGO = 2):
     end_date = date.today()
     start_date = end_date - timedelta(days=DAYS_AGO)
     step = timedelta(days=1)
