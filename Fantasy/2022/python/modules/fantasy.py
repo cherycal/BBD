@@ -925,7 +925,7 @@ class Fantasy(object):
 		out_date = now.strftime("%Y%m%d")
 		run_injury_updates = False
 		#####################################
-		skip_ids = ['41134']
+		skip_ids = ['41134','39810']
 		## skip_ids = ['41134','4722949','41257','33089','36138','4917897','39802']
 		# ESPN has some players who
 		# change injury status
@@ -1647,19 +1647,20 @@ class Fantasy(object):
 		return_text = ""
 		if len(msgs) > 0:
 			for msg in msgs:
-				text = msg['text']
 				ts = float(msg['ts'])
 				msg_age = ts - last_msg_time_db
-				print(f"Msg time ({ts}) is {msg_age} seconds "
-				      f"older than last recorded message time ({last_msg_time_db})")
+				# print(f"Msg time ({ts}) is {msg_age} seconds "
+				#       f"older than last recorded message time ({last_msg_time_db})")
 				if msg_age > 0:
 					try:
+						text = msg['text']
 						self.slack_process_text(text)
 						return_text = text
 						self.process_instance.set_slack_timestamp(process_name, ts)
 						time.sleep(.25)
 					except Exception as ex:
 						self.push_instance.push(body = f"Error in push_instance, Error: {str(ex)}")
+				# Replaced by database timestamp solution on 20230915
 				# if text != self.slack_most_recent:
 				# 	try:
 				# 		self.slack_most_recent = text
@@ -1676,7 +1677,8 @@ class Fantasy(object):
 					pass
 					#print(f"Skipping most recent post: {text}"
 		if return_text != "":
-			self.push_instance.push(title = f"Received slack text: {text}", body = f"Received slack text: {text}")
+			self.push_instance.push(title = f"Received slack text: {return_text}",
+			                        body = f"Received slack text: {return_text}")
 		return return_text
 
 	def get_roster_run_date(self):
