@@ -30,6 +30,7 @@ msg = ""
 
 
 def populate_one_day(statcast_date):
+    print(statcast_date)
     date8 = str(statcast_date.replace("-", ""))
     url_name = f"http://statsapi.mlb.com/api/v1/schedule?sportId=1&date={statcast_date}"
 
@@ -60,8 +61,8 @@ def update_game_data(gamepk):
     pass
 
 def main():
-    start_date = date(2023, 7, 14)
-    end_date = date(2023, 10, 3)
+    start_date = date(2023, 11, 1)
+    end_date = date(2023, 11, 6)
     # If games aren't in the table yet for a given day, populate_one_day does it
     # It only enters a row for each game ( the game id is known as a gamepk )
     [populate_one_day(str(date.fromordinal(i))) for i in range(start_date.toordinal(), end_date.toordinal())]

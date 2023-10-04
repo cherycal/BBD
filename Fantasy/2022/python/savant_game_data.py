@@ -114,7 +114,7 @@ query = "select distinct MLBID, Name from ( select  round(MLBID,0) as MLBID, " \
         " E.espnid = R.ESPNID and  E.espnid = I.ESPNID and R.Team in" \
         " (select TeamName as Team from ESPNTeamOwners where WatchLevel > 0)"
 
-PLAYOFFS = False
+PLAYOFFS = True
 
 if PLAYOFFS is True:
     query = "select distinct MLBID, Name from ( select  round(MLBID,0) as MLBID, " \
@@ -716,6 +716,7 @@ def start_gamefeed(gamepks_):
 
 
 def main():
+    fantasy.refresh_statcast_schedule()
     start_gamefeed(gamepks)
 
 
