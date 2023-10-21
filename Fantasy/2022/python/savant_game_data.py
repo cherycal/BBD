@@ -129,11 +129,7 @@ query_result = bdb.select(query)
 for row in query_result:
     watch_ids.append(str(int(row[0])))
 
-gamepks = list()
 
-c = bdb.select("select game from StatcastGameData where date = " + str(out_date))
-for t in c:
-    gamepks.append(str(t[0]))
 
 sc_first_run = dict()
 
@@ -148,6 +144,12 @@ statcast_count: Dict[Any, Any] = dict()
 has_statcast = dict()
 is_in_pitching_change = dict()
 
+def get_gamepks():
+    gamepks = list()
+    c = bdb.select("select game from StatcastGameData where date = " + str(out_date))
+    for t in c:
+        gamepks.append(str(t[0]))
+    return gamepks
 
 def shorten_description(description, length):
     words = description.split()
@@ -466,7 +468,7 @@ def get_savant_gamefeed_page(url_name):
     return json.loads(r.content)
 
 
-def start_gamefeed(gamepks_):
+def start_gamefeed(gamepks):
     global has_statcast
     global reported_event_count
     global reported_statcast_count
@@ -497,7 +499,7 @@ def start_gamefeed(gamepks_):
     # game_start_times = get_start_times(now.strftime("%Y%m%d"))
 
     # Sets counts to zero if event counts are not found in event_count.csv file
-    for gamepk in gamepks_:
+    for gamepk in gamepks:
         if not event_count.get(gamepk):
             event_count[str(gamepk)] = 0
         if not reported_event_count.get(gamepk):
@@ -716,6 +718,7 @@ def start_gamefeed(gamepks_):
 
 
 def main():
+    gamepks = get_gamepks()
     fantasy.refresh_statcast_schedule()
     start_gamefeed(gamepks)
 
