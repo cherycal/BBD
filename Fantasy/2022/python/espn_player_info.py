@@ -404,20 +404,6 @@ def main():
         else:
             print(f"Not running roster suite, already run according to Process.db ProcessStatus table")
 
-        #
-        #
-        #
-        #
-        #
-        #
-        #
-        #
-        #
-        #
-        #
-        #
-        #
-
         fantasy.check_roster_lock_time()
         rt = fantasy.read_slack()
         print(f"fantasy.read_slack(): {rt}")

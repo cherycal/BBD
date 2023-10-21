@@ -1636,6 +1636,8 @@ class Fantasy(object):
 			leagueID = row['LeagueID']
 		return leagueID
 
+
+
 	@tools.try_wrap
 	def read_slack(self):
 		process_name = "General"
@@ -1760,6 +1762,7 @@ class Fantasy(object):
 			self.run_query(query, f"MiLB_Stats_for_{name}")
 		else:
 			self.roster_list(text_)
+
 
 	def get_odds_dates(self):
 		# Optional way to create list of dates

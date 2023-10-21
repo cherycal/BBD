@@ -4,9 +4,6 @@ sys.path.append('./modules')
 import sqldb
 import tools
 
-#plat = tools.get_platform()
-#print(plat)
-#push_instance = push.Push()
 mode = "PROD"
 
 if mode == "TEST":
